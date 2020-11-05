@@ -2,9 +2,11 @@ package com.konnector.backendapi.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Objects;
+
 public class UserDTO {
 
-	private long id;
+	private Long id;
 	private String email;
 	private String username;
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -12,11 +14,11 @@ public class UserDTO {
 	private String firstName;
 	private String lastName;
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -58,5 +60,23 @@ public class UserDTO {
 
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		UserDTO userDTO = (UserDTO) o;
+		return Objects.equals(id, userDTO.id) &&
+				Objects.equals(email, userDTO.email) &&
+				Objects.equals(username, userDTO.username) &&
+				Objects.equals(password, userDTO.password) &&
+				Objects.equals(firstName, userDTO.firstName) &&
+				Objects.equals(lastName, userDTO.lastName);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, email, username, password, firstName, lastName);
 	}
 }
