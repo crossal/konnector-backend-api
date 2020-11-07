@@ -20,5 +20,10 @@ Handling Konnector web and data requests
 
 ## Running the API
 
+Unit tests can be skipped when building by providing `-DskipUnitTests`
+Integration tests can be skipped when building by providing `-DskipIntegrationTests`
+All tests can be skipped when building by providing `-DskipTests`
+
+
 * Navigate to the project root
 * Run `$ mvn clean compile liquibase:update`

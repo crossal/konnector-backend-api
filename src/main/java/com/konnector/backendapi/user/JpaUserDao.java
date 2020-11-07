@@ -36,28 +36,33 @@ public class JpaUserDao implements Dao<User> {
 	}
 
 	@Override
-	public void update(User user, String[] params) {
+	public void update(User user) {
 //		user.setName(Objects.requireNonNull(params[0], "Name cannot be null"));
 //		user.setEmail(Objects.requireNonNull(params[1], "Email cannot be null"));
 //		executeInsideTransaction(entityManager -> entityManager.merge(user));
 		entityManager.merge(user);
 	}
 
+//	@Override
+//	public void delete(User user) {
+//		executeInsideTransaction(entityManager -> entityManager.remove(user));
+//	}
+
 	@Override
 	public void delete(User user) {
-		executeInsideTransaction(entityManager -> entityManager.remove(user));
+		entityManager.remove(user);
 	}
 
-	private void executeInsideTransaction(Consumer<EntityManager> action) {
-		EntityTransaction tx = entityManager.getTransaction();
-		try {
-			tx.begin();
-			action.accept(entityManager);
-			tx.commit();
-		}
-		catch (RuntimeException e) {
-			tx.rollback();
-			throw e;
-		}
-	}
+//	private void executeInsideTransaction(Consumer<EntityManager> action) {
+//		EntityTransaction tx = entityManager.getTransaction();
+//		try {
+//			tx.begin();
+//			action.accept(entityManager);
+//			tx.commit();
+//		}
+//		catch (RuntimeException e) {
+//			tx.rollback();
+//			throw e;
+//		}
+//	}
 }

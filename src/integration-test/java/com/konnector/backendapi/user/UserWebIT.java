@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserController.class)
-public class UserControllerTest {
+public class UserWebIT {
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -42,7 +42,7 @@ public class UserControllerTest {
 
 	@BeforeEach
 	public void setup() throws JsonProcessingException {
-		 userJson = objectMapper.writeValueAsString(userDTO);
+		userJson = objectMapper.writeValueAsString(userDTO);
 	}
 
 	@Test
