@@ -13,12 +13,14 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private Dao<User> userDao;
 	@Autowired
+	private UserValidator userValidator;
+	@Autowired
 	private PasswordHashingService passwordHashingService;
 
 	@Override
 	@Transactional
 	public User createUser(User user, String password) {
-//		user.validate();
+		userValidator.validateUserCreationArgument(user);
 		HashedPassword hashedPassword = passwordHashingService.getHashedPassword(password);
 		user.setPassword(hashedPassword.getHash());
 		user.setSalt(hashedPassword.getSalt());
