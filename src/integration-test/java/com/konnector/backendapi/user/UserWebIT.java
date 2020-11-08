@@ -51,7 +51,7 @@ public class UserWebIT {
 		when(userService.createUser(user, userDTO.getPassword())).thenReturn(user);
 		when(modelMapper.map(user, UserDTO.class)).thenReturn(userDTO);
 
-		MvcResult result = mockMvc.perform(post("/api/users").contentType(MediaType.APPLICATION_JSON).content(userJson)).andExpect(status().isOk()).andReturn();
+		MvcResult result = mockMvc.perform(post("/api/users").contentType(MediaType.APPLICATION_JSON).content(userJson)).andExpect(status().isCreated()).andReturn();
 		UserDTO userDTOResponse = objectMapper.readValue(result.getResponse().getContentAsString(), UserDTO.class);
 
 		userDTO.setPassword(null);

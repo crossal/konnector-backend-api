@@ -194,8 +194,8 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <skipTests>${skipTests}</skipTests>
-                    <skipIntegrationTests>${skipIntegrationTests}</skipIntegrationTests>
+                    <skipTests>${skipIntegrationTests}</skipTests>
+                    <skipIntegrationTests>${skipTests}</skipIntegrationTests>
                 </configuration>
             </plugin>
         </plugins>
