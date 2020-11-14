@@ -1,10 +1,12 @@
 package com.konnector.backendapi.verification;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Service
 public class VerificationServiceImpl implements VerificationService {
 
 	private static final int CODE_LENGTH = 4;

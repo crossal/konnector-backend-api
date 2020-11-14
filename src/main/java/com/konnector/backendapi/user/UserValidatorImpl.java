@@ -33,7 +33,7 @@ public class UserValidatorImpl implements UserValidator {
 			throw new InvalidDataException("Last name cannot be empty");
 		}
 
-		Optional<User> optionalUser = userRepository.findByEmail(user.getEmail()));
+		Optional<User> optionalUser = userRepository.findByEmail(user.getEmail());
 		optionalUser.ifPresent(existingUser -> {
 			throw new InvalidDataException("Email already used");
 		});

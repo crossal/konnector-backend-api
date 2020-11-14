@@ -43,6 +43,9 @@ public class User {
 	@UpdateTimestamp
 	private LocalDateTime updatedOn;
 
+	public User() {
+	}
+
 	public User(String email, String username, byte[] password, byte[] salt, String firstName, String lastName) {
 		this.email = email;
 		this.username = username;

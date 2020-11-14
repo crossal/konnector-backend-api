@@ -25,7 +25,6 @@ public class UserPersistenceIT {
 	@Test
 	@Transactional
 	public void saveUser_savesUser() {
-		user.setId(null);
 		userDao.save(user);
 		assertEquals(user, userDao.get(user.getId()).get());
 	}

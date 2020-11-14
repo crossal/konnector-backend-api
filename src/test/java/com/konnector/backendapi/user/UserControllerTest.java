@@ -21,20 +21,20 @@ public class UserControllerTest {
 	private UserController userController = new UserController();
 
 	@Mock
-	private UserService userService;
+	private UserService userServiceMock;
 	@Mock
-	private ModelMapper modelMapper;
+	private ModelMapper modelMapperMock;
 	@Mock
-	private User user;
+	private User userMock;
 
 	private final PodamFactory podamFactory = new PodamFactoryImpl();
 	private final UserDTO userDTO = podamFactory.manufacturePojo(UserDTO.class);
 
 	@Test
 	public void createUser_returnsSuccessAndCreatedUser() {
-		when(modelMapper.map(any(UserDTO.class), eq(User.class))).thenReturn(user);
-		when(userService.createUser(user, userDTO.getPassword())).thenReturn(user);
-		when(modelMapper.map(user, UserDTO.class)).thenReturn(userDTO);
+		when(modelMapperMock.map(any(UserDTO.class), eq(User.class))).thenReturn(userMock);
+		when(userServiceMock.createUser(userMock, userDTO.getPassword())).thenReturn(userMock);
+		when(modelMapperMock.map(userMock, UserDTO.class)).thenReturn(userDTO);
 
 		UserDTO result = userController.createUser(userDTO);
 

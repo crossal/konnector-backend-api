@@ -29,8 +29,9 @@ public class JpaUserDaoTest {
 
 	@Test
 	public void get_returnsUser() {
-		when(entityManagerMock.find(User.class, user.getId())).thenReturn(user);
-		assertEquals(user, jpaUserDao.get(user.getId()).get());
+		long userId = 1;
+		when(entityManagerMock.find(User.class, userId)).thenReturn(user);
+		assertEquals(user, jpaUserDao.get(userId).get());
 	}
 
 	@Test
