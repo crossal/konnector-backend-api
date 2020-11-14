@@ -1,27 +1,21 @@
-package com.konnector.backendapi.user;
+package com.konnector.backendapi.verification;
 
 import com.konnector.backendapi.data.Dao;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 @Repository
-public class JpaUserDao implements Dao<User> {
+public class JpaVerificationDao implements Dao<Verification> {
 
 	@PersistenceContext
 	private EntityManager entityManager;
 
 	@Override
-	public Optional<User> get(long id) {
-		return Optional.ofNullable(entityManager.find(User.class, id));
+	public Optional<Verification> get(long id) {
+		return Optional.ofNullable(entityManager.find(Verification.class, id));
 	}
 
 //	@Override
@@ -31,17 +25,17 @@ public class JpaUserDao implements Dao<User> {
 //	}
 
 	@Override
-	public void save(User user) {
+	public void save(Verification verification) {
 //		executeInsideTransaction(entityManager -> entityManager.persist(user));
-		entityManager.persist(user);
+		entityManager.persist(verification);
 	}
 
 	@Override
-	public void update(User user) {
+	public void update(Verification verification) {
 //		user.setName(Objects.requireNonNull(params[0], "Name cannot be null"));
 //		user.setEmail(Objects.requireNonNull(params[1], "Email cannot be null"));
 //		executeInsideTransaction(entityManager -> entityManager.merge(user));
-		entityManager.merge(user);
+		entityManager.merge(verification);
 	}
 
 //	@Override
@@ -50,8 +44,8 @@ public class JpaUserDao implements Dao<User> {
 //	}
 
 	@Override
-	public void delete(User user) {
-		entityManager.remove(user);
+	public void delete(Verification verification) {
+		entityManager.remove(verification);
 	}
 
 //	private void executeInsideTransaction(Consumer<EntityManager> action) {

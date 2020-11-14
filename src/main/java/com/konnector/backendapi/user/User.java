@@ -16,31 +16,44 @@ public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
 	@Column(name = "email")
 	private String email;
+
 	@Column(name = "username")
 	private String username;
+
 	@Column(name = "password")
 	private byte[] password;
+
 	@Column(name = "salt")
 	private byte[] salt;
+
 	@Column(name = "first_name")
 	private String firstName;
+
 	@Column(name = "last_name")
 	private String lastName;
+
 	@Column(name = "created_on")
 	@CreationTimestamp
 	private LocalDateTime createdOn;
+
 	@Column(name = "updated_on")
 	@UpdateTimestamp
 	private LocalDateTime updatedOn;
 
-	public Long getId() {
-		return id;
+	public User(String email, String username, byte[] password, byte[] salt, String firstName, String lastName) {
+		this.email = email;
+		this.username = username;
+		this.password = password;
+		this.salt = salt;
+		this.firstName = firstName;
+		this.lastName = lastName;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public Long getId() {
+		return id;
 	}
 
 	public String getEmail() {
@@ -95,15 +108,7 @@ public class User {
 		return createdOn;
 	}
 
-	public void setCreatedOn(LocalDateTime createdOn) {
-		this.createdOn = createdOn;
-	}
-
 	public LocalDateTime getUpdatedOn() {
 		return updatedOn;
-	}
-
-	public void setUpdatedOn(LocalDateTime updatedOn) {
-		this.updatedOn = updatedOn;
 	}
 }
