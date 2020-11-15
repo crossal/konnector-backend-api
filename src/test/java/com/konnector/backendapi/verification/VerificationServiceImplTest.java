@@ -35,10 +35,11 @@ public class VerificationServiceImplTest {
 
 	@Test
 	public void createVerificationForUser_createsVerification() {
-		Verification verification = verificationService.createVerificationForUser(userId);
+		Verification verification = verificationService.createEmailVerificationForUser(userId);
 
 		verify(codeGenerationServiceMock, times(1)).generateCode(anyInt());
 		assertEquals(userId, verification.getUserId());
+		assertEquals(VerificationType.EMAIL, verification.getType());
 		assertEquals(code, verification.getCode());
 		assertNotNull(verification.getUrlToken());
 		assertTrue(verification.getCodeAttemptsLeft() > 0);

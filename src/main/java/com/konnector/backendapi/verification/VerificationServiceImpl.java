@@ -18,8 +18,8 @@ public class VerificationServiceImpl implements VerificationService {
 	private CodeGenerationService codeGenerationService;
 
 	@Override
-	public Verification createVerificationForUser(long userId) {
-		Verification verification = new Verification(userId, codeGenerationService.generateCode(CODE_LENGTH), CODE_ATTEMPTS, UUID.randomUUID().toString(), LocalDateTime.now().plusDays(URL_TOKEN_EXPIRATION_IN_DAYS));
+	public Verification createEmailVerificationForUser(long userId) {
+		Verification verification = new Verification(userId, VerificationType.EMAIL, codeGenerationService.generateCode(CODE_LENGTH), CODE_ATTEMPTS, UUID.randomUUID().toString(), LocalDateTime.now().plusDays(URL_TOKEN_EXPIRATION_IN_DAYS));
 		return verification;
 	}
 }

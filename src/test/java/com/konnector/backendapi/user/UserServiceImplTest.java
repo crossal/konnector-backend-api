@@ -72,7 +72,7 @@ public class UserServiceImplTest {
 		when(passwordHashingServiceMock.getHashedPassword(password)).thenReturn(hashedPasswordMock);
 		when(verificationMock.getCode()).thenReturn(verificationCode);
 		when(verificationMock.getUrlToken()).thenReturn(verificationUrlToken);
-		when(verificationServiceMock.createVerificationForUser(anyLong())).thenReturn(verificationMock);
+		when(verificationServiceMock.createEmailVerificationForUser(anyLong())).thenReturn(verificationMock);
 		doAnswer(new Answer() {
 			@Override
 			public Object answer(InvocationOnMock invocationOnMock) throws Throwable {

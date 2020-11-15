@@ -20,6 +20,9 @@ public class Verification {
 	@Column(name = "user_id")
 	private Long userId;
 
+	@Column(name = "type")
+	private VerificationType type;
+
 	@Column(name = "status")
 	private VerificationStatus status;
 
@@ -43,8 +46,12 @@ public class Verification {
 	@UpdateTimestamp
 	private LocalDateTime updatedOn;
 
-	public Verification(long userId, String code, int codeAttemptsLeft, String urlToken, LocalDateTime expiresOn) {
+	public Verification() {
+	}
+
+	public Verification(long userId, VerificationType type, String code, int codeAttemptsLeft, String urlToken, LocalDateTime expiresOn) {
 		this.userId = userId;
+		this.type = type;
 		this.status = VerificationStatus.INCOMPLETE;
 		this.code = code;
 		this.codeAttemptsLeft = codeAttemptsLeft;
@@ -62,6 +69,14 @@ public class Verification {
 
 	public void setUserId(Long userId) {
 		this.userId = userId;
+	}
+
+	public VerificationType getType() {
+		return type;
+	}
+
+	public void setType(VerificationType type) {
+		this.type = type;
 	}
 
 	public VerificationStatus getStatus() {

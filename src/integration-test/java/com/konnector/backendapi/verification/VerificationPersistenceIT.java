@@ -1,5 +1,8 @@
-package com.konnector.backendapi.user;
+package com.konnector.backendapi.verification;
 
+import com.konnector.backendapi.verification.JpaVerificationDao;
+import com.konnector.backendapi.verification.Verification;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -15,19 +18,26 @@ import static org.junit.Assert.assertEquals;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @TestPropertySource("classpath:application-test.properties")
-@Import(JpaUserDao.class)
-public class UserPersistenceIT {
+@Import(JpaVerificationDao.class)
+public class VerificationPersistenceIT {
 
 	@Autowired
-	private JpaUserDao userDao;
+	private JpaVerificationDao verificationDao;
 
 	private final PodamFactory podamFactory = new PodamFactoryImpl();
-	private final User user = podamFactory.manufacturePojo(User.class);
+	private final Verification verification = podamFactory.manufacturePojo(Verification.class);
+
+	@BeforeEach
+	public void setup() {
+		verification.setUserId(1L);
+		verification.setCode(verification.getCode().substring(0, 6));
+		verification.setCodeAttemptsLeft(5);
+	}
 
 	@Test
 	@Transactional
-	public void saveUser_savesUser() {
-		userDao.save(user);
-		assertEquals(user, userDao.get(user.getId()).get());
+	public void saveVerification_savesVerification() {
+		verificationDao.save(verification);
+		assertEquals(verification, verificationDao.get(verification.getId()).get());
 	}
 }
