@@ -1,4 +1,4 @@
-package com.konnector.backendapi.security;
+package com.konnector.backendapi.security.password;
 
 public interface PasswordHashingService {
 	HashedPassword getHashedPassword(String password);

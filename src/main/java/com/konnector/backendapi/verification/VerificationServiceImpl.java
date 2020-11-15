@@ -1,5 +1,6 @@
 package com.konnector.backendapi.verification;
 
+import com.konnector.backendapi.verification.code.CodeGenerationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

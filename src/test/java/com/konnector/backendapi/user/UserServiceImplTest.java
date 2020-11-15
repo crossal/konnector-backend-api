@@ -2,8 +2,8 @@ package com.konnector.backendapi.user;
 
 import com.konnector.backendapi.data.Dao;
 import com.konnector.backendapi.notifications.EmailNotificationService;
-import com.konnector.backendapi.security.HashedPassword;
-import com.konnector.backendapi.security.PasswordHashingService;
+import com.konnector.backendapi.security.password.HashedPassword;
+import com.konnector.backendapi.security.password.PasswordHashingService;
 import com.konnector.backendapi.verification.Verification;
 import com.konnector.backendapi.verification.VerificationService;
 import org.junit.jupiter.api.BeforeEach;

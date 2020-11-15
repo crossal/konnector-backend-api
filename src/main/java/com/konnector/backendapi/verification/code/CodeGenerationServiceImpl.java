@@ -1,4 +1,4 @@
-package com.konnector.backendapi.verification;
+package com.konnector.backendapi.verification.code;
 
 import org.springframework.stereotype.Service;
 
