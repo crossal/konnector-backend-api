@@ -1,6 +1,7 @@
 package com.konnector.backendapi.user;
 
 import com.konnector.backendapi.exceptions.InvalidDataException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -26,6 +27,11 @@ public class UserValidatorImplTest {
 	private final PodamFactory podamFactory = new PodamFactoryImpl();
 	private final User user = podamFactory.manufacturePojo(User.class);
 
+	@BeforeEach
+	public void setup() {
+		user.setEmail("some_email@validationtest.com");
+	}
+
 	@Test
 	public void validateUserCreationArgument_userIsValid_doesNotThrowException() {
 		userValidator.validateUserCreationArgument(user);
@@ -39,6 +45,12 @@ public class UserValidatorImplTest {
 	@Test
 	public void validateUserCreationArgument_emailIsNull_throwsException() {
 		user.setEmail(null);
+		assertThrows(InvalidDataException.class, () -> userValidator.validateUserCreationArgument(user));
+	}
+
+	@Test
+	public void validateUserCreationArgument_emailIsInvalid_throwsException() {
+		user.setEmail("invalid_email");
 		assertThrows(InvalidDataException.class, () -> userValidator.validateUserCreationArgument(user));
 	}
 

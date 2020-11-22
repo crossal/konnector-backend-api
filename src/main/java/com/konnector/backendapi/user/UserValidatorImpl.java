@@ -5,9 +5,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 @Service
 public class UserValidatorImpl implements UserValidator {
+
+	private static final String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\." +
+			"[a-zA-Z0-9_+&*-]+)*@" +
+			"(?:[a-zA-Z0-9-]+\\.)+[a-z" +
+			"A-Z]{2,7}$";
+	private static final Pattern emailPattern = Pattern.compile(emailRegex);
 
 	@Autowired
 	private UserRepository userRepository;
@@ -22,6 +29,9 @@ public class UserValidatorImpl implements UserValidator {
 		}
 		if (user.getEmail() == null) {
 			throw new InvalidDataException("Email cannot be empty");
+		}
+		if (!emailPattern.matcher(user.getEmail()).matches()){
+			throw new InvalidDataException("Email not valid");
 		}
 		if (user.getUsername() == null) {
 			throw new InvalidDataException("Username cannot be empty");

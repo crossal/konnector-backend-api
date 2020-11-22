@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
 
@@ -23,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource("classpath:application-test.properties")
+@Sql("/data/truncate-all-data.sql")
 public class UserIT {
 
 	private TestRestTemplate testRestTemplate = new TestRestTemplate();
@@ -34,6 +36,7 @@ public class UserIT {
 
 	@Test
 	public void createUserEndpoint_createsUser() throws Exception {
+		userDTO.setEmail("someemail@userit.com");
 		userDTO.setId(null);
 		String userJson = objectMapper.writeValueAsString(userDTO);
 		HttpHeaders headers = new HttpHeaders();

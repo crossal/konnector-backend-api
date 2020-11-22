@@ -1,6 +1,7 @@
 package com.konnector.backendapi.user;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,13 +32,13 @@ public class UserWebIT {
 	@Autowired
 	private MockMvc mockMvc;
 	@MockBean
-	private UserService userService;
+	private UserService userServiceMock;
 	@MockBean
-	private ModelMapper modelMapper;
+	private ModelMapper modelMapperMock;
 	@Mock
-	private User user;
+	private User userMock;
 
-	private final ObjectMapper objectMapper = new ObjectMapper().configure(MapperFeature.USE_ANNOTATIONS, false);
+	private final ObjectMapper objectMapper = new ObjectMapper().configure(MapperFeature.USE_ANNOTATIONS, false).configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	private final PodamFactory podamFactory = new PodamFactoryImpl();
 	private final UserDTO userDTO = podamFactory.manufacturePojo(UserDTO.class);
 	private String userJson;
@@ -49,9 +50,9 @@ public class UserWebIT {
 
 	@Test
 	public void createUser_returnsSuccessAndCreatedUser() throws Exception {
-		when(modelMapper.map(any(UserDTO.class), eq(User.class))).thenReturn(user);
-		when(userService.createUser(user, userDTO.getPassword())).thenReturn(user);
-		when(modelMapper.map(user, UserDTO.class)).thenReturn(userDTO);
+		when(modelMapperMock.map(any(UserDTO.class), eq(User.class))).thenReturn(userMock);
+		when(userServiceMock.createUser(userMock, userDTO.getPassword())).thenReturn(userMock);
+		when(modelMapperMock.map(userMock, UserDTO.class)).thenReturn(userDTO);
 
 		MvcResult result = mockMvc.perform(post("/api/users").contentType(MediaType.APPLICATION_JSON).content(userJson)).andExpect(status().isCreated()).andReturn();
 		UserDTO userDTOResponse = objectMapper.readValue(result.getResponse().getContentAsString(), UserDTO.class);

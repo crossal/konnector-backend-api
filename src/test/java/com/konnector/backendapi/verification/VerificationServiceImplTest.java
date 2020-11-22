@@ -2,6 +2,8 @@ package com.konnector.backendapi.verification;
 
 import com.konnector.backendapi.data.Dao;
 import com.konnector.backendapi.exceptions.InvalidDataException;
+import com.konnector.backendapi.exceptions.InvalidVerificationCodeException;
+import com.konnector.backendapi.exceptions.NoVerificationAttemptsLeftException;
 import com.konnector.backendapi.user.User;
 import com.konnector.backendapi.user.UserRepository;
 import com.konnector.backendapi.verification.code.CodeGenerationService;
@@ -162,16 +164,28 @@ public class VerificationServiceImplTest {
 	}
 
 	@Test
+	public void verifyEmailByCode_noAttemptsLeft_throwsException() {
+		when(userMock.getId()).thenReturn(userId);
+		when(userRepositoryMock.findByEmailOrUsername(username, username)).thenReturn(Optional.of(userMock));
+		when(verificationRepositoryMock.findFirstByUserIdAndTypeOrderByCreatedOnDesc(eq(userId), any(VerificationType.class))).thenReturn(Optional.of(verificationMock));
+		when(verificationMock.getStatus()).thenReturn(VerificationStatus.INCOMPLETE);
+		when(verificationMock.getExpiresOn()).thenReturn(LocalDateTime.now().plusDays(2));
+		when(verificationMock.getCodeAttemptsLeft()).thenReturn(0);
+
+		assertThrows(NoVerificationAttemptsLeftException.class, () -> verificationService.verifyEmailByCode(username, code));
+	}
+
+	@Test
 	public void verifyEmailByCode_codeInvalid_throwsException() {
 		when(userMock.getId()).thenReturn(userId);
 		when(userRepositoryMock.findByEmailOrUsername(username, username)).thenReturn(Optional.of(userMock));
 		when(verificationRepositoryMock.findFirstByUserIdAndTypeOrderByCreatedOnDesc(eq(userId), any(VerificationType.class))).thenReturn(Optional.of(verificationMock));
 		when(verificationMock.getStatus()).thenReturn(VerificationStatus.INCOMPLETE);
 		when(verificationMock.getExpiresOn()).thenReturn(LocalDateTime.now().plusDays(2));
-		when(verificationMock.getCode()).thenReturn(code);
 		when(verificationMock.getCode()).thenReturn("some_other_code");
+		when(verificationMock.getCodeAttemptsLeft()).thenReturn(5);
 
-		assertThrows(InvalidDataException.class, () -> verificationService.verifyEmailByCode(username, code));
+		assertThrows(InvalidVerificationCodeException.class, () -> verificationService.verifyEmailByCode(username, code));
 	}
 
 	@Test
@@ -182,6 +196,7 @@ public class VerificationServiceImplTest {
 		when(verificationMock.getStatus()).thenReturn(VerificationStatus.INCOMPLETE);
 		when(verificationMock.getExpiresOn()).thenReturn(LocalDateTime.now().plusDays(2));
 		when(verificationMock.getCode()).thenReturn(code);
+		when(verificationMock.getCodeAttemptsLeft()).thenReturn(5);
 
 		verificationService.verifyEmailByCode(username, code);
 

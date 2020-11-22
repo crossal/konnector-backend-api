@@ -1,0 +1,3 @@
+INSERT INTO `user` (`email`, `username`, `password`, `salt`, `first_name`, `last_name`, `is_email_verified`) VALUES ('verification_test_email', 'verification_test_username', RANDOM_BYTES(16), RANDOM_BYTES(16), 'verification_test_first_name', 'verification_test_last_name', false);
+SELECT @user_id := (SELECT `id` FROM `user` WHERE `email` = 'verification_test_email');
+INSERT INTO `verification` (`user_id`, `type`, `status`, `code`, `code_attempts_left`, `url_token`, `expires_on`) VALUES (@user_id, 0, 0, '123456', 5, 'verification_test_token', DATE_ADD(CURRENT_DATE, INTERVAL 2 DAY));

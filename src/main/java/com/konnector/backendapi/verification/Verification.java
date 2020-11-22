@@ -35,7 +35,7 @@ public class Verification {
 	@Column(name = "url_token")
 	private String urlToken;
 
-	@Column(name = "expiresOn")
+	@Column(name = "expires_on")
 	private LocalDateTime expiresOn;
 
 	@Column(name = "created_on")
