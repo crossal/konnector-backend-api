@@ -2,9 +2,6 @@ package com.konnector.backendapi.verification;
 
 import com.konnector.backendapi.user.JpaUserDao;
 import com.konnector.backendapi.user.User;
-import com.konnector.backendapi.verification.JpaVerificationDao;
-import com.konnector.backendapi.verification.Verification;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;

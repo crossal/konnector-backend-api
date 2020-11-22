@@ -1,10 +1,18 @@
 package com.konnector.backendapi.verification;
 
+import com.konnector.backendapi.data.Dao;
+import com.konnector.backendapi.exceptions.InvalidDataException;
+import com.konnector.backendapi.exceptions.InvalidVerificationCodeException;
+import com.konnector.backendapi.exceptions.NoVerificationAttemptsLeftException;
+import com.konnector.backendapi.user.User;
+import com.konnector.backendapi.user.UserRepository;
 import com.konnector.backendapi.verification.code.CodeGenerationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -15,11 +23,88 @@ public class VerificationServiceImpl implements VerificationService {
 	private static final int URL_TOKEN_EXPIRATION_IN_DAYS = 5;
 
 	@Autowired
+	private Dao<Verification> verificationDao;
+	@Autowired
+	private VerificationRepository verificationRepository;
+	@Autowired
+	private Dao<User> userDao;
+	@Autowired
+	private UserRepository userRepository;
+	@Autowired
 	private CodeGenerationService codeGenerationService;
+
+	public VerificationServiceImpl(Dao<Verification> verificationDao, VerificationRepository verificationRepository, Dao<User> userDao, UserRepository userRepository, CodeGenerationService codeGenerationService) {
+		this.verificationDao = verificationDao;
+		this.verificationRepository = verificationRepository;
+		this.userDao = userDao;
+		this.userRepository = userRepository;
+		this.codeGenerationService = codeGenerationService;
+	}
 
 	@Override
 	public Verification createEmailVerificationForUser(long userId) {
 		Verification verification = new Verification(userId, VerificationType.EMAIL, codeGenerationService.generateCode(CODE_LENGTH), CODE_ATTEMPTS, UUID.randomUUID().toString(), LocalDateTime.now().plusDays(URL_TOKEN_EXPIRATION_IN_DAYS));
 		return verification;
+	}
+
+	@Override
+	@Transactional
+	public void verifyEmailByUrlToken(String usernameOrEmail, String urlToken) {
+		validateUsernameOrEmail(usernameOrEmail);
+		if (urlToken == null || urlToken.isEmpty()) {
+			throw new InvalidDataException("URL token cannot be empty");
+		}
+
+		verifyEmailByUrlTokenOrCode(usernameOrEmail, urlToken, false);
+	}
+
+	@Override
+	@Transactional(noRollbackFor = InvalidVerificationCodeException.class)
+	public void verifyEmailByCode(String usernameOrEmail, String code) {
+		validateUsernameOrEmail(usernameOrEmail);
+		if (code == null || code.isEmpty()) {
+			throw new InvalidDataException("Code cannot be empty");
+		}
+
+		verifyEmailByUrlTokenOrCode(usernameOrEmail, code, true);
+	}
+
+	private void validateUsernameOrEmail(String usernameOrEmail) {
+		if (usernameOrEmail == null || usernameOrEmail.isEmpty()) {
+			throw new InvalidDataException("Username or Email cannot be empty");
+		}
+	}
+
+	private void verifyEmailByUrlTokenOrCode(String usernameOrEmail, String urlTokenOrCode, boolean usingCode) {
+		Optional<User> optionalUser = userRepository.findByEmailOrUsername(usernameOrEmail, usernameOrEmail);
+		User user = optionalUser.orElseThrow(() -> new InvalidDataException("No user found"));
+		Optional<Verification> optionalVerification = verificationRepository.findFirstByUserIdAndTypeOrderByCreatedOnDesc(user.getId(), VerificationType.EMAIL);
+		Verification verification = optionalVerification.orElseThrow(() -> new InvalidDataException("No verification found for user"));
+
+		if (verification.getStatus().equals(VerificationStatus.COMPLETE)) {
+			throw new InvalidDataException("Already verified");
+		}
+
+		if (verification.getExpiresOn().isBefore(LocalDateTime.now())) {
+			throw new InvalidDataException("Verification expired");
+		}
+
+		if (usingCode) {
+			if (verification.getCodeAttemptsLeft() == 0) {
+				throw new NoVerificationAttemptsLeftException("No verification code attempts left");
+			}
+
+			if (!urlTokenOrCode.equals(verification.getCode())) {
+				verification.setCodeAttemptsLeft(verification.getCodeAttemptsLeft() - 1);
+				verificationDao.update(verification);
+				throw new InvalidVerificationCodeException("Code incorrect");
+			}
+		}
+
+		user.setEmailVerified(true);
+		userDao.update(user);
+
+		verification.setStatus(VerificationStatus.COMPLETE);
+		verificationDao.update(verification);
 	}
 }

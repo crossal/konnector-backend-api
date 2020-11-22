@@ -13,6 +13,8 @@ public class UserDTO {
 	private String password;
 	private String firstName;
 	private String lastName;
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	private Boolean isEmailVerified;
 
 	public Long getId() {
 		return id;
@@ -62,6 +64,14 @@ public class UserDTO {
 		this.lastName = lastName;
 	}
 
+	public Boolean isEmailVerified() {
+		return isEmailVerified;
+	}
+
+	public void setEmailVerified(Boolean emailVerified) {
+		isEmailVerified = emailVerified;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
@@ -72,11 +82,12 @@ public class UserDTO {
 				Objects.equals(username, userDTO.username) &&
 				Objects.equals(password, userDTO.password) &&
 				Objects.equals(firstName, userDTO.firstName) &&
-				Objects.equals(lastName, userDTO.lastName);
+				Objects.equals(lastName, userDTO.lastName) &&
+				Objects.equals(isEmailVerified, userDTO.isEmailVerified);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, email, username, password, firstName, lastName);
+		return Objects.hash(id, email, username, password, firstName, lastName, isEmailVerified);
 	}
 }

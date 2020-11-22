@@ -1,6 +1,8 @@
 package com.konnector.backendapi.http;
 
 import com.konnector.backendapi.exceptions.InvalidDataException;
+import com.konnector.backendapi.exceptions.InvalidVerificationCodeException;
+import com.konnector.backendapi.exceptions.NoVerificationAttemptsLeftException;
 import com.konnector.backendapi.exceptions.NotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,6 +28,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	protected ResponseEntity<String> handleInvalidDataException(InvalidDataException e){
 		return ResponseEntity
 				.status(HttpStatus.UNPROCESSABLE_ENTITY)
+				.body(e.getMessage());
+	}
+
+	@ExceptionHandler(NoVerificationAttemptsLeftException.class)
+	protected ResponseEntity<String> handleNoVerificationAttemptsLeftException(NoVerificationAttemptsLeftException e){
+		return ResponseEntity
+				.status(HttpStatus.BAD_REQUEST)
+				.body(e.getMessage());
+	}
+
+	@ExceptionHandler(InvalidVerificationCodeException.class)
+	protected ResponseEntity<String> handleInvalidVerificationCodeException(InvalidVerificationCodeException e){
+		return ResponseEntity
+				.status(HttpStatus.BAD_REQUEST)
 				.body(e.getMessage());
 	}
 

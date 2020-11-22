@@ -35,6 +35,9 @@ public class User {
 	@Column(name = "last_name")
 	private String lastName;
 
+	@Column(name = "is_email_verified")
+	private boolean isEmailVerified;
+
 	@Column(name = "created_on")
 	@CreationTimestamp
 	private LocalDateTime createdOn;
@@ -105,6 +108,14 @@ public class User {
 
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+
+	public boolean isEmailVerified() {
+		return isEmailVerified;
+	}
+
+	public void setEmailVerified(boolean emailVerified) {
+		isEmailVerified = emailVerified;
 	}
 
 	public LocalDateTime getCreatedOn() {

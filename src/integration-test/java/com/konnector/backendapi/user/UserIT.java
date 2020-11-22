@@ -1,5 +1,6 @@
 package com.konnector.backendapi.user;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -26,7 +28,7 @@ public class UserIT {
 	private TestRestTemplate testRestTemplate = new TestRestTemplate();
 	@LocalServerPort
 	int randomServerPort;
-	private final ObjectMapper objectMapper = new ObjectMapper().configure(MapperFeature.USE_ANNOTATIONS, false);
+	private final ObjectMapper objectMapper = new ObjectMapper().configure(MapperFeature.USE_ANNOTATIONS, false).configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	private final PodamFactory podamFactory = new PodamFactoryImpl();
 	private final UserDTO userDTO = podamFactory.manufacturePojo(UserDTO.class);
 
@@ -49,5 +51,6 @@ public class UserIT {
 		assertEquals(userDTO.getEmail(), createdUser.getEmail());
 		assertEquals(userDTO.getFirstName(), createdUser.getFirstName());
 		assertEquals(userDTO.getLastName(), createdUser.getLastName());
+		assertFalse(createdUser.isEmailVerified());
 	}
 }
