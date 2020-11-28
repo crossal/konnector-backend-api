@@ -13,7 +13,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestPropertySource("classpath:application-test.properties")
+@TestPropertySource("classpath:application-integration-test.properties")
 @Sql({ "/data/truncate-all-data.sql", "/data/verification/verification-insert-data.sql" })
 public class VerificationIT {
 

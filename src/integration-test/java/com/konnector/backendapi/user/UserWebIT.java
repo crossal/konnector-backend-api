@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserController.class)
-@TestPropertySource("classpath:application-test.properties")
+@TestPropertySource("classpath:application-integration-test.properties")
 public class UserWebIT {
 
 	@Autowired

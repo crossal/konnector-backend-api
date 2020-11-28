@@ -14,7 +14,7 @@ import static org.junit.Assert.assertEquals;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@TestPropertySource("classpath:application-test.properties")
+@TestPropertySource("classpath:application-integration-test.properties")
 @Import(JpaUserDao.class)
 public class UserPersistenceIT {
 
