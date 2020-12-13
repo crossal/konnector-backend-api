@@ -78,4 +78,14 @@ public class UserValidatorImplTest {
 		when(userRepositoryMock.findByEmail(user.getEmail())).thenReturn(optionalUser);
 		assertThrows(InvalidDataException.class, () -> userValidator.validateUserCreationArgument(user));
 	}
+
+	@Test
+	public void validateUserFetchRequest_emptyUserId_throwsException() {
+		assertThrows(InvalidDataException.class, () -> userValidator.validateUserFetchRequest(null));
+	}
+
+	@Test
+	public void validateUserFetchRequest_requestIsValid_doesNotThrowException() {
+		userValidator.validateUserFetchRequest(1L);
+	}
 }

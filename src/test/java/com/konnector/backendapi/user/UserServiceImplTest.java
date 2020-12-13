@@ -1,12 +1,12 @@
 package com.konnector.backendapi.user;
 
 import com.konnector.backendapi.data.Dao;
+import com.konnector.backendapi.exceptions.NotFoundException;
 import com.konnector.backendapi.notifications.EmailNotificationService;
 import com.konnector.backendapi.security.password.HashedPassword;
 import com.konnector.backendapi.security.password.PasswordHashingService;
 import com.konnector.backendapi.verification.Verification;
 import com.konnector.backendapi.verification.VerificationService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,9 +18,11 @@ import org.springframework.test.util.ReflectionTestUtils;
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
 
+import java.util.Optional;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
@@ -60,8 +62,8 @@ public class UserServiceImplTest {
 	private final String verificationCode = "1234";
 	private final String verificationUrlToken = "5678";
 
-	@BeforeEach
-	public void setup() {
+	@Test
+	public void createUser_createsUser() {
 		hash = new byte[16];
 		random.nextBytes(hash);
 		salt = new byte[16];
@@ -80,10 +82,7 @@ public class UserServiceImplTest {
 				return null;
 			}
 		}).when(userDaoMock).save(user);
-	}
 
-	@Test
-	public void createUser_createsUser() {
 		User createdUser = userService.createUser(user, password);
 
 		verify(userValidatorMock, times(1)).validateUserCreationArgument(user);
@@ -92,5 +91,28 @@ public class UserServiceImplTest {
 		assertEquals(user, createdUser);
 		assertEquals(hash, user.getPassword());
 		assertEquals(salt, user.getSalt());
+	}
+
+	@Test
+	public void getUser_userNotFound_throwsException() {
+		Long userId = 1L;
+		when(userDaoMock.get(userId)).thenReturn(Optional.empty());
+
+		assertThrows(NotFoundException.class, () -> userService.getUser(userId));
+
+		verify(userValidatorMock, times(1)).validateUserFetchRequest(userId);
+		verify(userDaoMock, times(1)).get(userId);
+	}
+
+	@Test
+	public void getUser_getsUser() {
+		Long userId = 1L;
+		when(userDaoMock.get(userId)).thenReturn(Optional.of(user));
+
+		User fetchedUser = userService.getUser(userId);
+
+		verify(userValidatorMock, times(1)).validateUserFetchRequest(userId);
+		verify(userDaoMock, times(1)).get(userId);
+		assertEquals(user, fetchedUser);
 	}
 }

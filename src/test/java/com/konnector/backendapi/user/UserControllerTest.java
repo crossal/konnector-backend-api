@@ -41,4 +41,15 @@ public class UserControllerTest {
 		userDTO.setPassword(null);
 		assertEquals(userDTO, result);
 	}
+
+	@Test
+	public void getUser_returnsSuccessAndUser() {
+		when(userServiceMock.getUser(userDTO.getId())).thenReturn(userMock);
+		when(modelMapperMock.map(userMock, UserDTO.class)).thenReturn(userDTO);
+
+		UserDTO result = userController.getUser(userDTO.getId());
+
+		userDTO.setPassword(null);
+		assertEquals(userDTO, result);
+	}
 }

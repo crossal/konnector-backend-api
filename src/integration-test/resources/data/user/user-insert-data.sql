@@ -1,0 +1,1 @@
+INSERT INTO `user` (`email`, `username`, `password`, `salt`, `first_name`, `last_name`, `is_email_verified`) VALUES ('verification_test_email', 'verification_test_username', RANDOM_BYTES(16), RANDOM_BYTES(16), 'verification_test_first_name', 'verification_test_last_name', false);

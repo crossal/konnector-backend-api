@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -55,6 +56,18 @@ public class UserWebIT {
 		when(modelMapperMock.map(userMock, UserDTO.class)).thenReturn(userDTO);
 
 		MvcResult result = mockMvc.perform(post("/api/users").contentType(MediaType.APPLICATION_JSON).content(userJson)).andExpect(status().isCreated()).andReturn();
+		UserDTO userDTOResponse = objectMapper.readValue(result.getResponse().getContentAsString(), UserDTO.class);
+
+		userDTO.setPassword(null);
+		assertEquals(userDTO, userDTOResponse);
+	}
+
+	@Test
+	public void getUser_returnsSuccessAndUser() throws Exception {
+		when(userServiceMock.getUser(1L)).thenReturn(userMock);
+		when(modelMapperMock.map(userMock, UserDTO.class)).thenReturn(userDTO);
+
+		MvcResult result = mockMvc.perform(get("/api/users/1").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 		UserDTO userDTOResponse = objectMapper.readValue(result.getResponse().getContentAsString(), UserDTO.class);
 
 		userDTO.setPassword(null);

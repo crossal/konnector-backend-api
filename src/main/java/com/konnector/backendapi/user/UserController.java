@@ -3,6 +3,8 @@ package com.konnector.backendapi.user;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -20,7 +22,17 @@ public class UserController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public UserDTO createUser(@RequestBody UserDTO userDTO) {
 		User user = modelMapper.map(userDTO, User.class);
+
 		user = userService.createUser(user, userDTO.getPassword());
+
+		return modelMapper.map(user, UserDTO.class);
+	}
+
+	@GetMapping("/api/users/{id}")
+	@ResponseStatus(HttpStatus.OK)
+	public UserDTO getUser(@PathVariable("id") Long userId) {
+		User user = userService.getUser(userId);
+
 		return modelMapper.map(user, UserDTO.class);
 	}
 }

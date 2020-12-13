@@ -48,4 +48,11 @@ public class UserValidatorImpl implements UserValidator {
 			throw new InvalidDataException("Email already used");
 		});
 	}
+
+	@Override
+	public void validateUserFetchRequest(Long userId) {
+		if (userId == null) {
+			throw new InvalidDataException("User Id cannot be empty");
+		}
+	}
 }

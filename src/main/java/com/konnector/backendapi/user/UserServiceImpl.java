@@ -1,6 +1,7 @@
 package com.konnector.backendapi.user;
 
 import com.konnector.backendapi.data.Dao;
+import com.konnector.backendapi.exceptions.NotFoundException;
 import com.konnector.backendapi.notifications.EmailNotificationService;
 import com.konnector.backendapi.security.password.HashedPassword;
 import com.konnector.backendapi.security.password.PasswordHashingService;
@@ -9,6 +10,8 @@ import com.konnector.backendapi.verification.VerificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -41,5 +44,14 @@ public class UserServiceImpl implements UserService {
 		emailNotificationService.sendVerificationEmail(user.getEmail(), verification.getCode(), verification.getUrlToken());
 
 		return user;
+	}
+
+	@Override
+	public User getUser(Long id) {
+		userValidator.validateUserFetchRequest(id);
+
+		Optional<User> optionalUser = userDao.get(id);
+
+		return optionalUser.orElseThrow(() -> new NotFoundException("User not found"));
 	}
 }

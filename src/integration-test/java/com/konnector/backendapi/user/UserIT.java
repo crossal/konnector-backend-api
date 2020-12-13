@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource("classpath:application-integration-test.properties")
-@Sql("/data/truncate-all-data.sql")
+@Sql({ "/data/truncate-all-data.sql", "/data/user/user-insert-data.sql" })
 public class UserIT {
 
 	private TestRestTemplate testRestTemplate = new TestRestTemplate();
@@ -55,5 +55,19 @@ public class UserIT {
 		assertEquals(userDTO.getFirstName(), createdUser.getFirstName());
 		assertEquals(userDTO.getLastName(), createdUser.getLastName());
 		assertFalse(createdUser.isEmailVerified());
+	}
+
+	@Test
+	public void getUserEndpoint_getsUser() throws Exception {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+
+		ResponseEntity<String> response = testRestTemplate.getForEntity("http://localhost:" + randomServerPort + "/api/users/1", String.class);
+
+		assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+		assertNotNull(response.getBody());
+
+		UserDTO createdUser = objectMapper.readValue(response.getBody(), UserDTO.class);
+		assertEquals(1, createdUser.getId());
 	}
 }
