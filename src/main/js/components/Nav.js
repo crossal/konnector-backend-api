@@ -19,8 +19,8 @@ class Nav extends React.Component { // <1>
 			<nav>
 				<ul>
 					<li><Link to='/'>Home</Link></li>
-					<li><Link to='/roster'>Roster</Link></li>
-					<li><Link to='/schedule'>Schedule</Link></li>
+					<li><Link to='/profile'>Profile</Link></li>
+					<li><Link to='/connections'>Connections</Link></li>
 				</ul>
 			</nav>
 		)

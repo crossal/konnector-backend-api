@@ -20,11 +20,11 @@ class App extends React.Component { // <1>
 //		this.state = {employees: []};
 //	}
 //
-	componentDidMount() { // <2>
-		client({method: 'GET', path: '/api/employees'}).then(response => {
-			this.setState({employees: response.entity._embedded.employees});
-		});
-	}
+//	componentDidMount() { // <2>
+//		client({method: 'GET', path: '/api/employees'}).then(response => {
+//			this.setState({employees: response.entity._embedded.employees});
+//		});
+//	}
 
 	render() { // <3>
 		return (

@@ -1,5 +1,6 @@
 package com.konnector.backendapi.session;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -9,22 +10,31 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+	@Autowired
+	private UserDetailsService userDetailsService;
+
+//	@Override
+//	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//		auth
+//				.inMemoryAuthentication()
+//				.withUser("user")
+//				.password("password")
+//				.roles("USER")
+//				.and()
+//				.withUser("admin")
+//				.password("password")
+//				.roles("ADMIN", "USER");
+//	}
+
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth
-				.inMemoryAuthentication()
-				.withUser("user")
-				.password("password")
-				.roles("USER")
-				.and()
-				.withUser("admin")
-				.password("password")
-				.roles("ADMIN", "USER");
+		auth.userDetailsService(userDetailsService);
 	}
 
 	@Bean
@@ -40,9 +50,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.authorizeRequests()
 				.antMatchers(HttpMethod.GET, "/api/health").permitAll()
 				.antMatchers(HttpMethod.POST, "/api/users").permitAll()
-				.antMatchers("/api/*").authenticated()
+//				.antMatchers(HttpMethod.GET, "/api/users/*").permitAll()
+				.antMatchers("/api/**").authenticated()
 				.anyRequest().permitAll()
+//				.anyRequest().authenticated()
 				.and()
+//				.exceptionHandling().authenticationEntryPoint(new AuthenticationEntryPointImpl())
+//				.and()
+//				.exceptionHandling().accessDeniedHandler(new AccessDeniedExceptionHandler())
+//				.and()
 				.logout().deleteCookies("JSESSIONID")
 				.and()
 				.rememberMe().key("uniqueAndSecret").tokenValiditySeconds(86400)

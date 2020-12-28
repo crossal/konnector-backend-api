@@ -1,6 +1,8 @@
 package com.konnector.backendapi.http;
 
+import com.konnector.backendapi.exceptions.EmailVerificationSendException;
 import com.konnector.backendapi.exceptions.InvalidDataException;
+import com.konnector.backendapi.exceptions.InvalidLoginDetailsException;
 import com.konnector.backendapi.exceptions.InvalidVerificationCodeException;
 import com.konnector.backendapi.exceptions.NoVerificationAttemptsLeftException;
 import com.konnector.backendapi.exceptions.NotFoundException;
@@ -42,6 +44,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	protected ResponseEntity<String> handleInvalidVerificationCodeException(InvalidVerificationCodeException e){
 		return ResponseEntity
 				.status(HttpStatus.BAD_REQUEST)
+				.body(e.getMessage());
+	}
+
+	@ExceptionHandler(InvalidLoginDetailsException.class)
+	protected ResponseEntity<String> handleInvalidLoginDetailsExceptionException(InvalidLoginDetailsException e){
+		return ResponseEntity
+				.status(HttpStatus.UNAUTHORIZED)
+				.body(e.getMessage());
+	}
+
+	@ExceptionHandler(EmailVerificationSendException.class)
+	protected ResponseEntity<String> handleEmailVerificationSendException(EmailVerificationSendException e){
+		return ResponseEntity
+				.status(HttpStatus.INTERNAL_SERVER_ERROR)
 				.body(e.getMessage());
 	}
 

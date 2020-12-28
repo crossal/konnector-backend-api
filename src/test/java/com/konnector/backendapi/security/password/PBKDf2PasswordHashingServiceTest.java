@@ -54,13 +54,17 @@ public class PBKDf2PasswordHashingServiceTest {
 	@BeforeEach
 	public void setup() throws NoSuchAlgorithmException, InvalidKeySpecException {
 		random.nextBytes(secret);
-		when(secretKeyFactoryWrapperServiceMock.getInstance(anyString())).thenReturn(secretKeyFactoryMock);
-		when(secretKeyFactoryMock.generateSecret(any(KeySpec.class))).thenReturn(secretKeyMock);
-		when(secretKeyMock.getEncoded()).thenReturn(secret);
+//		when(secretKeyFactoryWrapperServiceMock.getInstance(anyString())).thenReturn(secretKeyFactoryMock);
+//		when(secretKeyFactoryMock.generateSecret(any(KeySpec.class))).thenReturn(secretKeyMock);
+//		when(secretKeyMock.getEncoded()).thenReturn(secret);
 	}
 
 	@Test
-	public void getHashedPassword_returnsHashedPassword() throws InvalidKeySpecException {
+	public void getHashedPassword_returnsHashedPassword() throws NoSuchAlgorithmException, InvalidKeySpecException {
+		when(secretKeyFactoryWrapperServiceMock.getInstance(anyString())).thenReturn(secretKeyFactoryMock);
+		when(secretKeyFactoryMock.generateSecret(any(KeySpec.class))).thenReturn(secretKeyMock);
+		when(secretKeyMock.getEncoded()).thenReturn(secret);
+
 		HashedPassword hashedPassword = passwordHashingService.getHashedPassword(password);
 		verify(secureRandomMock, times(1)).nextBytes(any());
 		verify(secretKeyFactoryMock, times(1)).generateSecret(pbeKeySpecArgumentCaptor.capture());
@@ -71,12 +75,49 @@ public class PBKDf2PasswordHashingServiceTest {
 	}
 
 	@Test
-	public void isPasswordValid_validPassword_returnsTrue() {
-		assertTrue(passwordHashingService.isPasswordValid(password, secret, new byte[16]));
+	public void getHashedPasswordWithSalt_returnsHashedPassword() throws NoSuchAlgorithmException, InvalidKeySpecException {
+		byte[] salt = new byte[16];
+		random.nextBytes(salt);
+		when(secretKeyFactoryWrapperServiceMock.getInstance(anyString())).thenReturn(secretKeyFactoryMock);
+		when(secretKeyFactoryMock.generateSecret(any(KeySpec.class))).thenReturn(secretKeyMock);
+		when(secretKeyMock.getEncoded()).thenReturn(secret);
+
+		HashedPassword hashedPassword = passwordHashingService.getHashedPassword(password, salt);
+		verify(secureRandomMock, times(0)).nextBytes(any());
+		verify(secretKeyFactoryMock, times(1)).generateSecret(pbeKeySpecArgumentCaptor.capture());
+		assertEquals(password, new String(pbeKeySpecArgumentCaptor.getValue().getPassword()));
+		assertNotNull(hashedPassword);
+		assertNotEquals(password, hashedPassword.getHash());
+		assertNotNull(hashedPassword.getSalt());
 	}
 
 	@Test
-	public void isPasswordValid_invalidPassword_returnsTrue() {
-		assertFalse(passwordHashingService.isPasswordValid(password, new byte[16], new byte[16]));
+	public void hashesEqual_hashesEqual_returnsTrue() {
+		assertTrue(passwordHashingService.hashesEqual(secret, secret));
+	}
+
+	@Test
+	public void hashesEqual_hashesDoNotEqual_returnsFalse() {
+		byte[] otherHash = new byte[16];
+		random.nextBytes(otherHash);
+		assertFalse(passwordHashingService.hashesEqual(secret, otherHash));
+	}
+
+	@Test
+	public void passwordMatchesHash_hashesEqual_returnsTrue() throws NoSuchAlgorithmException, InvalidKeySpecException {
+		when(secretKeyFactoryWrapperServiceMock.getInstance(anyString())).thenReturn(secretKeyFactoryMock);
+		when(secretKeyFactoryMock.generateSecret(any(KeySpec.class))).thenReturn(secretKeyMock);
+		when(secretKeyMock.getEncoded()).thenReturn(secret);
+
+		assertTrue(passwordHashingService.passwordMatchesHash(password, new byte[16], secret));
+	}
+
+	@Test
+	public void passwordMatchesHash_hashesDoNotEqual_returnsFalse() throws NoSuchAlgorithmException, InvalidKeySpecException {
+		when(secretKeyFactoryWrapperServiceMock.getInstance(anyString())).thenReturn(secretKeyFactoryMock);
+		when(secretKeyFactoryMock.generateSecret(any(KeySpec.class))).thenReturn(secretKeyMock);
+		when(secretKeyMock.getEncoded()).thenReturn(secret);
+
+		assertFalse(passwordHashingService.passwordMatchesHash(password, new byte[16], new byte[16]));
 	}
 }

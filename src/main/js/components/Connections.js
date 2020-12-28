@@ -1,6 +1,6 @@
 import React from 'react';
 
-class Schedule extends React.Component { // <1>
+class Connections extends React.Component { // <1>
 
 //	constructor(props) {
 //		super(props);
@@ -26,4 +26,4 @@ class Schedule extends React.Component { // <1>
 	}
 }
 
-export default Schedule;
+export default Connections;

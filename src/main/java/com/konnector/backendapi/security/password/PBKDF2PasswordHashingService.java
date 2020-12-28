@@ -31,29 +31,35 @@ public class PBKDF2PasswordHashingService implements PasswordHashingService {
 		byte[] salt = new byte[SALT_BYTES];
 		secureRandom.nextBytes(salt);
 
-		byte[] hash = getHashedPassword(password, salt);
-
-		return new HashedPassword(hash, salt, PBKDF2_ITERATIONS);
+		return getHashedPassword(password, salt);
 	}
 
 	@Override
-	public boolean isPasswordValid(String password, byte[] hash, byte[] salt) {
-		byte[] hashedInputPassword = getHashedPassword(password, salt);
-		return slowEquals(hash, hashedInputPassword);
-	}
-
-	private byte[] getHashedPassword(String password, byte[] salt) {
+	public HashedPassword getHashedPassword(String password, byte[] salt) {
 		char[] passwordChars = password.toCharArray();
 
 		PBEKeySpec pbeKeySpec = new PBEKeySpec(passwordChars, salt, PBKDF2_ITERATIONS, HASH_BYTES * 8);
 
 		try {
 			SecretKeyFactory secretKeyFactory = secretKeyFactoryWrapperService.getInstance(PBKDF2_ALGORITHM);
-			return secretKeyFactory.generateSecret(pbeKeySpec).getEncoded();
+			byte[] hashedPassword = secretKeyFactory.generateSecret(pbeKeySpec).getEncoded();
+
+			return new HashedPassword(hashedPassword, salt, PBKDF2_ITERATIONS);
 		} catch (Exception e) {
 			logger.error("Exception getting hashed password: '{}'", e);
 			throw new RuntimeException(e);
 		}
+	}
+
+	@Override
+	public boolean hashesEqual(byte[] hashA, byte[] hashB) {
+		return slowEquals(hashA, hashB);
+	}
+
+	@Override
+	public boolean passwordMatchesHash(String password, byte[] salt, byte[] hash) {
+		HashedPassword hashedInputPassword = getHashedPassword(password, salt);
+		return hashesEqual(hashedInputPassword.getHash(), hash);
 	}
 
 	/**

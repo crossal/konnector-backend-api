@@ -2,5 +2,7 @@ package com.konnector.backendapi.security.password;
 
 public interface PasswordHashingService {
 	HashedPassword getHashedPassword(String password);
-	boolean isPasswordValid(String password, byte[] hash, byte[] salt);
+	HashedPassword getHashedPassword(String password, byte[] salt);
+	boolean passwordMatchesHash(String password, byte[] salt, byte[] hash);
+	boolean hashesEqual(byte[] hashA, byte[] hashB);
 }

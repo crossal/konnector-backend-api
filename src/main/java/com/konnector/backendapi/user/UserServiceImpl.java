@@ -7,6 +7,8 @@ import com.konnector.backendapi.security.password.HashedPassword;
 import com.konnector.backendapi.security.password.PasswordHashingService;
 import com.konnector.backendapi.verification.Verification;
 import com.konnector.backendapi.verification.VerificationService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +17,8 @@ import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
+
+	private static final Logger LOGGER = LogManager.getLogger(UserServiceImpl.class);
 
 	@Autowired
 	private Dao<User> userDao;
