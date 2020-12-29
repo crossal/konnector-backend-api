@@ -44,6 +44,8 @@ public class PBKDF2PasswordHashingService implements PasswordHashingService {
 			SecretKeyFactory secretKeyFactory = secretKeyFactoryWrapperService.getInstance(PBKDF2_ALGORITHM);
 			byte[] hashedPassword = secretKeyFactory.generateSecret(pbeKeySpec).getEncoded();
 
+			String pass = hashedPassword.toString();
+
 			return new HashedPassword(hashedPassword, salt, PBKDF2_ITERATIONS);
 		} catch (Exception e) {
 			logger.error("Exception getting hashed password: '{}'", e);

@@ -9,9 +9,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -36,6 +38,8 @@ public class UserWebIT {
 	private UserService userServiceMock;
 	@MockBean
 	private ModelMapper modelMapperMock;
+	@MockBean
+	private UserDetailsService userDetailsService;
 	@Mock
 	private User userMock;
 
@@ -60,6 +64,11 @@ public class UserWebIT {
 
 		userDTO.setPassword(null);
 		assertEquals(userDTO, userDTOResponse);
+	}
+
+	@Test
+	public void getUser_withoutAuthentication_returns403() throws Exception {
+		mockMvc.perform(get("/api/users/1").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isForbidden());
 	}
 
 	@Test

@@ -42,8 +42,10 @@ public class VerificationServiceImpl implements VerificationService {
 	}
 
 	@Override
+	@Transactional
 	public Verification createEmailVerificationForUser(long userId) {
 		Verification verification = new Verification(userId, VerificationType.EMAIL, codeGenerationService.generateCode(CODE_LENGTH), CODE_ATTEMPTS, UUID.randomUUID().toString(), LocalDateTime.now().plusDays(URL_TOKEN_EXPIRATION_IN_DAYS));
+		verificationDao.save(verification);
 		return verification;
 	}
 
@@ -96,7 +98,7 @@ public class VerificationServiceImpl implements VerificationService {
 
 			if (!urlTokenOrCode.equals(verification.getCode())) {
 				verification.setCodeAttemptsLeft(verification.getCodeAttemptsLeft() - 1);
-				verificationDao.update(verification);
+				verificationDao.update(verification); // not working?
 				throw new InvalidVerificationCodeException("Code incorrect");
 			}
 		}

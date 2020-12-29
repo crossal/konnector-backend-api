@@ -3,10 +3,15 @@ package com.konnector.backendapi.user;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.konnector.backendapi.notifications.EmailTransportWrapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -33,6 +38,9 @@ public class UserIT {
 	private final ObjectMapper objectMapper = new ObjectMapper().configure(MapperFeature.USE_ANNOTATIONS, false).configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	private final PodamFactory podamFactory = new PodamFactoryImpl();
 	private final UserDTO userDTO = podamFactory.manufacturePojo(UserDTO.class);
+
+	@MockBean
+	private EmailTransportWrapper emailTransportWrapper;
 
 	@Test
 	public void createUserEndpoint_createsUser() throws Exception {

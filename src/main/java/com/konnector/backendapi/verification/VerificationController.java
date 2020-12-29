@@ -4,6 +4,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,9 +23,9 @@ public class VerificationController {
 		verificationService.verifyEmailByUrlToken(usernameOrEmail, token);
 	}
 
-	@PostMapping(value = "/api/verifications/verify", params = "code")
+	@PostMapping(value = "/api/verifications/verify")
 	@ResponseStatus(HttpStatus.OK)
-	public void verifyUserEmailByCode(@RequestParam String usernameOrEmail, @RequestParam String code) {
-		verificationService.verifyEmailByCode(usernameOrEmail, code);
+	public void verifyUserEmailByCode(@RequestBody VerificationDTO verificationDTO) {
+		verificationService.verifyEmailByCode(verificationDTO.getUsernameOrEmail(), verificationDTO.getCode());
 	}
 }

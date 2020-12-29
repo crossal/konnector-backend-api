@@ -10,6 +10,8 @@ import com.konnector.backendapi.verification.code.CodeGenerationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -53,6 +55,9 @@ public class VerificationServiceImplTest {
 	private final String username = "username";
 	private final String urlToken = "urlToken";
 
+	@Captor
+	ArgumentCaptor<Verification> verificationCaptor;
+
 	@BeforeEach
 	public void setup() {
 		verificationService = new VerificationServiceImpl(verificationDaoMock, verificationRepositoryMock, userDaoMock, userRepositoryMock, codeGenerationServiceMock);
@@ -65,6 +70,7 @@ public class VerificationServiceImplTest {
 		Verification verification = verificationService.createEmailVerificationForUser(userId);
 
 		verify(codeGenerationServiceMock, times(1)).generateCode(anyInt());
+		verify(verificationDaoMock, times(1)).save(any(Verification.class));
 		assertEquals(userId, verification.getUserId());
 		assertEquals(VerificationType.EMAIL, verification.getType());
 		assertEquals(code, verification.getCode());
@@ -186,6 +192,9 @@ public class VerificationServiceImplTest {
 		when(verificationMock.getCodeAttemptsLeft()).thenReturn(5);
 
 		assertThrows(InvalidVerificationCodeException.class, () -> verificationService.verifyEmailByCode(username, code));
+
+		verify(verificationDaoMock, times(1)).update(verificationCaptor.capture());
+		verify(verificationCaptor.getValue(), times(1)).setCodeAttemptsLeft(4);
 	}
 
 	@Test

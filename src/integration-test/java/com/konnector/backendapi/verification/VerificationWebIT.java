@@ -1,13 +1,19 @@
 package com.konnector.backendapi.verification;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.co.jemos.podam.api.PodamFactory;
+import uk.co.jemos.podam.api.PodamFactoryImpl;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -22,6 +28,12 @@ public class VerificationWebIT {
 	private VerificationService verificationServiceMock;
 	@MockBean
 	private ModelMapper modelMapperMock;
+	@MockBean
+	private UserDetailsService userDetailsService;
+
+	private final ObjectMapper objectMapper = new ObjectMapper().configure(MapperFeature.USE_ANNOTATIONS, false).configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+	private final PodamFactory podamFactory = new PodamFactoryImpl();
+	private final VerificationDTO verificationDTO = podamFactory.manufacturePojo(VerificationDTO.class);
 
 	@Test
 	public void verifyUserEmail_withToken_returnsSuccess() throws Exception {
@@ -30,6 +42,7 @@ public class VerificationWebIT {
 
 	@Test
 	public void verifyUserEmail_withCode_returnsSuccess() throws Exception {
-		mockMvc.perform(post("/api/verifications/verify").queryParam("usernameOrEmail", "username_or_email").queryParam("code", "code_value").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+		String verificationJson = objectMapper.writeValueAsString(verificationDTO);
+		mockMvc.perform(post("/api/verifications/verify").contentType(MediaType.APPLICATION_JSON).content(verificationJson)).andExpect(status().isOk());
 	}
 }
