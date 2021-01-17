@@ -13,7 +13,7 @@ public class UserDTO {
 	private String password;
 	private String firstName;
 	private String lastName;
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	@JsonProperty(value = "isEmailVerified", access = JsonProperty.Access.READ_ONLY)
 	private Boolean isEmailVerified;
 
 	public Long getId() {
@@ -64,12 +64,13 @@ public class UserDTO {
 		this.lastName = lastName;
 	}
 
+	@JsonProperty("isEmailVerified")
 	public Boolean isEmailVerified() {
 		return isEmailVerified;
 	}
 
-	public void setEmailVerified(Boolean emailVerified) {
-		isEmailVerified = emailVerified;
+	public void setEmailVerified(Boolean isEmailVerified) {
+		isEmailVerified = isEmailVerified;
 	}
 
 	@Override
