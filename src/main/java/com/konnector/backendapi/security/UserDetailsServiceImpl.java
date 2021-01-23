@@ -10,8 +10,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -31,7 +29,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
 		return optionalUser.map(user -> new org.springframework.security.core.userdetails.User(
 				user.getUsername(),
-				user.getPassword().toString(),
+				user.getPassword(),
 				getAuthorities()
 		)).orElseThrow(() -> new InvalidLoginDetailsException("Invalid username or email"));
 	}

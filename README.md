@@ -58,3 +58,4 @@ Handling Konnector web and data requests
 
 * Navigate to the project root
 * Run `$ mvn spring-boot:run`
+* Uncomment the `jvmArguments` element from the `spring-boot-maven-plugin` `configuration` element in the pom to enable remote debugging

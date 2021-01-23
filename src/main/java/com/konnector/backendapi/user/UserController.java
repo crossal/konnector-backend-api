@@ -27,7 +27,7 @@ public class UserController {
 	public UserDTO createUser(@RequestBody UserDTO userDTO) {
 		User user = modelMapper.map(userDTO, User.class);
 
-		user = userService.createUser(user, userDTO.getPassword());
+		user = userService.createUser(user);
 
 		return modelMapper.map(user, UserDTO.class);
 	}

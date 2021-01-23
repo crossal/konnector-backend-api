@@ -1,12 +1,11 @@
 package com.konnector.backendapi.verification;
 
+import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.co.jemos.podam.api.PodamFactory;
-import uk.co.jemos.podam.api.PodamFactoryImpl;
 
 import static org.mockito.Mockito.verify;
 
@@ -21,8 +20,8 @@ public class VerificationControllerTest {
 
 	private final String usernameOrEmail = "username_or_email";
 	private final String token = "token";
-	private final PodamFactory podamFactory = new PodamFactoryImpl();
-	private final VerificationDTO verificationDTO = podamFactory.manufacturePojo(VerificationDTO.class);
+	private final EasyRandom easyRandom = new EasyRandom();
+	private final VerificationDTO verificationDTO = easyRandom.nextObject(VerificationDTO.class);
 
 	@Test
 	public void verifyUserEmailByCode_verifiesEmailByCode() {

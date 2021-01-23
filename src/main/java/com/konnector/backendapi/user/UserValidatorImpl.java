@@ -10,11 +10,12 @@ import java.util.regex.Pattern;
 @Service
 public class UserValidatorImpl implements UserValidator {
 
-	private static final String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\." +
+	private static final String EMAIL_REGEX = "^[a-zA-Z0-9_+&*-]+(?:\\." +
 			"[a-zA-Z0-9_+&*-]+)*@" +
 			"(?:[a-zA-Z0-9-]+\\.)+[a-z" +
 			"A-Z]{2,7}$";
-	private static final Pattern emailPattern = Pattern.compile(emailRegex);
+	private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
+	private static final int MAX_PASSWORD_LENGTH = 50;
 
 	@Autowired
 	private UserRepository userRepository;
@@ -30,7 +31,7 @@ public class UserValidatorImpl implements UserValidator {
 		if (user.getEmail() == null) {
 			throw new InvalidDataException("Email cannot be empty");
 		}
-		if (!emailPattern.matcher(user.getEmail()).matches()){
+		if (!EMAIL_PATTERN.matcher(user.getEmail()).matches()){
 			throw new InvalidDataException("Email not valid");
 		}
 		if (user.getUsername() == null) {
@@ -42,10 +43,20 @@ public class UserValidatorImpl implements UserValidator {
 		if (user.getLastName() == null) {
 			throw new InvalidDataException("Last name cannot be empty");
 		}
+		if (user.getPassword() == null) {
+			throw new InvalidDataException("Password cannot be empty");
+		}
+		if (user.getPassword().length() > MAX_PASSWORD_LENGTH) {
+			throw new InvalidDataException("Password cannot be greater than " + MAX_PASSWORD_LENGTH + " characters");
+		}
 
-		Optional<User> optionalUser = userRepository.findByEmail(user.getEmail());
+		Optional<User> optionalUser = userRepository.findByEmailOrUsername(user.getEmail(), user.getUsername());
 		optionalUser.ifPresent(existingUser -> {
-			throw new InvalidDataException("Email already used");
+			if (existingUser.getEmail().equals(user.getUsername())) {
+				throw new InvalidDataException("Email taken");
+			} else {
+				throw new InvalidDataException("Username taken");
+			}
 		});
 	}
 

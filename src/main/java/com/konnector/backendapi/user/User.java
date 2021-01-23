@@ -24,10 +24,7 @@ public class User {
 	private String username;
 
 	@Column(name = "password")
-	private byte[] password;
-
-	@Column(name = "salt")
-	private byte[] salt;
+	private String password;
 
 	@Column(name = "first_name")
 	private String firstName;
@@ -36,7 +33,7 @@ public class User {
 	private String lastName;
 
 	@Column(name = "is_email_verified")
-	private boolean isEmailVerified;
+	private boolean emailVerified;
 
 	@Column(name = "created_on")
 	@CreationTimestamp
@@ -49,11 +46,10 @@ public class User {
 	public User() {
 	}
 
-	public User(String email, String username, byte[] password, byte[] salt, String firstName, String lastName) {
+	public User(String email, String username, String password, String firstName, String lastName) {
 		this.email = email;
 		this.username = username;
 		this.password = password;
-		this.salt = salt;
 		this.firstName = firstName;
 		this.lastName = lastName;
 	}
@@ -78,20 +74,12 @@ public class User {
 		this.username = username;
 	}
 
-	public byte[] getPassword() {
+	public String getPassword() {
 		return password;
 	}
 
-	public void setPassword(byte[] password) {
+	public void setPassword(String password) {
 		this.password = password;
-	}
-
-	public byte[] getSalt() {
-		return salt;
-	}
-
-	public void setSalt(byte[] salt) {
-		this.salt = salt;
 	}
 
 	public String getFirstName() {
@@ -111,11 +99,11 @@ public class User {
 	}
 
 	public boolean isEmailVerified() {
-		return isEmailVerified;
+		return emailVerified;
 	}
 
 	public void setEmailVerified(boolean emailVerified) {
-		isEmailVerified = emailVerified;
+		this.emailVerified = emailVerified;
 	}
 
 	public LocalDateTime getCreatedOn() {

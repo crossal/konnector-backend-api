@@ -1,12 +1,11 @@
 package com.konnector.backendapi.user;
 
+import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.co.jemos.podam.api.PodamFactory;
-import uk.co.jemos.podam.api.PodamFactoryImpl;
 
 import javax.persistence.EntityManager;
 
@@ -24,8 +23,8 @@ public class JpaUserDaoTest {
 	@Mock
 	private EntityManager entityManagerMock;
 
-	private final PodamFactory podamFactory = new PodamFactoryImpl();
-	private final User user = podamFactory.manufacturePojo(User.class);
+	private final EasyRandom easyRandom = new EasyRandom();
+	private final User user = easyRandom.nextObject(User.class);
 
 	@Test
 	public void get_returnsUser() {

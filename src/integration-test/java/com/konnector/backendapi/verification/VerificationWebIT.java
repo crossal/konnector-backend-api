@@ -3,6 +3,7 @@ package com.konnector.backendapi.verification;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +13,8 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.co.jemos.podam.api.PodamFactory;
-import uk.co.jemos.podam.api.PodamFactoryImpl;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -32,8 +32,8 @@ public class VerificationWebIT {
 	private UserDetailsService userDetailsService;
 
 	private final ObjectMapper objectMapper = new ObjectMapper().configure(MapperFeature.USE_ANNOTATIONS, false).configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-	private final PodamFactory podamFactory = new PodamFactoryImpl();
-	private final VerificationDTO verificationDTO = podamFactory.manufacturePojo(VerificationDTO.class);
+	private final EasyRandom easyRandom = new EasyRandom();
+	private final VerificationDTO verificationDTO = easyRandom.nextObject(VerificationDTO.class);
 
 	@Test
 	public void verifyUserEmail_withToken_returnsSuccess() throws Exception {

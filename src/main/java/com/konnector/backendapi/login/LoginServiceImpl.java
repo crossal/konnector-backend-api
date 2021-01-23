@@ -34,7 +34,8 @@ public class LoginServiceImpl implements LoginService {
 //			throw new InvalidLoginDetailsException("Incorrect password");
 //		}
 
-		securityService.createSession(user.getUsername(), user.getPassword().toString());
+//		securityService.createSession(user.getUsername(), user.getPassword());
+		securityService.createSession(usernameOrEmail, password);
 
 		return user;
 	}

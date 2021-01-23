@@ -1,12 +1,11 @@
 package com.konnector.backendapi.verification;
 
+import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.co.jemos.podam.api.PodamFactory;
-import uk.co.jemos.podam.api.PodamFactoryImpl;
 
 import javax.persistence.EntityManager;
 
@@ -24,8 +23,8 @@ public class JpaVerificationDaoTest {
 	@Mock
 	private EntityManager entityManagerMock;
 
-	private final PodamFactory podamFactory = new PodamFactoryImpl();
-	private final Verification verification = podamFactory.manufacturePojo(Verification.class);
+	private final EasyRandom easyRandom = new EasyRandom();
+	private final Verification verification = easyRandom.nextObject(Verification.class);
 
 	@Test
 	public void get_returnsVerification() {

@@ -3,10 +3,9 @@ package com.konnector.backendapi.user;
 import com.konnector.backendapi.data.Dao;
 import com.konnector.backendapi.exceptions.NotFoundException;
 import com.konnector.backendapi.notifications.EmailNotificationService;
-import com.konnector.backendapi.security.password.HashedPassword;
-import com.konnector.backendapi.security.password.PasswordHashingService;
 import com.konnector.backendapi.verification.Verification;
 import com.konnector.backendapi.verification.VerificationService;
+import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,12 +13,10 @@ import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
-import uk.co.jemos.podam.api.PodamFactory;
-import uk.co.jemos.podam.api.PodamFactoryImpl;
 
 import java.util.Optional;
-import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -44,34 +41,21 @@ public class UserServiceImplTest {
 	@Mock
 	private VerificationService verificationServiceMock;
 	@Mock
-	private PasswordHashingService passwordHashingServiceMock;
-	@Mock
 	private EmailNotificationService emailNotificationServiceMock;
-
 	@Mock
-	private HashedPassword hashedPasswordMock;
+	private PasswordEncoder passwordEncoderMock;
 	@Mock
 	private Verification verificationMock;
 
-	private final PodamFactory podamFactory = new PodamFactoryImpl();
-	private final User user = podamFactory.manufacturePojo(User.class);
-	private final String password = "password";
-	private final Random random = new Random();
-	private byte[] hash;
-	private byte[] salt;
+	private final EasyRandom easyRandom = new EasyRandom();
+	private final User user = easyRandom.nextObject(User.class);
+	private final String hashedPassword = "hashed_password";
 	private final String verificationCode = "1234";
 	private final String verificationUrlToken = "5678";
 
 	@Test
 	public void createUser_createsUser() {
-		hash = new byte[16];
-		random.nextBytes(hash);
-		salt = new byte[16];
-		random.nextBytes(salt);
-
-		when(hashedPasswordMock.getHash()).thenReturn(hash);
-		when(hashedPasswordMock.getSalt()).thenReturn(salt);
-		when(passwordHashingServiceMock.getHashedPassword(password)).thenReturn(hashedPasswordMock);
+		when(passwordEncoderMock.encode(user.getPassword())).thenReturn(hashedPassword);
 		when(verificationMock.getCode()).thenReturn(verificationCode);
 		when(verificationMock.getUrlToken()).thenReturn(verificationUrlToken);
 		when(verificationServiceMock.createEmailVerificationForUser(anyLong())).thenReturn(verificationMock);
@@ -83,14 +67,13 @@ public class UserServiceImplTest {
 			}
 		}).when(userDaoMock).save(user);
 
-		User createdUser = userService.createUser(user, password);
+		User createdUser = userService.createUser(user);
 
 		verify(userValidatorMock, times(1)).validateUserCreationArgument(user);
 		verify(userDaoMock, times(1)).save(user);
 		verify(emailNotificationServiceMock, times(1)).sendVerificationEmail(user.getEmail(), verificationMock.getCode(), verificationMock.getUrlToken());
 		assertEquals(user, createdUser);
-		assertEquals(hash, user.getPassword());
-		assertEquals(salt, user.getSalt());
+		assertEquals(hashedPassword, user.getPassword());
 	}
 
 	@Test

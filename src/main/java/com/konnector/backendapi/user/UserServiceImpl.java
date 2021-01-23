@@ -3,13 +3,12 @@ package com.konnector.backendapi.user;
 import com.konnector.backendapi.data.Dao;
 import com.konnector.backendapi.exceptions.NotFoundException;
 import com.konnector.backendapi.notifications.EmailNotificationService;
-import com.konnector.backendapi.security.password.HashedPassword;
-import com.konnector.backendapi.security.password.PasswordHashingService;
 import com.konnector.backendapi.verification.Verification;
 import com.konnector.backendapi.verification.VerificationService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,18 +28,17 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private VerificationService verificationService;
 	@Autowired
-	private PasswordHashingService passwordHashingService;
-	@Autowired
 	private EmailNotificationService emailNotificationService;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	@Override
 	@Transactional
-	public User createUser(User user, String password) {
+	public User createUser(User user) {
 		userValidator.validateUserCreationArgument(user);
 
-		HashedPassword hashedPassword = passwordHashingService.getHashedPassword(password);
-		user.setPassword(hashedPassword.getHash());
-		user.setSalt(hashedPassword.getSalt());
+		String hashedPassword = passwordEncoder.encode(user.getPassword());
+		user.setPassword(hashedPassword);
 
 		userDao.save(user);
 

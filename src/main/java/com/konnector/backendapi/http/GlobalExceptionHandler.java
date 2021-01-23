@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -58,6 +59,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	protected ResponseEntity<String> handleEmailVerificationSendException(EmailVerificationSendException e){
 		return ResponseEntity
 				.status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.body(e.getMessage());
+	}
+
+	@ExceptionHandler(BadCredentialsException.class)
+	protected ResponseEntity<String> handleBadCredentialsException(BadCredentialsException e) {
+		return ResponseEntity
+				.status(HttpStatus.UNAUTHORIZED)
 				.body(e.getMessage());
 	}
 

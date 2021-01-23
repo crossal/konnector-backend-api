@@ -1,13 +1,12 @@
 package com.konnector.backendapi.user;
 
+import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import uk.co.jemos.podam.api.PodamFactory;
-import uk.co.jemos.podam.api.PodamFactoryImpl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -27,13 +26,13 @@ public class UserControllerTest {
 	@Mock
 	private User userMock;
 
-	private final PodamFactory podamFactory = new PodamFactoryImpl();
-	private final UserDTO userDTO = podamFactory.manufacturePojo(UserDTO.class);
+	private final EasyRandom easyRandom = new EasyRandom();
+	private final UserDTO userDTO = easyRandom.nextObject(UserDTO.class);
 
 	@Test
 	public void createUser_returnsSuccessAndCreatedUser() {
 		when(modelMapperMock.map(any(UserDTO.class), eq(User.class))).thenReturn(userMock);
-		when(userServiceMock.createUser(userMock, userDTO.getPassword())).thenReturn(userMock);
+		when(userServiceMock.createUser(userMock)).thenReturn(userMock);
 		when(modelMapperMock.map(userMock, UserDTO.class)).thenReturn(userDTO);
 
 		UserDTO result = userController.createUser(userDTO);

@@ -4,7 +4,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 
 public interface UserService {
-	User createUser(User user, String password);
+	User createUser(User user);
 	User getUser(Long id);
 //	User updateUser(User user);
 //	User mergeUser(User user);

@@ -1,7 +1,6 @@
 package com.konnector.backendapi.session;
 
 import com.konnector.backendapi.security.UserDetailsServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -12,12 +11,14 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+	private static final int BCRYPT_STRENGTH = 12;
 
 //	@Autowired
 //	private UserDetailsService userDetailsService;
@@ -40,9 +41,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		return new UserDetailsServiceImpl();
 	}
 
+//	@Bean
+//	public PasswordEncoder passwordEncoder() {
+//		return new Pbkdf2PasswordEncoder();
+//	}
+
 	@Bean
 	public PasswordEncoder passwordEncoder() {
-		return new Pbkdf2PasswordEncoder();
+		return new BCryptPasswordEncoder(BCRYPT_STRENGTH);
 	}
 
 	@Override
