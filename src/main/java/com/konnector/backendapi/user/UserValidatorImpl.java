@@ -52,7 +52,7 @@ public class UserValidatorImpl implements UserValidator {
 
 		Optional<User> optionalUser = userRepository.findByEmailOrUsername(user.getEmail(), user.getUsername());
 		optionalUser.ifPresent(existingUser -> {
-			if (existingUser.getEmail().equals(user.getUsername())) {
+			if (existingUser.getEmail().equals(user.getEmail())) {
 				throw new InvalidDataException("Email taken");
 			} else {
 				throw new InvalidDataException("Username taken");

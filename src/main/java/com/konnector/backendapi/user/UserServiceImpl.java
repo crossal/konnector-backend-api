@@ -1,5 +1,6 @@
 package com.konnector.backendapi.user;
 
+import com.konnector.backendapi.authentication.AuthenticationFacade;
 import com.konnector.backendapi.data.Dao;
 import com.konnector.backendapi.exceptions.NotFoundException;
 import com.konnector.backendapi.notifications.EmailNotificationService;
@@ -8,6 +9,7 @@ import com.konnector.backendapi.verification.VerificationService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +33,10 @@ public class UserServiceImpl implements UserService {
 	private EmailNotificationService emailNotificationService;
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	@Autowired
+	private AuthenticationFacade authenticationFacade;
+	@Autowired
+	private UserAuthorizationValidator userAuthorizationValidator;
 
 	@Override
 	@Transactional
@@ -43,7 +49,7 @@ public class UserServiceImpl implements UserService {
 		userDao.save(user);
 
 		Verification verification = verificationService.createEmailVerificationForUser(user.getId());
-		emailNotificationService.sendVerificationEmail(user.getEmail(), verification.getCode(), verification.getUrlToken());
+//		emailNotificationService.sendVerificationEmail(user.getEmail(), verification.getCode(), verification.getUrlToken());
 
 		return user;
 	}
@@ -54,6 +60,13 @@ public class UserServiceImpl implements UserService {
 
 		Optional<User> optionalUser = userDao.get(id);
 
-		return optionalUser.orElseThrow(() -> new NotFoundException("User not found"));
+		return optionalUser.map(
+				user -> {
+					Authentication authentication = authenticationFacade.getAuthentication();
+					userAuthorizationValidator.validateUserFetchRequest(user, authentication);
+
+					return user;
+				}
+		).orElseThrow(() -> new NotFoundException("User not found"));
 	}
 }

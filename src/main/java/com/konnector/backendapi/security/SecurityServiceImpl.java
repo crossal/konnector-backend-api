@@ -25,8 +25,8 @@ public class SecurityServiceImpl implements SecurityService {
 	private HttpServletRequest request;
 
 	@Override
-	public void createSession(String username, String hashedPassword) {
-		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, hashedPassword);
+	public void createSession(String username, String password) {
+		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
 		Authentication authentication = authenticationManager.authenticate(authenticationToken);
 		SecurityContext securityContext = SecurityContextHolder.getContext();
 		securityContext.setAuthentication(authentication);

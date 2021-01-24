@@ -6,6 +6,7 @@ import com.konnector.backendapi.exceptions.InvalidLoginDetailsException;
 import com.konnector.backendapi.exceptions.InvalidVerificationCodeException;
 import com.konnector.backendapi.exceptions.NoVerificationAttemptsLeftException;
 import com.konnector.backendapi.exceptions.NotFoundException;
+import com.konnector.backendapi.exceptions.UnauthorizedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,13 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 	private static final Logger logger = LogManager.getLogger(GlobalExceptionHandler.class);
+
+	@ExceptionHandler(UnauthorizedException.class)
+	protected ResponseEntity<String> handleUnauthorizedException(UnauthorizedException e){
+		return ResponseEntity
+				.status(HttpStatus.FORBIDDEN)
+				.body("Not allowed");
+	}
 
 	@ExceptionHandler(NotFoundException.class)
 	protected ResponseEntity<String> handleNotFoundException(NotFoundException e){
