@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
 		userDao.save(user);
 
 		Verification verification = verificationService.createEmailVerificationForUser(user.getId());
-//		emailNotificationService.sendVerificationEmail(user.getEmail(), verification.getCode(), verification.getUrlToken());
+		emailNotificationService.sendVerificationEmail(user.getEmail(), verification.getCode(), verification.getUrlToken());
 
 		return user;
 	}

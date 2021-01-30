@@ -1,5 +1,6 @@
 package com.konnector.backendapi.user;
 
+import com.konnector.backendapi.authentication.AuthenticationFacade;
 import com.konnector.backendapi.data.Dao;
 import com.konnector.backendapi.exceptions.NotFoundException;
 import com.konnector.backendapi.notifications.EmailNotificationService;
@@ -13,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -46,6 +48,14 @@ public class UserServiceImplTest {
 	private PasswordEncoder passwordEncoderMock;
 	@Mock
 	private Verification verificationMock;
+	@Mock
+	private AuthenticationFacade authenticationFacadeMock;
+	@Mock
+	private UserAuthorizationValidator userAuthorizationValidatorMock;
+	@Mock
+	private Authentication authenticationMock;
+	@Mock
+	private User userMock;
 
 	private final EasyRandom easyRandom = new EasyRandom();
 	private final User user = easyRandom.nextObject(User.class);
@@ -90,12 +100,14 @@ public class UserServiceImplTest {
 	@Test
 	public void getUser_getsUser() {
 		Long userId = 1L;
-		when(userDaoMock.get(userId)).thenReturn(Optional.of(user));
+		when(userDaoMock.get(userId)).thenReturn(Optional.of(userMock));
+		when(authenticationFacadeMock.getAuthentication()).thenReturn(authenticationMock);
 
 		User fetchedUser = userService.getUser(userId);
 
+		assertEquals(userMock, fetchedUser);
 		verify(userValidatorMock, times(1)).validateUserFetchRequest(userId);
 		verify(userDaoMock, times(1)).get(userId);
-		assertEquals(user, fetchedUser);
+		verify(userAuthorizationValidatorMock, times(1)).validateUserFetchRequest(userMock, authenticationMock);
 	}
 }

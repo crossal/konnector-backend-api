@@ -67,7 +67,7 @@ public class UserWebIT {
 
 	@Test
 	public void getUser_withoutAuthentication_returnsFailure() throws Exception {
-		mockMvc.perform(get("/api/users/1").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isForbidden());
+		mockMvc.perform(get("/api/users/1").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isUnauthorized());
 	}
 
 	@Test

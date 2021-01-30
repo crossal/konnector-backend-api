@@ -3,7 +3,6 @@ package com.konnector.backendapi.verification;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.konnector.backendapi.user.UserDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,7 +13,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -26,8 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Sql({ "/data/truncate-all-data.sql", "/data/verification/verification-insert-data.sql" })
 public class VerificationIT {
 
-	private static final String USER_EMAIL = "verification_test_email";
-	private static final String VERIFICATION_TOKEN = "verification_test_token";
+	private static final String USER_EMAIL = "email";
+	private static final String VERIFICATION_TOKEN = "token";
 	private static final String VERIFICATION_CODE = "123456";
 
 	private TestRestTemplate testRestTemplate = new TestRestTemplate();

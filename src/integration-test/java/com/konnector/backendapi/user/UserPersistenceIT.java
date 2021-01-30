@@ -1,6 +1,7 @@
 package com.konnector.backendapi.user;
 
 import org.jeasy.random.EasyRandom;
+import org.jeasy.random.EasyRandomParameters;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -10,6 +11,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.jeasy.random.FieldPredicates.named;
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -23,7 +25,7 @@ public class UserPersistenceIT {
 	@Autowired
 	private JpaUserDao userDao;
 
-	private final EasyRandom easyRandom = new EasyRandom();
+	private final EasyRandom easyRandom = new EasyRandom(new EasyRandomParameters().excludeField(named("id")));
 	private final User user = easyRandom.nextObject(User.class);
 
 	@Test

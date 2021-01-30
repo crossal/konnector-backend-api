@@ -1,3 +1,3 @@
-INSERT INTO `user` (`email`, `username`, `password`, `first_name`, `last_name`, `is_email_verified`) VALUES ('verification_test_email', 'verification_test_username', '$2a$11$BHG59UT6p7bgT6U2fQ/9wOyTIdejh4Rk1vWilvl4b6ysNPdhnViUS', 'verification_test_first_name', 'verification_test_last_name', false);
-SELECT @user_id := (SELECT `id` FROM `user` WHERE `email` = 'verification_test_email');
-INSERT INTO `verification` (`user_id`, `type`, `status`, `code`, `code_attempts_left`, `url_token`, `expires_on`) VALUES (@user_id, 0, 0, '123456', 1, 'verification_test_token', DATE_ADD(CURRENT_DATE, INTERVAL 2 DAY));
+INSERT INTO `user` (`email`, `username`, `password`, `first_name`, `last_name`, `is_email_verified`) VALUES ('email', 'username', '$2a$11$BHG59UT6p7bgT6U2fQ/9wOyTIdejh4Rk1vWilvl4b6ysNPdhnViUS', 'first_name', 'last_name', false);
+SELECT @user_id := (SELECT `id` FROM `user` WHERE `email` = 'email');
+INSERT INTO `verification` (`user_id`, `type`, `status`, `code`, `code_attempts_left`, `url_token`, `expires_on`) VALUES (@user_id, 0, 0, '123456', 1, 'token', DATE_ADD(CURRENT_DATE, INTERVAL 2 DAY));
