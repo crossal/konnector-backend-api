@@ -3,8 +3,6 @@ package com.konnector.backendapi.user;
 import com.konnector.backendapi.authentication.AuthenticationFacade;
 import com.konnector.backendapi.data.Dao;
 import com.konnector.backendapi.exceptions.NotFoundException;
-import com.konnector.backendapi.notifications.EmailNotificationService;
-import com.konnector.backendapi.verification.Verification;
 import com.konnector.backendapi.verification.VerificationService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,8 +28,6 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private VerificationService verificationService;
 	@Autowired
-	private EmailNotificationService emailNotificationService;
-	@Autowired
 	private PasswordEncoder passwordEncoder;
 	@Autowired
 	private AuthenticationFacade authenticationFacade;
@@ -48,8 +44,7 @@ public class UserServiceImpl implements UserService {
 
 		userDao.save(user);
 
-		Verification verification = verificationService.createEmailVerificationForUser(user.getId());
-		emailNotificationService.sendVerificationEmail(user.getEmail(), verification.getCode(), verification.getUrlToken());
+		verificationService.createEmailVerificationForUser(user);
 
 		return user;
 	}

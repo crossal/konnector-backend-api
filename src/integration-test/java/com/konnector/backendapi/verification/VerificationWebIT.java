@@ -14,7 +14,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -36,13 +35,35 @@ public class VerificationWebIT {
 	private final VerificationDTO verificationDTO = easyRandom.nextObject(VerificationDTO.class);
 
 	@Test
-	public void verifyUserEmail_withToken_returnsSuccess() throws Exception {
-		mockMvc.perform(post("/api/verifications/verify").queryParam("usernameOrEmail", "username_or_email").queryParam("token", "token_value").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+	public void createEmailVerificationForUser_returnsSuccess() throws Exception {
+		mockMvc.perform(post("/api/verifications")
+				.queryParam("usernameOrEmail", "username_or_email")
+				.queryParam("type", "0")
+				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 	}
 
 	@Test
-	public void verifyUserEmail_withCode_returnsSuccess() throws Exception {
+	public void createEmailVerificationForUser_returnsSuccesss() throws Exception {
+		mockMvc.perform(post("/api/verifications")
+				.queryParam("usernameOrEmail", "username_or_email")
+				.queryParam("type", "0")
+				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+	}
+
+	@Test
+	public void verifyUserEmailByToken_returnsSuccess() throws Exception {
+		mockMvc.perform(post("/api/verifications/verify")
+				.queryParam("usernameOrEmail", "username_or_email")
+				.queryParam("token", "token_value")
+				.queryParam("type", "0")
+				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+	}
+
+	@Test
+	public void verifyUserEmailByCode_returnsSuccess() throws Exception {
 		String verificationJson = objectMapper.writeValueAsString(verificationDTO);
-		mockMvc.perform(post("/api/verifications/verify").contentType(MediaType.APPLICATION_JSON).content(verificationJson)).andExpect(status().isOk());
+		mockMvc.perform(post("/api/verifications/verify")
+				.queryParam("type", "0")
+				.contentType(MediaType.APPLICATION_JSON).content(verificationJson)).andExpect(status().isOk());
 	}
 }

@@ -4,6 +4,8 @@ import com.konnector.backendapi.data.Dao;
 import com.konnector.backendapi.exceptions.InvalidDataException;
 import com.konnector.backendapi.exceptions.InvalidVerificationCodeException;
 import com.konnector.backendapi.exceptions.NoVerificationAttemptsLeftException;
+import com.konnector.backendapi.exceptions.NotFoundException;
+import com.konnector.backendapi.notifications.EmailNotificationService;
 import com.konnector.backendapi.user.User;
 import com.konnector.backendapi.user.UserRepository;
 import com.konnector.backendapi.verification.code.CodeGenerationService;
@@ -21,6 +23,7 @@ public class VerificationServiceImpl implements VerificationService {
 	private static final int CODE_LENGTH = 4;
 	private static final int CODE_ATTEMPTS = 5;
 	private static final int URL_TOKEN_EXPIRATION_IN_DAYS = 5;
+	private static final int RESEND_ALLOWED_IN_MINUTES = 30;
 
 	@Autowired
 	private Dao<Verification> verificationDao;
@@ -32,21 +35,49 @@ public class VerificationServiceImpl implements VerificationService {
 	private UserRepository userRepository;
 	@Autowired
 	private CodeGenerationService codeGenerationService;
+	@Autowired
+	private EmailNotificationService emailNotificationService;
 
-	public VerificationServiceImpl(Dao<Verification> verificationDao, VerificationRepository verificationRepository, Dao<User> userDao, UserRepository userRepository, CodeGenerationService codeGenerationService) {
+	public VerificationServiceImpl(Dao<Verification> verificationDao, VerificationRepository verificationRepository, Dao<User> userDao,
+	                               UserRepository userRepository, CodeGenerationService codeGenerationService, EmailNotificationService emailNotificationService) {
 		this.verificationDao = verificationDao;
 		this.verificationRepository = verificationRepository;
 		this.userDao = userDao;
 		this.userRepository = userRepository;
 		this.codeGenerationService = codeGenerationService;
+		this.emailNotificationService = emailNotificationService;
 	}
 
 	@Override
 	@Transactional
-	public Verification createEmailVerificationForUser(long userId) {
-		Verification verification = new Verification(userId, VerificationType.EMAIL, codeGenerationService.generateCode(CODE_LENGTH), CODE_ATTEMPTS, UUID.randomUUID().toString(), LocalDateTime.now().plusDays(URL_TOKEN_EXPIRATION_IN_DAYS));
+	public Verification createEmailVerificationForUser(User user) {
+		Optional<Verification> optionalExistingVerification = verificationRepository.findFirstByUserIdAndTypeOrderByCreatedOnDesc(user.getId(), VerificationType.EMAIL);
+		optionalExistingVerification.ifPresent(verification -> {
+			if (verification.getStatus().equals(VerificationStatus.COMPLETE)) {
+				throw new InvalidDataException("Already verified");
+			}
+
+			if (verification.getReverifyAllowedOn().isAfter(LocalDateTime.now())) {
+				throw new InvalidDataException("Verification resend not allowed so soon");
+			}
+		});
+
+		Verification verification = new Verification(user.getId(), VerificationType.EMAIL, codeGenerationService.generateCode(CODE_LENGTH), CODE_ATTEMPTS,
+				UUID.randomUUID().toString(), LocalDateTime.now().plusDays(URL_TOKEN_EXPIRATION_IN_DAYS), LocalDateTime.now().plusMinutes(RESEND_ALLOWED_IN_MINUTES));
 		verificationDao.save(verification);
+
+		emailNotificationService.sendVerificationEmail(user.getEmail(), verification.getCode(), verification.getUrlToken());
+
 		return verification;
+	}
+
+	@Override
+	@Transactional
+	public Verification createEmailVerificationForUser(String usernameOrEmail) {
+		Optional<User> optionalUser = userRepository.findByEmailOrUsername(usernameOrEmail, usernameOrEmail);
+
+		return optionalUser.map(user -> createEmailVerificationForUser(user))
+				.orElseThrow(() -> new NotFoundException("User not found"));
 	}
 
 	@Override

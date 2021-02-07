@@ -22,7 +22,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -66,9 +65,6 @@ public class UserServiceImplTest {
 	@Test
 	public void createUser_createsUser() {
 		when(passwordEncoderMock.encode(user.getPassword())).thenReturn(hashedPassword);
-		when(verificationMock.getCode()).thenReturn(verificationCode);
-		when(verificationMock.getUrlToken()).thenReturn(verificationUrlToken);
-		when(verificationServiceMock.createEmailVerificationForUser(anyLong())).thenReturn(verificationMock);
 		doAnswer(new Answer() {
 			@Override
 			public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
@@ -81,7 +77,7 @@ public class UserServiceImplTest {
 
 		verify(userValidatorMock, times(1)).validateUserCreationArgument(user);
 		verify(userDaoMock, times(1)).save(user);
-		verify(emailNotificationServiceMock, times(1)).sendVerificationEmail(user.getEmail(), verificationMock.getCode(), verificationMock.getUrlToken());
+		verify(verificationServiceMock, times(1)).createEmailVerificationForUser(user);
 		assertEquals(user, createdUser);
 		assertEquals(hashedPassword, user.getPassword());
 	}

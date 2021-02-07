@@ -4,6 +4,8 @@ import com.konnector.backendapi.data.Dao;
 import com.konnector.backendapi.exceptions.InvalidDataException;
 import com.konnector.backendapi.exceptions.InvalidVerificationCodeException;
 import com.konnector.backendapi.exceptions.NoVerificationAttemptsLeftException;
+import com.konnector.backendapi.exceptions.NotFoundException;
+import com.konnector.backendapi.notifications.EmailNotificationService;
 import com.konnector.backendapi.user.User;
 import com.konnector.backendapi.user.UserRepository;
 import com.konnector.backendapi.verification.code.CodeGenerationService;
@@ -24,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -44,33 +47,41 @@ public class VerificationServiceImplTest {
 	private UserRepository userRepositoryMock;
 	@Mock
 	private CodeGenerationService codeGenerationServiceMock;
+	@Mock
+	private EmailNotificationService emailNotificationService;
 
 	@Mock
 	private User userMock;
 	@Mock
 	private Verification verificationMock;
 
-	private final long userId = 1;
-	private final String code = "code";
-	private final String username = "username";
-	private final String urlToken = "urlToken";
+	private final static long userId = 1;
+	private final static String code = "code";
+	private final static String username = "username";
+	private final static String urlToken = "urlToken";
+	private final static String email = "email";
 
 	@Captor
 	ArgumentCaptor<Verification> verificationCaptor;
 
 	@BeforeEach
 	public void setup() {
-		verificationService = new VerificationServiceImpl(verificationDaoMock, verificationRepositoryMock, userDaoMock, userRepositoryMock, codeGenerationServiceMock);
+		verificationService = new VerificationServiceImpl(verificationDaoMock, verificationRepositoryMock, userDaoMock, userRepositoryMock, codeGenerationServiceMock, emailNotificationService);
 	}
 
 	@Test
-	public void createVerificationForUser_createsVerification() {
-		when(codeGenerationServiceMock.generateCode(anyInt())).thenReturn(code);
+	public void createVerificationForUser_withUsernameOrEmail_createsVerification() {
+		when(userRepositoryMock.findByEmailOrUsername(username, username)).thenReturn(Optional.of(userMock));
 
-		Verification verification = verificationService.createEmailVerificationForUser(userId);
+		when(userMock.getId()).thenReturn(userId);
+		when(codeGenerationServiceMock.generateCode(anyInt())).thenReturn(code);
+		when(userMock.getEmail()).thenReturn(email);
+
+		Verification verification = verificationService.createEmailVerificationForUser(username);
 
 		verify(codeGenerationServiceMock, times(1)).generateCode(anyInt());
 		verify(verificationDaoMock, times(1)).save(any(Verification.class));
+		verify(emailNotificationService, times(1)).sendVerificationEmail(eq(email), eq(code), anyString());
 		assertEquals(userId, verification.getUserId());
 		assertEquals(VerificationType.EMAIL, verification.getType());
 		assertEquals(code, verification.getCode());
@@ -78,6 +89,121 @@ public class VerificationServiceImplTest {
 		assertTrue(verification.getCodeAttemptsLeft() > 0);
 		assertEquals(VerificationStatus.INCOMPLETE, verification.getStatus());
 		assertNotNull(verification.getExpiresOn());
+	}
+
+	@Test
+	public void createVerificationForUser_withUsernameOrEmail_userNotFound_throwsException() {
+		when(userRepositoryMock.findByEmailOrUsername(any(), any())).thenReturn(Optional.empty());
+
+		assertThrows(NotFoundException.class, () -> verificationService.createEmailVerificationForUser(username));
+	}
+
+	@Test
+	public void createVerificationForUser_withUsernameOrEmail_existingVerification_createsVerification() {
+		when(userRepositoryMock.findByEmailOrUsername(username, username)).thenReturn(Optional.of(userMock));
+		when(verificationMock.getStatus()).thenReturn(VerificationStatus.INCOMPLETE);
+		when(verificationMock.getReverifyAllowedOn()).thenReturn(LocalDateTime.now().minusDays(1));
+		when(verificationRepositoryMock.findFirstByUserIdAndTypeOrderByCreatedOnDesc(userId, VerificationType.EMAIL)).thenReturn(Optional.of(verificationMock));
+		when(userMock.getId()).thenReturn(userId);
+		when(codeGenerationServiceMock.generateCode(anyInt())).thenReturn(code);
+		when(userMock.getEmail()).thenReturn(email);
+
+		Verification verification = verificationService.createEmailVerificationForUser(username);
+
+		verify(codeGenerationServiceMock, times(1)).generateCode(anyInt());
+		verify(verificationDaoMock, times(1)).save(any(Verification.class));
+		verify(emailNotificationService, times(1)).sendVerificationEmail(eq(email), eq(code), anyString());
+		assertEquals(userId, verification.getUserId());
+		assertEquals(VerificationType.EMAIL, verification.getType());
+		assertEquals(code, verification.getCode());
+		assertNotNull(verification.getUrlToken());
+		assertTrue(verification.getCodeAttemptsLeft() > 0);
+		assertEquals(VerificationStatus.INCOMPLETE, verification.getStatus());
+		assertNotNull(verification.getExpiresOn());
+	}
+
+	@Test
+	public void createVerificationForUser_withUsernameOrEmail_existingVerificationAlreadyVerified_throwsException() {
+		when(userRepositoryMock.findByEmailOrUsername(username, username)).thenReturn(Optional.of(userMock));
+		when(userMock.getId()).thenReturn(userId);
+		when(verificationRepositoryMock.findFirstByUserIdAndTypeOrderByCreatedOnDesc(userId, VerificationType.EMAIL)).thenReturn(Optional.of(verificationMock));
+		when(verificationMock.getStatus()).thenReturn(VerificationStatus.COMPLETE);
+
+		assertThrows(InvalidDataException.class, () -> verificationService.createEmailVerificationForUser(username));
+	}
+
+	@Test
+	public void createVerificationForUser_withUsernameOrEmail_existingVerificationAndNotAllowedReverifyYet_throwsException() {
+		when(userRepositoryMock.findByEmailOrUsername(username, username)).thenReturn(Optional.of(userMock));
+		when(userMock.getId()).thenReturn(userId);
+		when(verificationMock.getStatus()).thenReturn(VerificationStatus.INCOMPLETE);
+		when(verificationMock.getReverifyAllowedOn()).thenReturn(LocalDateTime.now().minusDays(1));
+		when(verificationRepositoryMock.findFirstByUserIdAndTypeOrderByCreatedOnDesc(userId, VerificationType.EMAIL)).thenReturn(Optional.of(verificationMock));
+		when(verificationMock.getReverifyAllowedOn()).thenReturn(LocalDateTime.now().plusDays(1));
+
+		assertThrows(InvalidDataException.class, () -> verificationService.createEmailVerificationForUser(username));
+	}
+
+	@Test
+	public void createVerificationForUser_withUser_createsVerification() {
+		when(userMock.getId()).thenReturn(userId);
+		when(codeGenerationServiceMock.generateCode(anyInt())).thenReturn(code);
+		when(userMock.getEmail()).thenReturn(email);
+
+		Verification verification = verificationService.createEmailVerificationForUser(userMock);
+
+		verify(codeGenerationServiceMock, times(1)).generateCode(anyInt());
+		verify(verificationDaoMock, times(1)).save(any(Verification.class));
+		verify(emailNotificationService, times(1)).sendVerificationEmail(eq(email), eq(code), anyString());
+		assertEquals(userId, verification.getUserId());
+		assertEquals(VerificationType.EMAIL, verification.getType());
+		assertEquals(code, verification.getCode());
+		assertNotNull(verification.getUrlToken());
+		assertTrue(verification.getCodeAttemptsLeft() > 0);
+		assertEquals(VerificationStatus.INCOMPLETE, verification.getStatus());
+		assertNotNull(verification.getExpiresOn());
+	}
+
+	@Test
+	public void createVerificationForUser_withUser_existingVerification_createsVerification() {
+		when(verificationMock.getStatus()).thenReturn(VerificationStatus.INCOMPLETE);
+		when(verificationMock.getReverifyAllowedOn()).thenReturn(LocalDateTime.now().minusDays(1));
+		when(verificationRepositoryMock.findFirstByUserIdAndTypeOrderByCreatedOnDesc(userId, VerificationType.EMAIL)).thenReturn(Optional.of(verificationMock));
+		when(userMock.getId()).thenReturn(userId);
+		when(codeGenerationServiceMock.generateCode(anyInt())).thenReturn(code);
+		when(userMock.getEmail()).thenReturn(email);
+
+		Verification verification = verificationService.createEmailVerificationForUser(userMock);
+
+		verify(codeGenerationServiceMock, times(1)).generateCode(anyInt());
+		verify(verificationDaoMock, times(1)).save(any(Verification.class));
+		verify(emailNotificationService, times(1)).sendVerificationEmail(eq(email), eq(code), anyString());
+		assertEquals(userId, verification.getUserId());
+		assertEquals(VerificationType.EMAIL, verification.getType());
+		assertEquals(code, verification.getCode());
+		assertNotNull(verification.getUrlToken());
+		assertTrue(verification.getCodeAttemptsLeft() > 0);
+		assertEquals(VerificationStatus.INCOMPLETE, verification.getStatus());
+		assertNotNull(verification.getExpiresOn());
+	}
+
+	@Test
+	public void createVerificationForUser_withUser_existingVerificationAlreadyVerified_throwsException() {
+		when(userMock.getId()).thenReturn(userId);
+		when(verificationRepositoryMock.findFirstByUserIdAndTypeOrderByCreatedOnDesc(userId, VerificationType.EMAIL)).thenReturn(Optional.of(verificationMock));
+		when(verificationMock.getStatus()).thenReturn(VerificationStatus.COMPLETE);
+
+		assertThrows(InvalidDataException.class, () -> verificationService.createEmailVerificationForUser(userMock));
+	}
+
+	@Test
+	public void createVerificationForUser_withUser_existingVerificationAndNotAllowedReverifyYet_throwsException() {
+		when(userMock.getId()).thenReturn(userId);
+		when(verificationRepositoryMock.findFirstByUserIdAndTypeOrderByCreatedOnDesc(userId, VerificationType.EMAIL)).thenReturn(Optional.of(verificationMock));
+		when(verificationMock.getStatus()).thenReturn(VerificationStatus.INCOMPLETE);
+		when(verificationMock.getReverifyAllowedOn()).thenReturn(LocalDateTime.now().plusDays(1));
+
+		assertThrows(InvalidDataException.class, () -> verificationService.createEmailVerificationForUser(userMock));
 	}
 
 	@Test
@@ -100,7 +226,7 @@ public class VerificationServiceImplTest {
 	public void verifyEmailByUrlToken_verificationAlreadyComplete_throwsException() {
 		when(userMock.getId()).thenReturn(userId);
 		when(userRepositoryMock.findByEmailOrUsername(username, username)).thenReturn(Optional.of(userMock));
-		when(verificationRepositoryMock.findFirstByUserIdAndTypeOrderByCreatedOnDesc(eq(userId), any(VerificationType.class))).thenReturn(Optional.of(verificationMock));
+		when(verificationRepositoryMock.findFirstByUserIdAndTypeOrderByCreatedOnDesc(userId, VerificationType.EMAIL)).thenReturn(Optional.of(verificationMock));
 		when(verificationMock.getStatus()).thenReturn(VerificationStatus.INCOMPLETE);
 		when(verificationMock.getStatus()).thenReturn(VerificationStatus.COMPLETE);
 
@@ -111,7 +237,7 @@ public class VerificationServiceImplTest {
 	public void verifyEmailByUrlToken_verificationExpired_throwsException() {
 		when(userMock.getId()).thenReturn(userId);
 		when(userRepositoryMock.findByEmailOrUsername(username, username)).thenReturn(Optional.of(userMock));
-		when(verificationRepositoryMock.findFirstByUserIdAndTypeOrderByCreatedOnDesc(eq(userId), any(VerificationType.class))).thenReturn(Optional.of(verificationMock));
+		when(verificationRepositoryMock.findFirstByUserIdAndTypeOrderByCreatedOnDesc(userId, VerificationType.EMAIL)).thenReturn(Optional.of(verificationMock));
 		when(verificationMock.getStatus()).thenReturn(VerificationStatus.INCOMPLETE);
 		when(verificationMock.getExpiresOn()).thenReturn(LocalDateTime.now().minusDays(2));
 
@@ -122,7 +248,7 @@ public class VerificationServiceImplTest {
 	public void verifyEmailByUrlToken_verifiesEmail() {
 		when(userMock.getId()).thenReturn(userId);
 		when(userRepositoryMock.findByEmailOrUsername(username, username)).thenReturn(Optional.of(userMock));
-		when(verificationRepositoryMock.findFirstByUserIdAndTypeOrderByCreatedOnDesc(eq(userId), any(VerificationType.class))).thenReturn(Optional.of(verificationMock));
+		when(verificationRepositoryMock.findFirstByUserIdAndTypeOrderByCreatedOnDesc(userId, VerificationType.EMAIL)).thenReturn(Optional.of(verificationMock));
 		when(verificationMock.getStatus()).thenReturn(VerificationStatus.INCOMPLETE);
 		when(verificationMock.getExpiresOn()).thenReturn(LocalDateTime.now().plusDays(2));
 
@@ -152,7 +278,7 @@ public class VerificationServiceImplTest {
 	public void verifyEmailByCode_verificationAlreadyComplete_throwsException() {
 		when(userMock.getId()).thenReturn(userId);
 		when(userRepositoryMock.findByEmailOrUsername(username, username)).thenReturn(Optional.of(userMock));
-		when(verificationRepositoryMock.findFirstByUserIdAndTypeOrderByCreatedOnDesc(eq(userId), any(VerificationType.class))).thenReturn(Optional.of(verificationMock));
+		when(verificationRepositoryMock.findFirstByUserIdAndTypeOrderByCreatedOnDesc(userId, VerificationType.EMAIL)).thenReturn(Optional.of(verificationMock));
 		when(verificationMock.getStatus()).thenReturn(VerificationStatus.COMPLETE);
 
 		assertThrows(InvalidDataException.class, () -> verificationService.verifyEmailByCode(username, code));
@@ -162,7 +288,7 @@ public class VerificationServiceImplTest {
 	public void verifyEmailByCode_verificationExpired_throwsException() {
 		when(userMock.getId()).thenReturn(userId);
 		when(userRepositoryMock.findByEmailOrUsername(username, username)).thenReturn(Optional.of(userMock));
-		when(verificationRepositoryMock.findFirstByUserIdAndTypeOrderByCreatedOnDesc(eq(userId), any(VerificationType.class))).thenReturn(Optional.of(verificationMock));
+		when(verificationRepositoryMock.findFirstByUserIdAndTypeOrderByCreatedOnDesc(userId, VerificationType.EMAIL)).thenReturn(Optional.of(verificationMock));
 		when(verificationMock.getStatus()).thenReturn(VerificationStatus.INCOMPLETE);
 		when(verificationMock.getExpiresOn()).thenReturn(LocalDateTime.now().minusDays(2));
 
@@ -173,7 +299,7 @@ public class VerificationServiceImplTest {
 	public void verifyEmailByCode_noAttemptsLeft_throwsException() {
 		when(userMock.getId()).thenReturn(userId);
 		when(userRepositoryMock.findByEmailOrUsername(username, username)).thenReturn(Optional.of(userMock));
-		when(verificationRepositoryMock.findFirstByUserIdAndTypeOrderByCreatedOnDesc(eq(userId), any(VerificationType.class))).thenReturn(Optional.of(verificationMock));
+		when(verificationRepositoryMock.findFirstByUserIdAndTypeOrderByCreatedOnDesc(userId, VerificationType.EMAIL)).thenReturn(Optional.of(verificationMock));
 		when(verificationMock.getStatus()).thenReturn(VerificationStatus.INCOMPLETE);
 		when(verificationMock.getExpiresOn()).thenReturn(LocalDateTime.now().plusDays(2));
 		when(verificationMock.getCodeAttemptsLeft()).thenReturn(0);
@@ -185,7 +311,7 @@ public class VerificationServiceImplTest {
 	public void verifyEmailByCode_codeInvalid_throwsException() {
 		when(userMock.getId()).thenReturn(userId);
 		when(userRepositoryMock.findByEmailOrUsername(username, username)).thenReturn(Optional.of(userMock));
-		when(verificationRepositoryMock.findFirstByUserIdAndTypeOrderByCreatedOnDesc(eq(userId), any(VerificationType.class))).thenReturn(Optional.of(verificationMock));
+		when(verificationRepositoryMock.findFirstByUserIdAndTypeOrderByCreatedOnDesc(userId, VerificationType.EMAIL)).thenReturn(Optional.of(verificationMock));
 		when(verificationMock.getStatus()).thenReturn(VerificationStatus.INCOMPLETE);
 		when(verificationMock.getExpiresOn()).thenReturn(LocalDateTime.now().plusDays(2));
 		when(verificationMock.getCode()).thenReturn("some_other_code");
@@ -201,7 +327,7 @@ public class VerificationServiceImplTest {
 	public void verifyEmailByCode_verifiesEmail() {
 		when(userMock.getId()).thenReturn(userId);
 		when(userRepositoryMock.findByEmailOrUsername(username, username)).thenReturn(Optional.of(userMock));
-		when(verificationRepositoryMock.findFirstByUserIdAndTypeOrderByCreatedOnDesc(eq(userId), any(VerificationType.class))).thenReturn(Optional.of(verificationMock));
+		when(verificationRepositoryMock.findFirstByUserIdAndTypeOrderByCreatedOnDesc(userId, VerificationType.EMAIL)).thenReturn(Optional.of(verificationMock));
 		when(verificationMock.getStatus()).thenReturn(VerificationStatus.INCOMPLETE);
 		when(verificationMock.getExpiresOn()).thenReturn(LocalDateTime.now().plusDays(2));
 		when(verificationMock.getCode()).thenReturn(code);

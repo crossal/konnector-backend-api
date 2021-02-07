@@ -17,15 +17,21 @@ public class VerificationController {
 	@Autowired
 	private ModelMapper modelMapper;
 
-	@PostMapping(value = "/api/verifications/verify", params = "token")
+	@PostMapping(value = "/api/verifications", params = { "usernameOrEmail", "type=0" })
 	@ResponseStatus(HttpStatus.OK)
-	public void verifyUserEmailByToken(@RequestParam String usernameOrEmail, @RequestParam String token) {
+	public void createEmailVerificationForUser(@RequestParam String usernameOrEmail, @RequestParam Integer type) {
+		verificationService.createEmailVerificationForUser(usernameOrEmail);
+	}
+
+	@PostMapping(value = "/api/verifications/verify", params = { "token", "type=0" } )
+	@ResponseStatus(HttpStatus.OK)
+	public void verifyUserEmailByToken(@RequestParam String usernameOrEmail, @RequestParam String token, @RequestParam Integer type) {
 		verificationService.verifyEmailByUrlToken(usernameOrEmail, token);
 	}
 
-	@PostMapping(value = "/api/verifications/verify")
+	@PostMapping(value = "/api/verifications/verify", params = "type=0" )
 	@ResponseStatus(HttpStatus.OK)
-	public void verifyUserEmailByCode(@RequestBody VerificationDTO verificationDTO) {
+	public void verifyUserEmailByCode(@RequestBody VerificationDTO verificationDTO, @RequestParam Integer type) {
 		verificationService.verifyEmailByCode(verificationDTO.getUsernameOrEmail(), verificationDTO.getCode());
 	}
 }

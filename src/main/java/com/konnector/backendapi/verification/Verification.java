@@ -38,6 +38,9 @@ public class Verification {
 	@Column(name = "expires_on")
 	private LocalDateTime expiresOn;
 
+	@Column(name = "reverify_allowed_on")
+	private LocalDateTime reverifyAllowedOn;
+
 	@Column(name = "created_on")
 	@CreationTimestamp
 	private LocalDateTime createdOn;
@@ -49,7 +52,7 @@ public class Verification {
 	public Verification() {
 	}
 
-	public Verification(long userId, VerificationType type, String code, int codeAttemptsLeft, String urlToken, LocalDateTime expiresOn) {
+	public Verification(long userId, VerificationType type, String code, int codeAttemptsLeft, String urlToken, LocalDateTime expiresOn, LocalDateTime reverifyAllowedOn) {
 		this.userId = userId;
 		this.type = type;
 		this.status = VerificationStatus.INCOMPLETE;
@@ -57,6 +60,7 @@ public class Verification {
 		this.codeAttemptsLeft = codeAttemptsLeft;
 		this.urlToken = urlToken;
 		this.expiresOn = expiresOn;
+		this.reverifyAllowedOn = reverifyAllowedOn;
 	}
 
 	public Long getId() {
@@ -117,6 +121,14 @@ public class Verification {
 
 	public void setExpiresOn(LocalDateTime expiresOn) {
 		this.expiresOn = expiresOn;
+	}
+
+	public LocalDateTime getReverifyAllowedOn() {
+		return reverifyAllowedOn;
+	}
+
+	public void setReverifyAllowedOn(LocalDateTime reverifyAllowedOn) {
+		this.reverifyAllowedOn = reverifyAllowedOn;
 	}
 
 	public LocalDateTime getCreatedOn() {
