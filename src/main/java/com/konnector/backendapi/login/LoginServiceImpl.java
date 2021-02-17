@@ -1,9 +1,9 @@
 package com.konnector.backendapi.login;
 
 import com.konnector.backendapi.data.Dao;
+import com.konnector.backendapi.exceptions.InvalidDataException;
 import com.konnector.backendapi.exceptions.InvalidLoginDetailsException;
 import com.konnector.backendapi.security.SecurityService;
-import com.konnector.backendapi.security.password.PasswordHashingService;
 import com.konnector.backendapi.user.User;
 import com.konnector.backendapi.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +19,6 @@ public class LoginServiceImpl implements LoginService {
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
-	private PasswordHashingService passwordHashingService;
-	@Autowired
 	private SecurityService securityService;
 
 	@Override
@@ -29,12 +27,10 @@ public class LoginServiceImpl implements LoginService {
 
 		User user = optionalUser.orElseGet(() -> { throw new InvalidLoginDetailsException("User not found"); });
 
-		// may not need this as the securityconfig will check password
-//		if (!passwordHashingService.passwordMatchesHash(password, user.getSalt(), user.getPassword())) {
-//			throw new InvalidLoginDetailsException("Incorrect password");
-//		}
+		if (!user.isEmailVerified()) {
+			throw new InvalidDataException("User not verified");
+		}
 
-//		securityService.createSession(user.getUsername(), user.getPassword());
 		securityService.createSession(usernameOrEmail, password);
 
 		return user;
