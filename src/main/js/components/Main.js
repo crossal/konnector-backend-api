@@ -1,20 +1,15 @@
 import React from 'react';
-import { Switch, Route } from 'react-router-dom';
-import Home from './Home';
-import Profile from './Profile';
-import Connections from './Connections';
+import KNav from './KNav';
+import MainContent from './MainContent';
 
 class Main extends React.Component {
 
 	render() {
 		return (
-			<main>
-				<Switch>
-					<Route exact path='/' component={Home}/>
-					<Route path='/profile' component={Profile}/>
-					<Route path='/connections' component={Connections}/>
-				</Switch>
-			</main>
+			<div>
+				<KNav />
+				<MainContent />
+			</div>
 		)
 	}
 }

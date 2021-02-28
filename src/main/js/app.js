@@ -4,23 +4,22 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import client from './client';
 import { BrowserRouter } from 'react-router-dom';
+import { useStickyState } from './functions/stickyState';
 import KNav from './components/KNav';
 import Main from './components/Main';
 
-class App extends React.Component {
+const App = () => {
+	const [loggedIn, setLoggedIn] = useStickyState(false, 'loggedIn');
 
-	render() {
-		return (
-			<div>
-				<KNav />
-				<Main />
-			</div>
-		)
-	}
+	return (
+		<div>
+			<Main />
+		</div>
+	)
 }
 
 ReactDOM.render((
-  <BrowserRouter>
-    <App />
-  </BrowserRouter>
+	<BrowserRouter>
+		<App />
+	</BrowserRouter>
 ), document.getElementById('react'));
