@@ -1,7 +1,7 @@
 import React from 'react';
 import client from '../client';
 import { useStickyState } from './../functions/stickyState';
-import { Col, Row, Form } from "react-bootstrap";
+import { Col, Row, Form, Button } from "react-bootstrap";
 
 const LogIn = () => {
 
@@ -9,11 +9,11 @@ const LogIn = () => {
 
 	const handleSubmit = (event) => {
 		event.preventDefault();
-		const data = new FormData(event.target);
+		const formData = new FormData(event.target), formDataObj = Object.fromEntries(formData.entries())
 		client({
 			method: 'POST',
 			path: '/api/authenticate',
-			entity: data,
+			entity: formDataObj,
 			headers: {'Content-Type': 'application/json'}
 		}).then(response => {
 			if (response.status.code === 200) {
@@ -33,11 +33,11 @@ const LogIn = () => {
 				</Form.Row>
 				<Form.Row>
 					<Form.Group as={Col} controlId="formGridPassword">
-						<Form.Control placeholder="Password" name="password" />
+						<Form.Control type="password" placeholder="Password" name="password" />
 					</Form.Group>
 				</Form.Row>
+				<Button variant="primary" type="submit">Submit</Button>
 			</Form>
-			<input type="submit" value="Submit" />
 		</div>
 	)
 }
