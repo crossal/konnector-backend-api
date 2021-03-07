@@ -5,33 +5,36 @@ import Profile from './Profile';
 import Connections from './Connections';
 import LogIn from './LogIn';
 import SignUp from './SignUp';
-import { useStickyState } from './../functions/stickyState';
 
-const MainContent = () => {
+class MainContent extends React.Component {
 
-	const [loggedIn, setLoggedIn] = useStickyState(false, 'loggedIn');
+  constructor(props) {
+      super(props);
+  }
 
-	let switchComponent;
-	if (loggedIn) {
-		switchComponent =
-			<Switch>
-				<Route exact path='/' component={Home}/>
-				<Route path='/profile' component={Profile}/>
-				<Route path='/connections' component={Connections}/>
-			</Switch>
-	} else {
-		switchComponent =
-			<Switch>
-				<Route path='/login' component={LogIn}/>
-				<Route path='/signup' component={SignUp}/>
-			</Switch>
-	}
+  render() {
+    let switchComponent;
+    if (this.props.loggedIn) {
+      switchComponent =
+        <Switch>
+          <Route exact path='/' component={Home}/>
+          <Route path='/profile' render={() => <Profile {...this.props}/>}/>
+          <Route path='/connections' component={Connections}/>
+        </Switch>
+    } else {
+      switchComponent =
+        <Switch>
+          <Route path='/login' render={() => <LogIn updateLoggedIn={this.props.updateLoggedIn}/>}/>
+          <Route path='/signup' component={SignUp}/>
+        </Switch>
+    }
 
-	return (
-		<main>
-			{switchComponent}
-		</main>
-	)
+    return (
+      <main>
+        {switchComponent}
+      </main>
+    )
+  }
 }
 
 export default MainContent;
