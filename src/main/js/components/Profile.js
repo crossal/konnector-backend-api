@@ -44,11 +44,11 @@ class Profile extends React.Component {
             <Form.Row>
               <Form.Group as={Col} controlId="formGridPassword">
                 <Form.Label>Password</Form.Label>
-                <Form.Control placeholder="Password" />
+                <Form.Control type="password" placeholder="Password" />
               </Form.Group>
               <Form.Group as={Col} controlId="formGridNewPassword">
                 <Form.Label>Password</Form.Label>
-                <Form.Control placeholder="New password" />
+                <Form.Control type="password" placeholder="New password" />
               </Form.Group>
             </Form.Row>
             <Form.Row>

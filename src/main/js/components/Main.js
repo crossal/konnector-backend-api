@@ -6,9 +6,9 @@ class Main extends React.Component {
 
   constructor(props) {
     super(props);
-    var updateLoggedIn  = this.updateLoggedIn.bind(this);
+    var updateLoggedIn = this.updateLoggedIn.bind(this);
     this.state = {
-      loggedIn: localStorage.getItem('loggedIn'),
+      loggedIn: localStorage.getItem('loggedIn') == 'true',
       userId: localStorage.getItem('userId'),
       updateLoggedIn: updateLoggedIn
     };
@@ -17,7 +17,7 @@ class Main extends React.Component {
    updateLoggedIn(loggedIn, userId){
      this.setState({
         loggedIn: loggedIn,
-        userId, userId
+        userId: userId
      });
      localStorage.setItem('loggedIn', loggedIn);
      localStorage.setItem('userId', userId);

@@ -1,29 +1,38 @@
 import React from 'react';
-import { useStickyState } from './../functions/stickyState';
-import { Col, Row, Form } from "react-bootstrap";
+import SignUpDetails from './SignUpDetails';
 
-const SignUp = () => {
+class SignUp extends React.Component {
 
-	const [loggedIn, setLoggedIn] = useStickyState(false, 'loggedIn');
+  constructor(props) {
+      super(props);
+      this.signedUp = this.signedUp.bind(this);
+      this.state = {
+        signedUp: false
+      };
+  }
 
-	return (
-		<div className="ml-3">
-			<h2>Sign Up</h2>
-			<Form>
-				<Form.Row>
-					<Form.Group as={Col} controlId="formGridUsernameOrEmail">
-						<Form.Control placeholder="Username or Email" name="usernameOrEmail" />
-					</Form.Group>
-				</Form.Row>
-				<Form.Row>
-					<Form.Group as={Col} controlId="formGridPassword">
-						<Form.Control placeholder="Password" name="password" />
-					</Form.Group>
-				</Form.Row>
-			</Form>
-			<input type="submit" value="Submit" />
-		</div>
-	)
+  signedUp(){
+    this.setState({
+      signedUp: true
+    });
+  }
+
+  render() {
+    let content;
+    if (this.state.signedUp) {
+      content =
+        <AccountVerification updateLoggedIn={this.props.updateLoggedIn}/>
+    } else {
+      content =
+        <SignUpDetails signedUp={this.signedUp}/>
+    }
+
+    return (
+      <div>
+        {content}
+      </div>
+    )
+  }
 }
 
 export default SignUp;

@@ -3,8 +3,7 @@ import { Switch, Route } from 'react-router-dom';
 import Home from './Home';
 import Profile from './Profile';
 import Connections from './Connections';
-import LogIn from './LogIn';
-import SignUp from './SignUp';
+import LogInSignUp from './LogInSignUp';
 
 class MainContent extends React.Component {
 
@@ -13,25 +12,22 @@ class MainContent extends React.Component {
   }
 
   render() {
-    let switchComponent;
+    let content;
     if (this.props.loggedIn) {
-      switchComponent =
+      content =
         <Switch>
           <Route exact path='/' component={Home}/>
           <Route path='/profile' render={() => <Profile {...this.props}/>}/>
           <Route path='/connections' component={Connections}/>
         </Switch>
     } else {
-      switchComponent =
-        <Switch>
-          <Route path='/login' render={() => <LogIn updateLoggedIn={this.props.updateLoggedIn}/>}/>
-          <Route path='/signup' component={SignUp}/>
-        </Switch>
+      content =
+        <LogInSignUp {...this.props}/>
     }
 
     return (
       <main>
-        {switchComponent}
+        {content}
       </main>
     )
   }
