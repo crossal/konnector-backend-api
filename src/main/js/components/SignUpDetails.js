@@ -1,4 +1,5 @@
 import React from 'react';
+import client from '../client';
 import { Col, Row, Form, Button } from "react-bootstrap";
 
 const SignUpDetails = ({ signedUp }) => {
@@ -12,8 +13,10 @@ const SignUpDetails = ({ signedUp }) => {
       entity: formDataObj,
       headers: {'Content-Type': 'application/json'}
     }).then(response => {
-      if (response.status.code === 200) {
+      if (response.status.code === 201) {
         signedUp()
+      } else if (response.status.code === 422) {
+
       }
     })
   }
@@ -21,10 +24,25 @@ const SignUpDetails = ({ signedUp }) => {
   return (
     <div className="ml-3">
       <h2>Sign Up</h2>
-      <Form>
+      <Form onSubmit={handleSubmit}>
         <Form.Row>
-          <Form.Group as={Col} controlId="formGridUsernameOrEmail">
-            <Form.Control placeholder="Username or Email" name="usernameOrEmail" />
+          <Form.Group as={Col} controlId="formGridEmail">
+            <Form.Control type="email" placeholder="Email" name="email" />
+          </Form.Group>
+        </Form.Row>
+        <Form.Row>
+          <Form.Group as={Col} controlId="formGridUsername">
+            <Form.Control placeholder="Username" name="username" />
+          </Form.Group>
+        </Form.Row>
+        <Form.Row>
+          <Form.Group as={Col} controlId="formGridFirstName">
+            <Form.Control placeholder="First name" name="firstName" />
+          </Form.Group>
+        </Form.Row>
+        <Form.Row>
+          <Form.Group as={Col} controlId="formGridLastName">
+            <Form.Control placeholder="Last name" name="lastName" />
           </Form.Group>
         </Form.Row>
         <Form.Row>
@@ -37,8 +55,8 @@ const SignUpDetails = ({ signedUp }) => {
             <Form.Control type="password" placeholder="Confirm password" name="passwordConfirmation" />
           </Form.Group>
         </Form.Row>
+        <Button variant="primary" type="submit">Submit</Button>
       </Form>
-      <Button variant="primary" type="submit">Submit</Button>
     </div>
   )
 }

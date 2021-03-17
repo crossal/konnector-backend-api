@@ -1,5 +1,4 @@
 import React from 'react';
-import { Switch, Route } from 'react-router-dom';
 import LogIn from './LogIn';
 import SignUp from './SignUp';
 import { Button } from "react-bootstrap";
@@ -10,23 +9,32 @@ class LogInSignUp extends React.Component {
       super(props);
       this.logIn = this.logIn.bind(this);
       this.signUp = this.signUp.bind(this);
+      var updateLogInOrSignUpStatus = this.updateLogInOrSignUpStatus.bind(this);
       this.state = {
         loggingIn: false,
-        signingUp: false
+        signingUp: false,
+        updateLogInOrSignUpStatus: updateLogInOrSignUpStatus
       };
   }
 
-  logIn(e){
+  logIn(e) {
     this.setState({
       loggingIn: true,
       signingUp: false
     });
   }
 
-  signUp(e){
+  signUp(e) {
     this.setState({
       loggingIn: false,
       signingUp: true
+    });
+  }
+
+  updateLogInOrSignUpStatus(loggingIn, signingUp) {
+    this.setState({
+      loggingIn: loggingIn,
+      signingUp: signingUp
     });
   }
 
@@ -37,7 +45,7 @@ class LogInSignUp extends React.Component {
         <LogIn updateLoggedIn={this.props.updateLoggedIn}/>
     } else if (this.state.signingUp) {
       content =
-        <SignUp {...this.props}/>
+        <SignUp {...this.state}/>
     } else {
       content =
         <div>
