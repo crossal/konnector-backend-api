@@ -2,7 +2,7 @@ import React from 'react';
 import client from '../client';
 import { Col, Row, Form, Button } from "react-bootstrap";
 
-const LogIn = ({ updateLoggedIn }) => {
+const LogIn = ({ updateLoggedIn, updateLogInOrSignUpStatus }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -19,9 +19,14 @@ const LogIn = ({ updateLoggedIn }) => {
     })
   }
 
+  const backButton = (event) => {
+    updateLogInOrSignUpStatus(false, false)
+  }
+
   return (
-    <div className="ml-3">
-      <h2>Login</h2>
+    <div>
+      <Button className="mb-4" variant="secondary" onClick={backButton}>Back</Button>
+      <h3>Login</h3>
       <Form onSubmit={handleSubmit}>
         <Form.Row>
           <Form.Group as={Col} controlId="formGridUsernameOrEmail">

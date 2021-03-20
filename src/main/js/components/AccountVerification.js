@@ -19,9 +19,14 @@ const AccountVerification = ({ verified }) => {
     })
   }
 
+  const backButton = (event) => {
+    back()
+  }
+
   return (
-    <div className="ml-3">
-      <h2>Verification</h2>
+    <div>
+      <Button className="mb-4" variant="secondary" onClick={backButton}>Back</Button>
+      <h3>Verification</h3>
       <Form onSubmit={handleSubmit}>
         <Form.Row>
           <Form.Group as={Col} controlId="formGridUsernameOrEmail">

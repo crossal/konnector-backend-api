@@ -4,6 +4,7 @@ import Home from './Home';
 import Profile from './Profile';
 import Connections from './Connections';
 import LogInSignUp from './LogInSignUp';
+import { Container, Row, Col } from "react-bootstrap";
 
 class MainContent extends React.Component {
 
@@ -27,7 +28,17 @@ class MainContent extends React.Component {
 
     return (
       <main>
-        {content}
+        <div className="m-4">
+          <Container>
+            <Row>
+              <Col xs={0} sm={0} md={1} lg={2} xl={3}/>
+              <Col xs={12} sm={12} md={10} lg={8} xl={6}>
+                {content}
+              </Col>
+              <Col xs={0} sm={0} md={1} lg={2} xl={3}/>
+            </Row>
+          </Container>
+        </div>
       </main>
     )
   }

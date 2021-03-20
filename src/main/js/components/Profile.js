@@ -26,7 +26,7 @@ class Profile extends React.Component {
 
   render() {
       return (
-        <div className="ml-3">
+        <div>
           <h2>Account Details</h2>
           <Form>
             <Form.Row>

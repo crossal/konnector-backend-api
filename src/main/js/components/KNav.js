@@ -38,9 +38,9 @@ class KNav extends React.Component {
     }
 
     return (
-      <div>
+      <>
         {content}
-      </div>
+      </>
     )
   }
 }

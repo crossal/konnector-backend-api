@@ -26,10 +26,10 @@ class Main extends React.Component {
   render() {
     var updateLoggedIn = this.updateLoggedIn;
     return (
-      <div>
+      <>
         <KNav {...this.state} />
         <MainContent {...this.state} />
-      </div>
+      </>
     )
   }
 }

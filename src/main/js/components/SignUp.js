@@ -8,6 +8,7 @@ class SignUp extends React.Component {
       super(props);
       this.signedUp = this.signedUp.bind(this);
       this.verified = this.verified.bind(this);
+      this.back = this.back.bind(this);
       this.state = {
         signedUp: false
       };
@@ -23,20 +24,30 @@ class SignUp extends React.Component {
     this.props.updateLogInOrSignUpStatus(false, false)
   }
 
+  back() {
+    if (this.state.signedUp) {
+      this.setState({
+        signedUp: false
+      });
+    } else {
+      this.props.updateLogInOrSignUpStatus(false, false)
+    }
+  }
+
   render() {
     let content;
     if (this.state.signedUp) {
       content =
-        <AccountVerification verified={this.verified}/>
+        <AccountVerification verified={this.verified} back={this.back}/>
     } else {
       content =
-        <SignUpDetails signedUp={this.signedUp}/>
+        <SignUpDetails signedUp={this.signedUp} back={this.back}/>
     }
 
     return (
-      <div>
+      <>
         {content}
-      </div>
+      </>
     )
   }
 }

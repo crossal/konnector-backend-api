@@ -2,7 +2,7 @@ import React from 'react';
 import client from '../client';
 import { Col, Row, Form, Button } from "react-bootstrap";
 
-const SignUpDetails = ({ signedUp }) => {
+const SignUpDetails = ({ signedUp, back }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -21,9 +21,14 @@ const SignUpDetails = ({ signedUp }) => {
     })
   }
 
+  const backButton = (event) => {
+    back()
+  }
+
   return (
-    <div className="ml-3">
-      <h2>Sign Up</h2>
+    <div>
+      <Button className="mb-4" variant="secondary" onClick={backButton}>Back</Button>
+      <h3>Sign Up</h3>
       <Form onSubmit={handleSubmit}>
         <Form.Row>
           <Form.Group as={Col} controlId="formGridEmail">
