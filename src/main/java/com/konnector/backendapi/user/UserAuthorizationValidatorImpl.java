@@ -5,7 +5,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserAuthorizatinValidatorImpl implements UserAuthorizationValidator {
+public class UserAuthorizationValidatorImpl implements UserAuthorizationValidator {
 
 	@Override
 	public void validateUserFetchRequest(User user, Authentication authentication) {

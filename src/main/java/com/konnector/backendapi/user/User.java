@@ -1,5 +1,6 @@
 package com.konnector.backendapi.user;
 
+import com.konnector.backendapi.exceptions.InvalidDataException;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -9,9 +10,17 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
+import java.util.regex.Pattern;
 
 @Entity
 public class User {
+
+	private static final String EMAIL_REGEX = "^[a-zA-Z0-9_+&*-]+(?:\\." +
+			"[a-zA-Z0-9_+&*-]+)*@" +
+			"(?:[a-zA-Z0-9-]+\\.)+[a-z" +
+			"A-Z]{2,7}$";
+	private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
+	private static final int MAX_PASSWORD_LENGTH = 50;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -112,5 +121,32 @@ public class User {
 
 	public LocalDateTime getUpdatedOn() {
 		return updatedOn;
+	}
+
+	public void validateForCreation() {
+		if (id != null) {
+			throw new InvalidDataException("Id should be empty");
+		}
+		if (email == null || email.isEmpty()) {
+			throw new InvalidDataException("Email cannot be empty");
+		}
+		if (!EMAIL_PATTERN.matcher(email).matches()){
+			throw new InvalidDataException("Email not valid");
+		}
+		if (username == null || username.isEmpty()) {
+			throw new InvalidDataException("Username cannot be empty");
+		}
+		if (firstName == null || firstName.isEmpty()) {
+			throw new InvalidDataException("First name cannot be empty");
+		}
+		if (lastName == null || lastName.isEmpty()) {
+			throw new InvalidDataException("Last name cannot be empty");
+		}
+		if (password == null || password.isEmpty()) {
+			throw new InvalidDataException("Password cannot be empty");
+		}
+		if (password.length() > MAX_PASSWORD_LENGTH) {
+			throw new InvalidDataException("Password cannot be greater than " + MAX_PASSWORD_LENGTH + " characters");
+		}
 	}
 }

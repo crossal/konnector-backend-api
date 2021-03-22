@@ -10,13 +10,12 @@ const SignUpDetails = ({ signedUp, back }) => {
     client({
       method: 'POST',
       path: '/api/users',
-      entity: formDataObj,
-      headers: {'Content-Type': 'application/json'}
+      entity: formDataObj
     }).then(response => {
       if (response.status.code === 201) {
         signedUp()
       } else if (response.status.code === 422) {
-
+        console.log("422")
       }
     })
   }

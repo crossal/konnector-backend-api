@@ -22,68 +22,68 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	private static final Logger logger = LogManager.getLogger(GlobalExceptionHandler.class);
 
 	@ExceptionHandler(UnauthorizedException.class)
-	protected ResponseEntity<String> handleUnauthorizedException(UnauthorizedException e){
+	protected ResponseEntity<ErrorResponse> handleUnauthorizedException(UnauthorizedException e){
 		return ResponseEntity
 				.status(HttpStatus.FORBIDDEN)
-				.body("Not allowed");
+				.body(new ErrorResponse.Builder().withError("Not allowed").build());
 	}
 
 	@ExceptionHandler(NotFoundException.class)
-	protected ResponseEntity<String> handleNotFoundException(NotFoundException e){
+	protected ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException e){
 		return ResponseEntity
 				.status(HttpStatus.NOT_FOUND)
-				.body("Requested resource not found");
+				.body(new ErrorResponse.Builder().withError("Requested resource not found").build());
 	}
 
 	@ExceptionHandler(InvalidDataException.class)
-	protected ResponseEntity<String> handleInvalidDataException(InvalidDataException e){
+	protected ResponseEntity<ErrorResponse> handleInvalidDataException(InvalidDataException e){
 		return ResponseEntity
 				.status(HttpStatus.UNPROCESSABLE_ENTITY)
-				.body(e.getMessage());
+				.body(new ErrorResponse.Builder().withError(e.getMessage()).build());
 	}
 
 	@ExceptionHandler(NoVerificationAttemptsLeftException.class)
-	protected ResponseEntity<String> handleNoVerificationAttemptsLeftException(NoVerificationAttemptsLeftException e){
+	protected ResponseEntity<ErrorResponse> handleNoVerificationAttemptsLeftException(NoVerificationAttemptsLeftException e){
 		return ResponseEntity
 				.status(HttpStatus.BAD_REQUEST)
-				.body(e.getMessage());
+				.body(new ErrorResponse.Builder().withError(e.getMessage()).build());
 	}
 
 	@ExceptionHandler(InvalidVerificationCodeException.class)
-	protected ResponseEntity<String> handleInvalidVerificationCodeException(InvalidVerificationCodeException e){
+	protected ResponseEntity<ErrorResponse> handleInvalidVerificationCodeException(InvalidVerificationCodeException e){
 		return ResponseEntity
 				.status(HttpStatus.BAD_REQUEST)
-				.body(e.getMessage());
+				.body(new ErrorResponse.Builder().withError(e.getMessage()).build());
 	}
 
 	@ExceptionHandler(InvalidLoginDetailsException.class)
-	protected ResponseEntity<String> handleInvalidLoginDetailsExceptionException(InvalidLoginDetailsException e){
+	protected ResponseEntity<ErrorResponse> handleInvalidLoginDetailsExceptionException(InvalidLoginDetailsException e){
 		return ResponseEntity
 				.status(HttpStatus.UNAUTHORIZED)
-				.body(e.getMessage());
+				.body(new ErrorResponse.Builder().withError(e.getMessage()).build());
 	}
 
 	@ExceptionHandler(EmailVerificationSendException.class)
-	protected ResponseEntity<String> handleEmailVerificationSendException(EmailVerificationSendException e){
+	protected ResponseEntity<ErrorResponse> handleEmailVerificationSendException(EmailVerificationSendException e){
 		return ResponseEntity
 				.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(e.getMessage());
+				.body(new ErrorResponse.Builder().withError(e.getMessage()).build());
 	}
 
 	@ExceptionHandler(BadCredentialsException.class)
-	protected ResponseEntity<String> handleBadCredentialsException(BadCredentialsException e) {
+	protected ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException e) {
 		return ResponseEntity
 				.status(HttpStatus.UNAUTHORIZED)
-				.body(e.getMessage());
+				.body(new ErrorResponse.Builder().withError(e.getMessage()).build());
 	}
 
 	@ExceptionHandler(Exception.class)
-	protected ResponseEntity<String> exception(Exception e) {
+	protected ResponseEntity<ErrorResponse> exception(Exception e) {
 
 		logger.error(e);
 
 		return ResponseEntity
 				.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body("Internal server error");
+				.body(new ErrorResponse.Builder().withError("Internal server error").build());
 	}
 }
