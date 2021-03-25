@@ -1,5 +1,5 @@
 import React from 'react';
-import client from '../client';
+import client from '../../client';
 import { Col, Row, Form } from "react-bootstrap";
 
 class Profile extends React.Component {

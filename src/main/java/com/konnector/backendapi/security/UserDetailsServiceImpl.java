@@ -31,7 +31,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 				user.getUsername(),
 				user.getPassword(),
 				getAuthorities()
-		)).orElseThrow(() -> new InvalidLoginDetailsException("Invalid username or email"));
+		)).orElseThrow(() -> new InvalidLoginDetailsException("Invalid username or email."));
 	}
 
 	public Collection<? extends GrantedAuthority> getAuthorities() {

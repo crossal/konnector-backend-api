@@ -58,7 +58,7 @@ public class VerificationServiceImpl implements VerificationService {
 			}
 
 			if (verification.getReverifyAllowedOn().isAfter(LocalDateTime.now())) {
-				throw new InvalidDataException("Verification resend not allowed so soon");
+				throw new InvalidDataException("Verification resend not allowed so soon.");
 			}
 		});
 
@@ -77,7 +77,7 @@ public class VerificationServiceImpl implements VerificationService {
 		Optional<User> optionalUser = userRepository.findByEmailOrUsername(usernameOrEmail, usernameOrEmail);
 
 		return optionalUser.map(user -> createEmailVerificationForUser(user))
-				.orElseThrow(() -> new NotFoundException("User not found"));
+				.orElseThrow(() -> new NotFoundException("User not found."));
 	}
 
 	@Override
@@ -85,7 +85,7 @@ public class VerificationServiceImpl implements VerificationService {
 	public void verifyEmailByUrlToken(String usernameOrEmail, String urlToken) {
 		validateUsernameOrEmail(usernameOrEmail);
 		if (urlToken == null || urlToken.isEmpty()) {
-			throw new InvalidDataException("URL token cannot be empty");
+			throw new InvalidDataException("URL token cannot be empty.");
 		}
 
 		verifyEmailByUrlTokenOrCode(usernameOrEmail, urlToken, false);
@@ -96,7 +96,7 @@ public class VerificationServiceImpl implements VerificationService {
 	public void verifyEmailByCode(String usernameOrEmail, String code) {
 		validateUsernameOrEmail(usernameOrEmail);
 		if (code == null || code.isEmpty()) {
-			throw new InvalidDataException("Code cannot be empty");
+			throw new InvalidDataException("Code cannot be empty.");
 		}
 
 		verifyEmailByUrlTokenOrCode(usernameOrEmail, code, true);
@@ -104,33 +104,33 @@ public class VerificationServiceImpl implements VerificationService {
 
 	private void validateUsernameOrEmail(String usernameOrEmail) {
 		if (usernameOrEmail == null || usernameOrEmail.isEmpty()) {
-			throw new InvalidDataException("Username or Email cannot be empty");
+			throw new InvalidDataException("Username or Email cannot be empty.");
 		}
 	}
 
 	private void verifyEmailByUrlTokenOrCode(String usernameOrEmail, String urlTokenOrCode, boolean usingCode) {
 		Optional<User> optionalUser = userRepository.findByEmailOrUsername(usernameOrEmail, usernameOrEmail);
-		User user = optionalUser.orElseThrow(() -> new InvalidDataException("No user found"));
+		User user = optionalUser.orElseThrow(() -> new InvalidDataException("User not found."));
 		Optional<Verification> optionalVerification = verificationRepository.findFirstByUserIdAndTypeOrderByCreatedOnDesc(user.getId(), VerificationType.EMAIL);
-		Verification verification = optionalVerification.orElseThrow(() -> new InvalidDataException("No verification found for user"));
+		Verification verification = optionalVerification.orElseThrow(() -> new InvalidDataException("No verification found for user."));
 
 		if (verification.getStatus().equals(VerificationStatus.COMPLETE)) {
-			throw new InvalidDataException("Already verified");
+			throw new InvalidDataException("Already verified.");
 		}
 
 		if (verification.getExpiresOn().isBefore(LocalDateTime.now())) {
-			throw new InvalidDataException("Verification expired");
+			throw new InvalidDataException("Verification expired.");
 		}
 
 		if (usingCode) {
 			if (verification.getCodeAttemptsLeft() == 0) {
-				throw new NoVerificationAttemptsLeftException("No verification code attempts left");
+				throw new NoVerificationAttemptsLeftException("No verification code attempts left.");
 			}
 
 			if (!urlTokenOrCode.equals(verification.getCode())) {
 				verification.setCodeAttemptsLeft(verification.getCodeAttemptsLeft() - 1);
 				verificationDao.update(verification); // not working?
-				throw new InvalidVerificationCodeException("Code incorrect");
+				throw new InvalidVerificationCodeException("Code incorrect.");
 			}
 		}
 

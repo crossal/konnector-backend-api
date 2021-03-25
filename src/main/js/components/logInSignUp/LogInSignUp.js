@@ -6,16 +6,16 @@ import { Button } from "react-bootstrap";
 class LogInSignUp extends React.Component {
 
   constructor(props) {
-      super(props);
-      this.logIn = this.logIn.bind(this);
-      this.signUp = this.signUp.bind(this);
-      this.updateLogInOrSignUpStatus = this.updateLogInOrSignUpStatus.bind(this);
-      var updateLogInOrSignUpStatus = this.updateLogInOrSignUpStatus.bind(this);
-      this.state = {
-        loggingIn: false,
-        signingUp: false,
-        updateLogInOrSignUpStatus: updateLogInOrSignUpStatus
-      };
+    super(props);
+    this.logIn = this.logIn.bind(this);
+    this.signUp = this.signUp.bind(this);
+    this.updateLogInOrSignUpStatus = this.updateLogInOrSignUpStatus.bind(this);
+    var updateLogInOrSignUpStatus = this.updateLogInOrSignUpStatus.bind(this);
+    this.state = {
+      loggingIn: false,
+      signingUp: false,
+      updateLogInOrSignUpStatus: updateLogInOrSignUpStatus
+    };
   }
 
   logIn(e) {
@@ -43,7 +43,7 @@ class LogInSignUp extends React.Component {
     let content;
     if (this.state.loggingIn) {
       content =
-        <LogIn updateLoggedIn={this.props.updateLoggedIn} updateLogInOrSignUpStatus={this.updateLogInOrSignUpStatus}/>
+        <LogIn {...this.state} {...this.props}/>
     } else if (this.state.signingUp) {
       content =
         <SignUp {...this.state}/>

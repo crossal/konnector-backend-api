@@ -48,6 +48,16 @@ public class LoginServiceImplTest {
 	}
 
 	@Test
+	public void login_nullUsernameOrEmail_throwsException() {
+		assertThrows(InvalidDataException.class, () -> loginService.login(null, PASSWORD));
+	}
+
+	@Test
+	public void login_nullPassword_throwsException() {
+		assertThrows(InvalidDataException.class, () -> loginService.login(EMAIL, null));
+	}
+
+	@Test
 	public void login_userNotFound_throwsException() {
 		assertThrows(InvalidLoginDetailsException.class, () -> loginService.login(EMAIL, PASSWORD));
 	}

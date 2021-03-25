@@ -15,7 +15,7 @@ public class UserValidatorImpl implements UserValidator {
 	@Override
 	public void validateUserCreationArgument(User user) {
 		if (user == null) {
-			throw new InvalidDataException("User cannot be empty");
+			throw new InvalidDataException("User cannot be empty.");
 		}
 
 		user.validateForCreation();
@@ -23,9 +23,9 @@ public class UserValidatorImpl implements UserValidator {
 		Optional<User> optionalUser = userRepository.findByEmailOrUsername(user.getEmail(), user.getUsername());
 		optionalUser.ifPresent(existingUser -> {
 			if (existingUser.getEmail().equals(user.getEmail())) {
-				throw new InvalidDataException("Email taken");
+				throw new InvalidDataException("Email taken.");
 			} else {
-				throw new InvalidDataException("Username taken");
+				throw new InvalidDataException("Username taken.");
 			}
 		});
 	}
@@ -33,7 +33,7 @@ public class UserValidatorImpl implements UserValidator {
 	@Override
 	public void validateUserFetchRequest(Long userId) {
 		if (userId == null) {
-			throw new InvalidDataException("User Id cannot be empty");
+			throw new InvalidDataException("User Id cannot be empty.");
 		}
 	}
 }

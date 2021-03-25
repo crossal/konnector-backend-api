@@ -125,28 +125,28 @@ public class User {
 
 	public void validateForCreation() {
 		if (id != null) {
-			throw new InvalidDataException("Id should be empty");
+			throw new InvalidDataException("Id should be empty.");
 		}
 		if (email == null || email.isEmpty()) {
-			throw new InvalidDataException("Email cannot be empty");
+			throw new InvalidDataException("Email cannot be empty.");
 		}
 		if (!EMAIL_PATTERN.matcher(email).matches()){
-			throw new InvalidDataException("Email not valid");
+			throw new InvalidDataException("Email not valid.");
 		}
 		if (username == null || username.isEmpty()) {
-			throw new InvalidDataException("Username cannot be empty");
+			throw new InvalidDataException("Username cannot be empty.");
 		}
 		if (firstName == null || firstName.isEmpty()) {
-			throw new InvalidDataException("First name cannot be empty");
+			throw new InvalidDataException("First name cannot be empty.");
 		}
 		if (lastName == null || lastName.isEmpty()) {
-			throw new InvalidDataException("Last name cannot be empty");
+			throw new InvalidDataException("Last name cannot be empty.");
 		}
 		if (password == null || password.isEmpty()) {
-			throw new InvalidDataException("Password cannot be empty");
+			throw new InvalidDataException("Password cannot be empty.");
 		}
 		if (password.length() > MAX_PASSWORD_LENGTH) {
-			throw new InvalidDataException("Password cannot be greater than " + MAX_PASSWORD_LENGTH + " characters");
+			throw new InvalidDataException("Password cannot be greater than " + MAX_PASSWORD_LENGTH + " characters.");
 		}
 	}
 }

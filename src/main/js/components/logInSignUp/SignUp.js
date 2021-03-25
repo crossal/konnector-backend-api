@@ -5,13 +5,13 @@ import AccountVerification from './AccountVerification';
 class SignUp extends React.Component {
 
   constructor(props) {
-      super(props);
-      this.signedUp = this.signedUp.bind(this);
-      this.verified = this.verified.bind(this);
-      this.back = this.back.bind(this);
-      this.state = {
-        signedUp: false
-      };
+    super(props);
+    this.signedUp = this.signedUp.bind(this);
+    this.verified = this.verified.bind(this);
+    this.back = this.back.bind(this);
+    this.state = {
+      signedUp: false
+    };
   }
 
   signedUp() {

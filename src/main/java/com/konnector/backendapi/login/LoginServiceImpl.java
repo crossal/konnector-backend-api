@@ -3,6 +3,7 @@ package com.konnector.backendapi.login;
 import com.konnector.backendapi.data.Dao;
 import com.konnector.backendapi.exceptions.InvalidDataException;
 import com.konnector.backendapi.exceptions.InvalidLoginDetailsException;
+import com.konnector.backendapi.exceptions.UserNotVerifiedException;
 import com.konnector.backendapi.security.SecurityService;
 import com.konnector.backendapi.user.User;
 import com.konnector.backendapi.user.UserRepository;
@@ -23,12 +24,20 @@ public class LoginServiceImpl implements LoginService {
 
 	@Override
 	public User login(String usernameOrEmail, String password) {
+		if (usernameOrEmail == null) {
+			throw new InvalidDataException("Username/email cannot be empty.");
+		}
+
+		if (password == null) {
+			throw new InvalidDataException("Password cannot be empty.");
+		}
+
 		Optional<User> optionalUser = userRepository.findByEmailOrUsername(usernameOrEmail, usernameOrEmail);
 
-		User user = optionalUser.orElseGet(() -> { throw new InvalidLoginDetailsException("User not found"); });
+		User user = optionalUser.orElseGet(() -> { throw new InvalidLoginDetailsException("User not found."); });
 
 		if (!user.isEmailVerified()) {
-			throw new InvalidDataException("User not verified");
+			throw new UserNotVerifiedException("User not verified.");
 		}
 
 		securityService.createSession(usernameOrEmail, password);

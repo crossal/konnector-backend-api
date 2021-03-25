@@ -77,7 +77,7 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
 			emailTransportWrapper.send(message);
 		} catch (Exception e) {
 			LOGGER.error("Verification email could not be sent with exception: {}", e);
-			throw new EmailVerificationSendException("Verification email could not be sent");
+			throw new EmailVerificationSendException("Verification email could not be sent.");
 		}
 	}
 

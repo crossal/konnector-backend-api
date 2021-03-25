@@ -1,9 +1,9 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import Home from './Home';
-import Profile from './Profile';
-import Connections from './Connections';
-import LogInSignUp from './LogInSignUp';
+import Profile from './profile/Profile';
+import Connections from './connections/Connections';
+import LogInSignUp from './logInSignUp/LogInSignUp';
 import { Container, Row, Col } from "react-bootstrap";
 
 class MainContent extends React.Component {

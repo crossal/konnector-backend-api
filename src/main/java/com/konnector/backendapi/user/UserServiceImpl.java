@@ -62,6 +62,6 @@ public class UserServiceImpl implements UserService {
 
 					return user;
 				}
-		).orElseThrow(() -> new NotFoundException("User not found"));
+		).orElseThrow(() -> new NotFoundException("User not found."));
 	}
 }
