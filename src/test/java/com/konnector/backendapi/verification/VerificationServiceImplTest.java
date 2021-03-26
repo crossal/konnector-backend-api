@@ -8,6 +8,7 @@ import com.konnector.backendapi.exceptions.NotFoundException;
 import com.konnector.backendapi.notifications.EmailNotificationService;
 import com.konnector.backendapi.user.User;
 import com.konnector.backendapi.user.UserRepository;
+import com.konnector.backendapi.user.UserService;
 import com.konnector.backendapi.verification.code.CodeGenerationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,7 +49,9 @@ public class VerificationServiceImplTest {
 	@Mock
 	private CodeGenerationService codeGenerationServiceMock;
 	@Mock
-	private EmailNotificationService emailNotificationService;
+	private EmailNotificationService emailNotificationServiceMock;
+	@Mock
+	private UserService userServiceMock;
 
 	@Mock
 	private User userMock;
@@ -60,13 +63,16 @@ public class VerificationServiceImplTest {
 	private final static String username = "username";
 	private final static String urlToken = "urlToken";
 	private final static String email = "email";
+	private final static String password = "password";
 
 	@Captor
 	ArgumentCaptor<Verification> verificationCaptor;
 
 	@BeforeEach
 	public void setup() {
-		verificationService = new VerificationServiceImpl(verificationDaoMock, verificationRepositoryMock, userDaoMock, userRepositoryMock, codeGenerationServiceMock, emailNotificationService);
+		verificationService = new VerificationServiceImpl(verificationDaoMock, verificationRepositoryMock, userDaoMock,
+				userRepositoryMock, codeGenerationServiceMock, emailNotificationServiceMock,
+				userServiceMock);
 	}
 
 	@Test
@@ -80,8 +86,8 @@ public class VerificationServiceImplTest {
 		Verification verification = verificationService.createEmailVerificationForUser(username);
 
 		verify(codeGenerationServiceMock, times(1)).generateCode(anyInt());
-		verify(verificationDaoMock, times(1)).save(any(Verification.class));
-		verify(emailNotificationService, times(1)).sendVerificationEmail(eq(email), eq(code), anyString());
+		verify(verificationDaoMock, times(1)).save(verification);
+		verify(emailNotificationServiceMock, times(1)).sendVerificationEmail(eq(email), eq(code), anyString());
 		assertEquals(userId, verification.getUserId());
 		assertEquals(VerificationType.EMAIL, verification.getType());
 		assertEquals(code, verification.getCode());
@@ -110,9 +116,9 @@ public class VerificationServiceImplTest {
 
 		Verification verification = verificationService.createEmailVerificationForUser(username);
 
-		verify(codeGenerationServiceMock, times(1)).generateCode(anyInt());
-		verify(verificationDaoMock, times(1)).save(any(Verification.class));
-		verify(emailNotificationService, times(1)).sendVerificationEmail(eq(email), eq(code), anyString());
+		verify(codeGenerationServiceMock).generateCode(anyInt());
+		verify(verificationDaoMock).save(any(Verification.class));
+		verify(emailNotificationServiceMock).sendVerificationEmail(eq(email), eq(code), anyString());
 		assertEquals(userId, verification.getUserId());
 		assertEquals(VerificationType.EMAIL, verification.getType());
 		assertEquals(code, verification.getCode());
@@ -137,7 +143,6 @@ public class VerificationServiceImplTest {
 		when(userRepositoryMock.findByEmailOrUsername(username, username)).thenReturn(Optional.of(userMock));
 		when(userMock.getId()).thenReturn(userId);
 		when(verificationMock.getStatus()).thenReturn(VerificationStatus.INCOMPLETE);
-		when(verificationMock.getReverifyAllowedOn()).thenReturn(LocalDateTime.now().minusDays(1));
 		when(verificationRepositoryMock.findFirstByUserIdAndTypeOrderByCreatedOnDesc(userId, VerificationType.EMAIL)).thenReturn(Optional.of(verificationMock));
 		when(verificationMock.getReverifyAllowedOn()).thenReturn(LocalDateTime.now().plusDays(1));
 
@@ -154,7 +159,7 @@ public class VerificationServiceImplTest {
 
 		verify(codeGenerationServiceMock, times(1)).generateCode(anyInt());
 		verify(verificationDaoMock, times(1)).save(any(Verification.class));
-		verify(emailNotificationService, times(1)).sendVerificationEmail(eq(email), eq(code), anyString());
+		verify(emailNotificationServiceMock, times(1)).sendVerificationEmail(eq(email), eq(code), anyString());
 		assertEquals(userId, verification.getUserId());
 		assertEquals(VerificationType.EMAIL, verification.getType());
 		assertEquals(code, verification.getCode());
@@ -177,7 +182,7 @@ public class VerificationServiceImplTest {
 
 		verify(codeGenerationServiceMock, times(1)).generateCode(anyInt());
 		verify(verificationDaoMock, times(1)).save(any(Verification.class));
-		verify(emailNotificationService, times(1)).sendVerificationEmail(eq(email), eq(code), anyString());
+		verify(emailNotificationServiceMock, times(1)).sendVerificationEmail(eq(email), eq(code), anyString());
 		assertEquals(userId, verification.getUserId());
 		assertEquals(VerificationType.EMAIL, verification.getType());
 		assertEquals(code, verification.getCode());
@@ -336,6 +341,114 @@ public class VerificationServiceImplTest {
 		verificationService.verifyEmailByCode(username, code);
 
 		verify(userDaoMock).update(userMock);
+		verify(verificationMock).setStatus(VerificationStatus.COMPLETE);
+		verify(verificationDaoMock).update(verificationMock);
+	}
+
+	@Test
+	public void createPasswordResetForUser_userNotFound_throwsException() {
+		assertThrows(InvalidDataException.class, () -> verificationService.createPasswordResetForUser(username));
+	}
+
+	@Test
+	public void createPasswordResetForUser_existingPasswordResetAndAlreadyReset_throwsException() {
+		when(userRepositoryMock.findByEmailOrUsername(username, username)).thenReturn(Optional.of(userMock));
+		when(userMock.getId()).thenReturn(userId);
+		when(verificationRepositoryMock.findFirstByUserIdAndTypeOrderByCreatedOnDesc(userId, VerificationType.PASSWORD)).thenReturn(Optional.of(verificationMock));
+		when(verificationMock.getStatus()).thenReturn(VerificationStatus.COMPLETE);
+
+		assertThrows(InvalidDataException.class, () -> verificationService.createPasswordResetForUser(username));
+	}
+
+	@Test
+	public void createPasswordResetForUser_existingPasswordResetAndNotAllowedReverifyYet_throwsException() {
+		when(userRepositoryMock.findByEmailOrUsername(username, username)).thenReturn(Optional.of(userMock));
+		when(userMock.getId()).thenReturn(userId);
+		when(verificationRepositoryMock.findFirstByUserIdAndTypeOrderByCreatedOnDesc(userId, VerificationType.PASSWORD)).thenReturn(Optional.of(verificationMock));
+		when(verificationMock.getStatus()).thenReturn(VerificationStatus.INCOMPLETE);
+		when(verificationMock.getReverifyAllowedOn()).thenReturn(LocalDateTime.now().plusDays(1));
+
+		assertThrows(InvalidDataException.class, () -> verificationService.createPasswordResetForUser(username));
+	}
+
+	@Test
+	public void createPasswordResetForUser_createsPasswordReset() {
+		when(userRepositoryMock.findByEmailOrUsername(username, username)).thenReturn(Optional.of(userMock));
+		when(userMock.getId()).thenReturn(userId);
+		when(verificationRepositoryMock.findFirstByUserIdAndTypeOrderByCreatedOnDesc(userId, VerificationType.PASSWORD)).thenReturn(Optional.of(verificationMock));
+		when(verificationMock.getStatus()).thenReturn(VerificationStatus.INCOMPLETE);
+		when(verificationMock.getReverifyAllowedOn()).thenReturn(LocalDateTime.now().minusDays(1));
+		when(codeGenerationServiceMock.generateCode(anyInt())).thenReturn(code);
+		when(userMock.getEmail()).thenReturn(email);
+
+		Verification passwordReset = verificationService.createPasswordResetForUser(username);
+
+		verify(codeGenerationServiceMock, times(1)).generateCode(anyInt());
+		verify(verificationDaoMock).save(passwordReset);
+		verify(emailNotificationServiceMock).sendPasswordResetEmail(email, passwordReset.getUrlToken());
+		assertEquals(userId, passwordReset.getUserId());
+		assertEquals(VerificationType.PASSWORD, passwordReset.getType());
+		assertEquals(code, passwordReset.getCode());
+		assertNotNull(passwordReset.getUrlToken());
+		assertTrue(passwordReset.getCodeAttemptsLeft() > 0);
+		assertEquals(VerificationStatus.INCOMPLETE, passwordReset.getStatus());
+		assertNotNull(passwordReset.getExpiresOn());
+	}
+
+	@Test
+	public void resetPasswordWithToken_nullPassword_throwsException() {
+		assertThrows(InvalidDataException.class, () -> verificationService.resetPasswordWithToken(null, urlToken));
+	}
+
+	@Test
+	public void resetPasswordWithToken_emptyPassword_throwsException() {
+		assertThrows(InvalidDataException.class, () -> verificationService.resetPasswordWithToken("", urlToken));
+	}
+
+	@Test
+	public void resetPasswordWithToken_nullToken_throwsException() {
+		assertThrows(InvalidDataException.class, () -> verificationService.resetPasswordWithToken(password, null));
+	}
+
+	@Test
+	public void resetPasswordWithToken_emptyToken_throwsException() {
+		assertThrows(InvalidDataException.class, () -> verificationService.resetPasswordWithToken(password, ""));
+	}
+
+	@Test
+	public void resetPasswordWithToken_verificationNotFound_throwsException() {
+		assertThrows(InvalidDataException.class, () -> verificationService.resetPasswordWithToken(password, urlToken));
+	}
+
+	@Test
+	public void resetPasswordWithToken_resetAlreadyComplete_throwsException() {
+		when(verificationRepositoryMock.findFirstByUrlTokenAndTypeOrderByCreatedOnDesc(urlToken, VerificationType.PASSWORD)).thenReturn(Optional.of(verificationMock));
+		when(verificationMock.getStatus()).thenReturn(VerificationStatus.COMPLETE);
+
+		assertThrows(InvalidDataException.class, () -> verificationService.resetPasswordWithToken(password, urlToken));
+	}
+
+	@Test
+	public void resetPasswordWithToken_resetExpired_throwsException() {
+		when(verificationRepositoryMock.findFirstByUrlTokenAndTypeOrderByCreatedOnDesc(urlToken, VerificationType.PASSWORD)).thenReturn(Optional.of(verificationMock));
+		when(verificationMock.getStatus()).thenReturn(VerificationStatus.INCOMPLETE);
+		when(verificationMock.getExpiresOn()).thenReturn(LocalDateTime.now().minusDays(2));
+
+		assertThrows(InvalidDataException.class, () -> verificationService.resetPasswordWithToken(password, urlToken));
+	}
+
+	@Test
+	public void resetPasswordWithToken_resetsPassword() {
+		when(verificationRepositoryMock.findFirstByUrlTokenAndTypeOrderByCreatedOnDesc(urlToken, VerificationType.PASSWORD)).thenReturn(Optional.of(verificationMock));
+		when(verificationMock.getStatus()).thenReturn(VerificationStatus.INCOMPLETE);
+		when(verificationMock.getExpiresOn()).thenReturn(LocalDateTime.now().plusDays(2));
+		when(verificationMock.getUserId()).thenReturn(userId);
+		when(userDaoMock.get(userId)).thenReturn(Optional.of(userMock));
+
+		verificationService.resetPasswordWithToken(password, urlToken);
+
+		verify(userServiceMock).updateUserPassword(userMock, password);
+		verify(verificationMock).setStatus(VerificationStatus.COMPLETE);
 		verify(verificationDaoMock).update(verificationMock);
 	}
 }

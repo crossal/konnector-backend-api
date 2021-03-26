@@ -6,4 +6,5 @@ import java.util.Optional;
 
 public interface VerificationRepository extends CrudRepository<Verification, Integer> {
 	Optional<Verification> findFirstByUserIdAndTypeOrderByCreatedOnDesc(Long userId, VerificationType type);
+	Optional<Verification> findFirstByUrlTokenAndTypeOrderByCreatedOnDesc(String urlToken, VerificationType type);
 }

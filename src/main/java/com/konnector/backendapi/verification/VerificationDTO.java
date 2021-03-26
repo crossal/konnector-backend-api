@@ -3,6 +3,7 @@ package com.konnector.backendapi.verification;
 public class VerificationDTO {
 	private String usernameOrEmail;
 	private String code;
+	private String userPassword;
 
 	public String getUsernameOrEmail() {
 		return usernameOrEmail;
@@ -18,5 +19,13 @@ public class VerificationDTO {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public String getUserPassword() {
+		return userPassword;
+	}
+
+	public void setUserPassword(String userPassword) {
+		this.userPassword = userPassword;
 	}
 }

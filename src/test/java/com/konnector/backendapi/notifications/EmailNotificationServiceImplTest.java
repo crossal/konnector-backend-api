@@ -34,8 +34,10 @@ public class EmailNotificationServiceImplTest {
 	private static final String SENDER = "support@konnector.io";
 	private static final String CODE = "code";
 	private static final String URL_TOKEN = "token";
-	private static final String SUBJECT = "Verify your email address";
-	private static final String BODY = "Verification code: " + CODE + "\nVerification link: konnector.io/api/verifications/verify?token=" + URL_TOKEN;
+	private static final String VERIFICATION_SUBJECT = "Verify your email address";
+	private static final String VERIFICATION_BODY = "Verification code: " + CODE + "\nVerification link: konnector.io/api/verifications/verify?type=0&token=" + URL_TOKEN;
+	private static final String PASSWORD_RESET_SUBJECT = "Reset your password";
+	private static final String PASSWORD_RESET_BODY = "Password Reset link: konnector.io/verifications/verify?type=1&token=" + URL_TOKEN;
 
 	@InjectMocks
 	private EmailNotificationServiceImpl emailNotificationService = new EmailNotificationServiceImpl();
@@ -68,7 +70,28 @@ public class EmailNotificationServiceImplTest {
 		assertTrue(recipients.contains(RECIPIENT));
 		List<String> senders = Arrays.asList(message.getFrom()).stream().map(address -> ((InternetAddress) address).getAddress()).collect(Collectors.toList());
 		assertTrue(senders.contains(SENDER));
-		assertEquals(SUBJECT, message.getSubject());
-		assertEquals(BODY, message.getContent().toString());
+		assertEquals(VERIFICATION_SUBJECT, message.getSubject());
+		assertEquals(VERIFICATION_BODY, message.getContent().toString());
+	}
+
+	@Test
+	public void sendPasswordResetEmail_exception_throwsCorrectException() throws MessagingException {
+		doThrow(new MessagingException()).when(emailTransportWrapperMock).send(any());
+
+		assertThrows(EmailVerificationSendException.class, () -> emailNotificationService.sendPasswordResetEmail(RECIPIENT, URL_TOKEN));
+	}
+
+	@Test
+	public void sendPasswordResetEmail_sendsEmail() throws MessagingException, IOException {
+		emailNotificationService.sendPasswordResetEmail(RECIPIENT, URL_TOKEN);
+
+		verify(emailTransportWrapperMock, times(1)).send(messageCaptor.capture());
+		Message message = messageCaptor.getValue();
+		List<String> recipients = Arrays.asList(message.getAllRecipients()).stream().map(address -> ((InternetAddress) address).getAddress()).collect(Collectors.toList());
+		assertTrue(recipients.contains(RECIPIENT));
+		List<String> senders = Arrays.asList(message.getFrom()).stream().map(address -> ((InternetAddress) address).getAddress()).collect(Collectors.toList());
+		assertTrue(senders.contains(SENDER));
+		assertEquals(PASSWORD_RESET_SUBJECT, message.getSubject());
+		assertEquals(PASSWORD_RESET_BODY, message.getContent().toString());
 	}
 }

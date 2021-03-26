@@ -4,6 +4,7 @@ import Home from './Home';
 import Profile from './profile/Profile';
 import Connections from './connections/Connections';
 import LogInSignUp from './logInSignUp/LogInSignUp';
+import ResetPassword from './logInSignUp/ResetPassword';
 import { Container, Row, Col } from "react-bootstrap";
 
 class MainContent extends React.Component {
@@ -21,6 +22,9 @@ class MainContent extends React.Component {
           <Route path='/profile' render={() => <Profile {...this.props}/>}/>
           <Route path='/connections' component={Connections}/>
         </Switch>
+    } else if (this.props.resetPasswordToken) {
+      content =
+        <ResetPassword token={this.props.resetPasswordToken} updatePasswordReset={this.props.updatePasswordReset}/>
     } else {
       content =
         <LogInSignUp {...this.props}/>

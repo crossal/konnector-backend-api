@@ -2,6 +2,7 @@ package com.konnector.backendapi.login;
 
 import com.konnector.backendapi.exceptions.InvalidDataException;
 import com.konnector.backendapi.exceptions.InvalidLoginDetailsException;
+import com.konnector.backendapi.exceptions.UserNotVerifiedException;
 import com.konnector.backendapi.security.SecurityService;
 import com.konnector.backendapi.user.User;
 import com.konnector.backendapi.user.UserRepository;
@@ -67,6 +68,6 @@ public class LoginServiceImplTest {
 		when(userMock.isEmailVerified()).thenReturn(false);
 		when(userRepositoryMock.findByEmailOrUsername(EMAIL, EMAIL)).thenReturn(Optional.of(userMock));
 
-		assertThrows(InvalidDataException.class, () -> loginService.login(EMAIL, PASSWORD));
+		assertThrows(UserNotVerifiedException.class, () -> loginService.login(EMAIL, PASSWORD));
 	}
 }

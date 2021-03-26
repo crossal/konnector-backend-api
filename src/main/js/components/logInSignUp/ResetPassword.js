@@ -2,7 +2,7 @@ import React from 'react';
 import client from '../../client';
 import { Col, Row, Form, Button, Alert } from "react-bootstrap";
 
-const SignUpDetails = ({ signedUp, back }) => {
+const ResetPassword = ({ token, updatePasswordReset }) => {
 
   const [validated, setValidated] = React.useState(false);
   const [serverError, setServerError] = React.useState(null);
@@ -22,11 +22,11 @@ const SignUpDetails = ({ signedUp, back }) => {
       const formData = new FormData(event.target), formDataObj = Object.fromEntries(formData.entries())
       client({
         method: 'POST',
-        path: '/api/users',
+        path: '/api/verifications/verify?type=1&passwordResetToken=' + token,
         entity: formDataObj
       }).then(response => {
-        if (response.status.code === 201) {
-          signedUp()
+        if (response.status.code === 200) {
+          updatePasswordReset()
         } else if (response.status.code === 422) {
           setServerError(response.entity.error)
         }
@@ -37,8 +37,8 @@ const SignUpDetails = ({ signedUp, back }) => {
     }
   }
 
-  const backButton = (event) => {
-    back()
+  const cancelButton = (event) => {
+    updatePasswordReset()
   }
 
   const checkPasswordMatching = () => {
@@ -53,43 +53,19 @@ const SignUpDetails = ({ signedUp, back }) => {
 
   return (
     <div>
-      <Button className="mb-4" variant="secondary" onClick={backButton}>Back</Button>
-      <h3 className="mb-4">Sign Up</h3>
+      <Button className="mb-4" variant="secondary" onClick={cancelButton}>Cancel</Button>
+      <h3 className="mb-4">Password Reset</h3>
       <Form noValidate validated={validated} onSubmit={handleSubmit}>
         <Form.Row>
-          <Form.Group as={Col} controlId="formGridEmail">
-            <Form.Control required type="email" placeholder="Email" name="email" />
-            <Form.Control.Feedback type="invalid">Please add a valid email.</Form.Control.Feedback>
-          </Form.Group>
-        </Form.Row>
-        <Form.Row>
-          <Form.Group as={Col} controlId="formGridUsername">
-            <Form.Control required placeholder="Username" name="username" />
-            <Form.Control.Feedback type="invalid">Please add a username.</Form.Control.Feedback>
-          </Form.Group>
-        </Form.Row>
-        <Form.Row>
-          <Form.Group as={Col} controlId="formGridFirstName">
-            <Form.Control required placeholder="First name" name="firstName" />
-            <Form.Control.Feedback type="invalid">Please add a first name.</Form.Control.Feedback>
-          </Form.Group>
-        </Form.Row>
-        <Form.Row>
-          <Form.Group as={Col} controlId="formGridLastName">
-            <Form.Control required placeholder="Last name" name="lastName" />
-            <Form.Control.Feedback type="invalid">Please add a last name.</Form.Control.Feedback>
-          </Form.Group>
-        </Form.Row>
-        <Form.Row>
           <Form.Group as={Col} controlId="formGridPassword">
-            <Form.Control ref={password} required type="password" placeholder="Password" name="password" onChange={checkPasswordMatching} />
+            <Form.Control ref={password} required placeholder="Password" name="userPassword" onChange={checkPasswordMatching} />
             <Form.Control.Feedback type="invalid">Please add a password.</Form.Control.Feedback>
           </Form.Group>
         </Form.Row>
         <Form.Row>
           <Form.Group as={Col} controlId="formGridPasswordConfirmation">
-            <Form.Control ref={passwordConfirmation} required type="password" placeholder="Confirm password" name="passwordConfirmation" onChange={checkPasswordMatching} />
-            <Form.Control.Feedback type="invalid">Please add a password confirmation.</Form.Control.Feedback>
+            <Form.Control ref={passwordConfirmation} required type="password" placeholder="Confirm password " name="passwordConfirmation" onChange={checkPasswordMatching} />
+            <Form.Control.Feedback type="invalid">Please add a matching password confirmation.</Form.Control.Feedback>
           </Form.Group>
         </Form.Row>
         { serverError ? <Alert variant="danger">{serverError}</Alert> : <div/> }
@@ -99,4 +75,4 @@ const SignUpDetails = ({ signedUp, back }) => {
   )
 }
 
-export default SignUpDetails;
+export default ResetPassword;

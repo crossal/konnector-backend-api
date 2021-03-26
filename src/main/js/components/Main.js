@@ -7,14 +7,21 @@ class Main extends React.Component {
   constructor(props) {
     super(props);
     var updateLoggedIn = this.updateLoggedIn.bind(this);
+    var updatePasswordReset = this.updatePasswordReset.bind(this);
     this.state = {
       loggedIn: localStorage.getItem('loggedIn') == 'true',
       userId: localStorage.getItem('userId'),
-      updateLoggedIn: updateLoggedIn
+      updateLoggedIn: updateLoggedIn,
+      updatePasswordReset: updatePasswordReset,
+      resetPasswordToken: sessionStorage.getItem('resetPasswordToken')
     };
+    if (this.state.resetPasswordToken) {
+      window.history.replaceState({}, "Konnector", "/")
+    }
+    sessionStorage.removeItem('resetPasswordToken')
   }
 
-   updateLoggedIn(loggedIn, userId){
+   updateLoggedIn(loggedIn, userId) {
      this.setState({
         loggedIn: loggedIn,
         userId: userId
@@ -23,8 +30,13 @@ class Main extends React.Component {
      localStorage.setItem('userId', userId);
    }
 
+   updatePasswordReset() {
+     this.setState({
+       resetPasswordToken: null
+     });
+   }
+
   render() {
-    var updateLoggedIn = this.updateLoggedIn;
     return (
       <>
         <KNav {...this.state} />

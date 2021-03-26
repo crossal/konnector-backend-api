@@ -8,6 +8,7 @@ import com.konnector.backendapi.exceptions.NotFoundException;
 import com.konnector.backendapi.notifications.EmailNotificationService;
 import com.konnector.backendapi.user.User;
 import com.konnector.backendapi.user.UserRepository;
+import com.konnector.backendapi.user.UserService;
 import com.konnector.backendapi.verification.code.CodeGenerationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,15 +38,19 @@ public class VerificationServiceImpl implements VerificationService {
 	private CodeGenerationService codeGenerationService;
 	@Autowired
 	private EmailNotificationService emailNotificationService;
+	@Autowired
+	private UserService userService;
 
 	public VerificationServiceImpl(Dao<Verification> verificationDao, VerificationRepository verificationRepository, Dao<User> userDao,
-	                               UserRepository userRepository, CodeGenerationService codeGenerationService, EmailNotificationService emailNotificationService) {
+	                               UserRepository userRepository, CodeGenerationService codeGenerationService, EmailNotificationService emailNotificationService,
+	                               UserService userService) {
 		this.verificationDao = verificationDao;
 		this.verificationRepository = verificationRepository;
 		this.userDao = userDao;
 		this.userRepository = userRepository;
 		this.codeGenerationService = codeGenerationService;
 		this.emailNotificationService = emailNotificationService;
+		this.userService = userService;
 	}
 
 	@Override
@@ -54,7 +59,7 @@ public class VerificationServiceImpl implements VerificationService {
 		Optional<Verification> optionalExistingVerification = verificationRepository.findFirstByUserIdAndTypeOrderByCreatedOnDesc(user.getId(), VerificationType.EMAIL);
 		optionalExistingVerification.ifPresent(verification -> {
 			if (verification.getStatus().equals(VerificationStatus.COMPLETE)) {
-				throw new InvalidDataException("Already verified");
+				throw new InvalidDataException("Already verified.");
 			}
 
 			if (verification.getReverifyAllowedOn().isAfter(LocalDateTime.now())) {
@@ -136,6 +141,60 @@ public class VerificationServiceImpl implements VerificationService {
 
 		user.setEmailVerified(true);
 		userDao.update(user);
+
+		verification.setStatus(VerificationStatus.COMPLETE);
+		verificationDao.update(verification);
+	}
+
+	@Override
+	@Transactional
+	public Verification createPasswordResetForUser(String usernameOrEmail) {
+		User user = userRepository.findByEmailOrUsername(usernameOrEmail, usernameOrEmail).orElseThrow(() -> new InvalidDataException("User not found."));
+
+		Optional<Verification> optionalExistingVerification = verificationRepository.findFirstByUserIdAndTypeOrderByCreatedOnDesc(user.getId(), VerificationType.PASSWORD);
+		optionalExistingVerification.ifPresent(verification -> {
+			if (verification.getStatus().equals(VerificationStatus.COMPLETE)) {
+				throw new InvalidDataException("Already reset.");
+			}
+
+			if (verification.getReverifyAllowedOn().isAfter(LocalDateTime.now())) {
+				throw new InvalidDataException("Reset not allowed so soon.");
+			}
+		});
+
+		Verification verification = new Verification(user.getId(), VerificationType.PASSWORD, codeGenerationService.generateCode(CODE_LENGTH), CODE_ATTEMPTS,
+				UUID.randomUUID().toString(), LocalDateTime.now().plusDays(URL_TOKEN_EXPIRATION_IN_DAYS), LocalDateTime.now().plusMinutes(RESEND_ALLOWED_IN_MINUTES));
+		verificationDao.save(verification);
+
+		emailNotificationService.sendPasswordResetEmail(user.getEmail(), verification.getUrlToken());
+
+		return verification;
+	}
+
+	@Override
+	@Transactional
+	public void resetPasswordWithToken(String userPassword, String passwordResetToken) {
+		if (userPassword == null || userPassword.isEmpty()) {
+			throw new InvalidDataException("Password cannot be empty.");
+		}
+
+		if (passwordResetToken == null || passwordResetToken.isEmpty()) {
+			throw new InvalidDataException("Token cannot be empty.");
+		}
+
+		Optional<Verification> optionalVerification = verificationRepository.findFirstByUrlTokenAndTypeOrderByCreatedOnDesc(passwordResetToken, VerificationType.PASSWORD);
+		Verification verification = optionalVerification.orElseThrow(() -> new InvalidDataException("No verification found for token."));
+
+		if (verification.getStatus().equals(VerificationStatus.COMPLETE)) {
+			throw new InvalidDataException("Already verified.");
+		}
+
+		if (verification.getExpiresOn().isBefore(LocalDateTime.now())) {
+			throw new InvalidDataException("Reset expired.");
+		}
+
+		User user = userDao.get(verification.getUserId()).get();
+		userService.updateUserPassword(user, userPassword);
 
 		verification.setStatus(VerificationStatus.COMPLETE);
 		verificationDao.update(verification);

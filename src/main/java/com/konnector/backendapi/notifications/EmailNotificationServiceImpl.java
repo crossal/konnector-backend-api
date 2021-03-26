@@ -32,8 +32,11 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
 	private static final String PROPERTY_KEY_AUTH = "mail.smtp.auth";
 	private static final String AUTH = "true";
 	private static final String VERIFICATION_EMAIL_SUBJECT = "Verify your email address";
-	private static final String VERIFICATION_URL_TEMPLATE = "konnector.io/api/verifications/verify?token={0}";
+	private static final String VERIFICATION_URL_TEMPLATE = "konnector.io/api/verifications/verify?type=0&token={0}";
 	private static final String VERIFICATION_EMAIL_BODY_TEMPLATE = "Verification code: {0}\nVerification link: {1}";
+	private static final String RESET_PASSWORD_EMAIL_SUBJECT = "Reset your password";
+	private static final String RESET_PASSWORD_URL_TEMPLATE = "konnector.io/verifications/verify?type=1&token={0}";
+	private static final String RESET_PASSWORD_EMAIL_BODY_TEMPLATE = "Password Reset link: {0}";
 
 	@Autowired
 	private EmailTransportWrapper emailTransportWrapper;
@@ -81,6 +84,33 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
 		}
 	}
 
+	@Override
+	public void sendPasswordResetEmail(String recipient, String urlToken) {
+		Session session = Session.getInstance(properties, new Authenticator() {
+			@Override
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication(emailUserName, emailPassword);
+			}
+		});
+
+		MimeMessage message = new MimeMessage(session);
+
+		String passwordResetUrl = getPasswordResetUrl(urlToken);
+		String passwordResetBody = getPasswordResetBody(passwordResetUrl);
+
+		try {
+			message.setFrom(new InternetAddress(FROM_ADDRESS));
+			message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
+			message.setSubject(RESET_PASSWORD_EMAIL_SUBJECT);
+			message.setText(passwordResetBody);
+
+			emailTransportWrapper.send(message);
+		} catch (Exception e) {
+			LOGGER.error("Password Reset email could not be sent with exception: {}", e);
+			throw new EmailVerificationSendException("Password Reset email could not be sent.");
+		}
+	}
+
 	private String getVerificationUrl(String urlToken) {
 		Object[] params = new Object[]{urlToken};
 		String verificationUrl = MessageFormat.format(VERIFICATION_URL_TEMPLATE, params);
@@ -91,6 +121,20 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
 	private String getVerificationBody(String code, String verificationUrl) {
 		Object[] params = new Object[]{code, verificationUrl};
 		String verificationBody = MessageFormat.format(VERIFICATION_EMAIL_BODY_TEMPLATE, params);
+
+		return  verificationBody;
+	}
+
+	private String getPasswordResetUrl(String urlToken) {
+		Object[] params = new Object[]{urlToken};
+		String verificationUrl = MessageFormat.format(RESET_PASSWORD_URL_TEMPLATE, params);
+
+		return  verificationUrl;
+	}
+
+	private String getPasswordResetBody(String verificationUrl) {
+		Object[] params = new Object[]{verificationUrl};
+		String verificationBody = MessageFormat.format(RESET_PASSWORD_EMAIL_BODY_TEMPLATE, params);
 
 		return  verificationBody;
 	}

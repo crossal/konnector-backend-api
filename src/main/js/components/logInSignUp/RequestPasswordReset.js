@@ -2,7 +2,7 @@ import React from 'react';
 import client from '../../client';
 import { Col, Row, Form, Button, Alert } from "react-bootstrap";
 
-const AccountVerification = ({ verified, back }) => {
+const RequestPasswordReset = ({ back }) => {
 
   const [validated, setValidated] = React.useState(false);
   const [serverError, setServerError] = React.useState(null);
@@ -17,14 +17,12 @@ const AccountVerification = ({ verified, back }) => {
     const form = event.currentTarget;
     if (form.checkValidity() === true) {
       setLoading(true);
-      const formData = new FormData(event.target), formDataObj = Object.fromEntries(formData.entries())
       client({
         method: 'POST',
-        path: '/api/verifications/verify?type=0',
-        entity: formDataObj
+        path: '/api/verifications?type=1&usernameOrEmail=' + event.target.usernameOrEmail.value
       }).then(response => {
         if (response.status.code === 200) {
-          verified()
+          back()
         } else if (response.status.code === 422) {
           setServerError(response.entity.error)
         }
@@ -35,25 +33,15 @@ const AccountVerification = ({ verified, back }) => {
     }
   }
 
-  const backButton = (event) => {
-    back()
-  }
-
   return (
     <div>
-      <Button className="mb-4" variant="secondary" onClick={backButton}>Back</Button>
-      <h3>Verification</h3>
-      <Form noValidate validated={validated}  onSubmit={handleSubmit}>
+      <Button className="mb-4" variant="secondary" onClick={back}>Back</Button>
+      <h3 className="mb-4">Request Password Reset</h3>
+      <Form noValidate validated={validated} onSubmit={handleSubmit}>
         <Form.Row>
-          <Form.Group required as={Col} controlId="formGridUsernameOrEmail">
-            <Form.Control placeholder="Username or email" name="usernameOrEmail" />
+          <Form.Group as={Col} controlId="formGridUsernameOrEmail">
+            <Form.Control required placeholder="Username or Email" name="usernameOrEmail" />
             <Form.Control.Feedback type="invalid">Please add a username or email.</Form.Control.Feedback>
-          </Form.Group>
-        </Form.Row>
-        <Form.Row>
-          <Form.Group as={Col} controlId="formGridCode">
-            <Form.Control required placeholder="Code" name="code" />
-            <Form.Control.Feedback type="invalid">Please add a code.</Form.Control.Feedback>
           </Form.Group>
         </Form.Row>
         { serverError ? <Alert variant="danger">{serverError}</Alert> : <div/> }
@@ -63,4 +51,4 @@ const AccountVerification = ({ verified, back }) => {
   )
 }
 
-export default AccountVerification;
+export default RequestPasswordReset;

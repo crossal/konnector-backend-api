@@ -1,37 +1,18 @@
 package com.konnector.backendapi.verification;
 
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@Controller
 public class VerificationController {
 
-	@Autowired
-	private VerificationService verificationService;
-	@Autowired
-	private ModelMapper modelMapper;
-
-	@PostMapping(value = "/api/verifications", params = { "usernameOrEmail", "type=0" })
-	@ResponseStatus(HttpStatus.OK)
-	public void createEmailVerificationForUser(@RequestParam String usernameOrEmail, @RequestParam Integer type) {
-		verificationService.createEmailVerificationForUser(usernameOrEmail);
-	}
-
-	@PostMapping(value = "/api/verifications/verify", params = { "token", "type=0" } )
-	@ResponseStatus(HttpStatus.OK)
-	public void verifyUserEmailByToken(@RequestParam String usernameOrEmail, @RequestParam String token, @RequestParam Integer type) {
-		verificationService.verifyEmailByUrlToken(usernameOrEmail, token);
-	}
-
-	@PostMapping(value = "/api/verifications/verify", params = "type=0" )
-	@ResponseStatus(HttpStatus.OK)
-	public void verifyUserEmailByCode(@RequestBody VerificationDTO verificationDTO, @RequestParam Integer type) {
-		verificationService.verifyEmailByCode(verificationDTO.getUsernameOrEmail(), verificationDTO.getCode());
+	@GetMapping(value = "/verifications/verify", params = {"token", "type=1"})
+	@ModelAttribute
+	public String resetPassword(@RequestParam String token, @RequestParam Integer type, Model model) {
+		model.addAttribute("passwordResetToken", token);
+		return "verify";
 	}
 }

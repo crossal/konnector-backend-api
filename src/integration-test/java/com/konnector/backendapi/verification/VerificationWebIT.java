@@ -17,7 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(VerificationController.class)
+@WebMvcTest(VerificationAPIController.class)
 @TestPropertySource("classpath:application-integration-test.properties")
 public class VerificationWebIT {
 
@@ -38,15 +38,7 @@ public class VerificationWebIT {
 	public void createEmailVerificationForUser_returnsSuccess() throws Exception {
 		mockMvc.perform(post("/api/verifications")
 				.queryParam("usernameOrEmail", "username_or_email")
-				.queryParam("type", "0")
-				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
-	}
-
-	@Test
-	public void createEmailVerificationForUser_returnsSuccesss() throws Exception {
-		mockMvc.perform(post("/api/verifications")
-				.queryParam("usernameOrEmail", "username_or_email")
-				.queryParam("type", "0")
+				.queryParam("type", Integer.toString(VerificationType.EMAIL.getValue()))
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 	}
 
@@ -55,7 +47,7 @@ public class VerificationWebIT {
 		mockMvc.perform(post("/api/verifications/verify")
 				.queryParam("usernameOrEmail", "username_or_email")
 				.queryParam("token", "token_value")
-				.queryParam("type", "0")
+				.queryParam("type", Integer.toString(VerificationType.EMAIL.getValue()))
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 	}
 
@@ -63,7 +55,24 @@ public class VerificationWebIT {
 	public void verifyUserEmailByCode_returnsSuccess() throws Exception {
 		String verificationJson = objectMapper.writeValueAsString(verificationDTO);
 		mockMvc.perform(post("/api/verifications/verify")
-				.queryParam("type", "0")
+				.queryParam("type", Integer.toString(VerificationType.EMAIL.getValue()))
+				.contentType(MediaType.APPLICATION_JSON).content(verificationJson)).andExpect(status().isOk());
+	}
+
+	@Test
+	public void createPasswordResetForUser_returnsSuccess() throws Exception {
+		mockMvc.perform(post("/api/verifications")
+				.queryParam("usernameOrEmail", "username_or_email")
+				.queryParam("type", Integer.toString(VerificationType.PASSWORD.getValue()))
+				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+	}
+
+	@Test
+	public void resetUserPassword_returnsSuccess() throws Exception {
+		String verificationJson = objectMapper.writeValueAsString(verificationDTO);
+		mockMvc.perform(post("/api/verifications/verify")
+				.queryParam("passwordResetToken", "token_value")
+				.queryParam("type", Integer.toString(VerificationType.PASSWORD.getValue()))
 				.contentType(MediaType.APPLICATION_JSON).content(verificationJson)).andExpect(status().isOk());
 	}
 }

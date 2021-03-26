@@ -64,4 +64,12 @@ public class UserServiceImpl implements UserService {
 				}
 		).orElseThrow(() -> new NotFoundException("User not found."));
 	}
+
+	@Override
+	public void updateUserPassword(User user, String password) {
+		String hashedPassword = passwordEncoder.encode(password);
+		user.setPassword(hashedPassword);
+
+		userDao.save(user);
+	}
 }

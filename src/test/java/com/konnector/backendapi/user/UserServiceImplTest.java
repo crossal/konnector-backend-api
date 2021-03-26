@@ -61,6 +61,7 @@ public class UserServiceImplTest {
 	private final String hashedPassword = "hashed_password";
 	private final String verificationCode = "1234";
 	private final String verificationUrlToken = "5678";
+	private final String password = "password";
 
 	@Test
 	public void createUser_createsUser() {
@@ -105,5 +106,16 @@ public class UserServiceImplTest {
 		verify(userValidatorMock, times(1)).validateUserFetchRequest(userId);
 		verify(userDaoMock, times(1)).get(userId);
 		verify(userAuthorizationValidatorMock, times(1)).validateUserFetchRequest(userMock, authenticationMock);
+	}
+
+	@Test
+	public void updateUserPassword_updatesUserPassword() {
+		when(passwordEncoderMock.encode(password)).thenReturn(hashedPassword);
+
+		userService.updateUserPassword(userMock, password);
+
+		verify(passwordEncoderMock).encode(password);
+		verify(userMock).setPassword(hashedPassword);
+		verify(userDaoMock).save(userMock);
 	}
 }

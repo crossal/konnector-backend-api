@@ -7,4 +7,6 @@ public interface VerificationService {
 	Verification createEmailVerificationForUser(User user);
 	void verifyEmailByUrlToken(String usernameOrEmail, String urlToken);
 	void verifyEmailByCode(String usernameOrEmail, String code);
+	Verification createPasswordResetForUser(String usernameOrEmail);
+	void resetPasswordWithToken(String userPassword, String passwordResetToken);
 }
