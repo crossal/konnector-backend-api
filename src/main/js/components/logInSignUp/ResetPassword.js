@@ -25,12 +25,12 @@ const ResetPassword = ({ token, updatePasswordReset }) => {
         path: '/api/verifications/verify?type=1&passwordResetToken=' + token,
         entity: formDataObj
       }).then(response => {
+        setLoading(false);
         if (response.status.code === 200) {
           updatePasswordReset()
         } else if (response.status.code === 422) {
           setServerError(response.entity.error)
         }
-        setLoading(false);
       })
     } else {
       setValidated(true);

@@ -23,12 +23,12 @@ const AccountVerification = ({ verified, back }) => {
         path: '/api/verifications/verify?type=0',
         entity: formDataObj
       }).then(response => {
+        setLoading(false);
         if (response.status.code === 200) {
           verified()
         } else if (response.status.code === 422) {
           setServerError(response.entity.error)
         }
-        setLoading(false);
       })
     } else {
       setValidated(true);

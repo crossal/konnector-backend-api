@@ -25,12 +25,12 @@ const SignUpDetails = ({ signedUp, back }) => {
         path: '/api/users',
         entity: formDataObj
       }).then(response => {
+        setLoading(false);
         if (response.status.code === 201) {
           signedUp()
         } else if (response.status.code === 422) {
           setServerError(response.entity.error)
         }
-        setLoading(false);
       })
     } else {
       setValidated(true);

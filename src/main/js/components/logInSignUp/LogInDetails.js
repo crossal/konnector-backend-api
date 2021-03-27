@@ -23,6 +23,7 @@ const LogInDetails = ({ updateLoggedIn, logInWithoutVerification, requestResetPa
         path: '/api/authenticate',
         entity: formDataObj
       }).then(response => {
+        setLoading(false);
         if (response.status.code === 200) {
           updateLoggedIn(true, response.entity.id)
         } else if (response.status.code === 401) {
@@ -30,7 +31,6 @@ const LogInDetails = ({ updateLoggedIn, logInWithoutVerification, requestResetPa
         } else if (response.status.code === 422 && response.entity.code === 1) {
           logInWithoutVerification()
         }
-        setLoading(false);
       })
     } else {
       setValidated(true);

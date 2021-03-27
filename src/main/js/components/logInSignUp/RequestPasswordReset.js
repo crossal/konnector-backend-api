@@ -21,12 +21,12 @@ const RequestPasswordReset = ({ back }) => {
         method: 'POST',
         path: '/api/verifications?type=1&usernameOrEmail=' + event.target.usernameOrEmail.value
       }).then(response => {
+        setLoading(false);
         if (response.status.code === 200) {
           back()
         } else if (response.status.code === 422) {
           setServerError(response.entity.error)
         }
-        setLoading(false);
       })
     } else {
       setValidated(true);
