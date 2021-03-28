@@ -6,6 +6,7 @@ Handling Konnector web and data requests
 
 ## How do I get set up?
 
+* Install Maven
 * Create a Maven master password `$ mvn --encrypt-master-password`
 * Store the encrypted master password in ~/.m2/settings-security.xml
 ```
@@ -41,6 +42,8 @@ Handling Konnector web and data requests
     </servers>
 </settings>
 ```
+
+* To run the integration tests and run the app locally, install MySQL and follow the konnector-database README.md
 
 ## Building & Testing
 
