@@ -20,6 +20,7 @@ public class User {
 			"(?:[a-zA-Z0-9-]+\\.)+[a-z" +
 			"A-Z]{2,7}$";
 	private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
+	private static final int MIN_PASSWORD_LENGTH = 8;
 	private static final int MAX_PASSWORD_LENGTH = 50;
 
 	@Id
@@ -144,6 +145,9 @@ public class User {
 		}
 		if (password == null || password.isEmpty()) {
 			throw new InvalidDataException("Password cannot be empty.");
+		}
+		if (password.length() < MIN_PASSWORD_LENGTH) {
+			throw new InvalidDataException("Password cannot be less than " + MIN_PASSWORD_LENGTH + " characters.");
 		}
 		if (password.length() > MAX_PASSWORD_LENGTH) {
 			throw new InvalidDataException("Password cannot be greater than " + MAX_PASSWORD_LENGTH + " characters.");
