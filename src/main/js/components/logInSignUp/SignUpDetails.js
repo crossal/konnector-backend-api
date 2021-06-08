@@ -43,10 +43,8 @@ const SignUpDetails = ({ signedUp, back }) => {
 
   const checkPasswordMatching = () => {
     if (password.current.value != passwordConfirmation.current.value) {
-      password.current.setCustomValidity('Passwords must match.');
       passwordConfirmation.current.setCustomValidity('Passwords must match.');
     } else {
-      password.current.setCustomValidity('');
       passwordConfirmation.current.setCustomValidity('');
     }
   }
@@ -64,8 +62,8 @@ const SignUpDetails = ({ signedUp, back }) => {
         </Form.Row>
         <Form.Row>
           <Form.Group as={Col} controlId="formGridUsername">
-            <Form.Control required placeholder="Username" name="username" />
-            <Form.Control.Feedback type="invalid">Please add a username.</Form.Control.Feedback>
+            <Form.Control required pattern="[a-zA-Z0-9._]+" placeholder="Username" name="username" />
+            <Form.Control.Feedback type="invalid">Please add a valid username.</Form.Control.Feedback>
           </Form.Group>
         </Form.Row>
         <Form.Row>
@@ -82,8 +80,8 @@ const SignUpDetails = ({ signedUp, back }) => {
         </Form.Row>
         <Form.Row>
           <Form.Group as={Col} controlId="formGridPassword">
-            <Form.Control ref={password} required type="password" placeholder="Password" name="password" onChange={checkPasswordMatching} />
-            <Form.Control.Feedback type="invalid">Please add a password.</Form.Control.Feedback>
+            <Form.Control ref={password} required minlength="7" type="password" placeholder="Password" name="password" />
+            <Form.Control.Feedback type="invalid">Please add a password greater than 7 characters.</Form.Control.Feedback>
           </Form.Group>
         </Form.Row>
         <Form.Row>
