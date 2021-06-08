@@ -55,6 +55,13 @@ public class VerificationAPIControllerTest {
 	public void resetUserPasswordWithToken_resetsUserPasswordWithToken() {
 		verificationAPIController.resetUserPasswordWithToken(verificationDTO, token, VerificationType.PASSWORD.getValue());
 
-		verify(verificationServiceMock).resetPasswordWithToken(verificationDTO.getUserPassword(), token);
+		verify(verificationServiceMock).resetPasswordWithToken(verificationDTO.getUsernameOrEmail(), verificationDTO.getUserPassword(), token);
+	}
+
+	@Test
+	public void resetUserPasswordWithCode_resetsUserPasswordWithCode() {
+		verificationAPIController.resetUserPasswordWithCode(verificationDTO, VerificationType.PASSWORD.getValue());
+
+		verify(verificationServiceMock).resetPasswordWithCode(verificationDTO.getUsernameOrEmail(), verificationDTO.getUserPassword(), verificationDTO.getCode());
 	}
 }

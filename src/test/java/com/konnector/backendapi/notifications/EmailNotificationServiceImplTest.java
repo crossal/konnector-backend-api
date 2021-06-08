@@ -37,7 +37,7 @@ public class EmailNotificationServiceImplTest {
 	private static final String VERIFICATION_SUBJECT = "Verify your email address";
 	private static final String VERIFICATION_BODY = "Verification code: " + CODE + "\nVerification link: konnector.io/api/verifications/verify?type=0&token=" + URL_TOKEN;
 	private static final String PASSWORD_RESET_SUBJECT = "Reset your password";
-	private static final String PASSWORD_RESET_BODY = "Password Reset link: konnector.io/verifications/verify?type=1&token=" + URL_TOKEN;
+	private static final String PASSWORD_RESET_BODY = "Password Reset code: " + CODE + "\nPassword Reset link: konnector.io/verifications/verify?type=1&token=" + URL_TOKEN;
 
 	@InjectMocks
 	private EmailNotificationServiceImpl emailNotificationService = new EmailNotificationServiceImpl();
@@ -78,12 +78,12 @@ public class EmailNotificationServiceImplTest {
 	public void sendPasswordResetEmail_exception_throwsCorrectException() throws MessagingException {
 		doThrow(new MessagingException()).when(emailTransportWrapperMock).send(any());
 
-		assertThrows(EmailVerificationSendException.class, () -> emailNotificationService.sendPasswordResetEmail(RECIPIENT, URL_TOKEN));
+		assertThrows(EmailVerificationSendException.class, () -> emailNotificationService.sendPasswordResetEmail(RECIPIENT, CODE, URL_TOKEN));
 	}
 
 	@Test
 	public void sendPasswordResetEmail_sendsEmail() throws MessagingException, IOException {
-		emailNotificationService.sendPasswordResetEmail(RECIPIENT, URL_TOKEN);
+		emailNotificationService.sendPasswordResetEmail(RECIPIENT, CODE, URL_TOKEN);
 
 		verify(emailTransportWrapperMock, times(1)).send(messageCaptor.capture());
 		Message message = messageCaptor.getValue();

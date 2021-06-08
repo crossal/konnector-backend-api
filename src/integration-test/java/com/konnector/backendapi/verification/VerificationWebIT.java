@@ -68,10 +68,20 @@ public class VerificationWebIT {
 	}
 
 	@Test
-	public void resetUserPassword_returnsSuccess() throws Exception {
+	public void resetUserPasswordWithToken_returnsSuccess() throws Exception {
 		String verificationJson = objectMapper.writeValueAsString(verificationDTO);
 		mockMvc.perform(post("/api/verifications/verify")
+				.queryParam("usernameOrEmail", "username_or_email")
 				.queryParam("passwordResetToken", "token_value")
+				.queryParam("type", Integer.toString(VerificationType.PASSWORD.getValue()))
+				.contentType(MediaType.APPLICATION_JSON).content(verificationJson)).andExpect(status().isOk());
+	}
+
+	@Test
+	public void resetUserPasswordWithCode_returnsSuccess() throws Exception {
+		String verificationJson = objectMapper.writeValueAsString(verificationDTO);
+		mockMvc.perform(post("/api/verifications/verify")
+				.queryParam("usernameOrEmail", "username_or_email")
 				.queryParam("type", Integer.toString(VerificationType.PASSWORD.getValue()))
 				.contentType(MediaType.APPLICATION_JSON).content(verificationJson)).andExpect(status().isOk());
 	}

@@ -2,18 +2,22 @@ import React from 'react';
 import LogInDetails from './LogInDetails';
 import AccountVerification from './AccountVerification';
 import RequestPasswordReset from './RequestPasswordReset';
+import ResetPasswordWithCode from './ResetPasswordWithCode';
 
 class LogIn extends React.Component {
 
   constructor(props) {
     super(props);
     this.logInWithoutVerification = this.logInWithoutVerification.bind(this);
-    this.requestResetPassword = this.requestResetPassword.bind(this);
+    this.handleRequestResetPassword = this.handleRequestResetPassword.bind(this);
+    this.handleRequestResetPasswordFollowUp = this.handleRequestResetPasswordFollowUp.bind(this);
+    this.handlePasswordReset = this.handlePasswordReset.bind(this);
     this.verified = this.verified.bind(this);
     this.back = this.back.bind(this);
     this.state = {
       loggedInWithoutVerification: false,
-      requestedResetPassword: false
+      requestResetPassword: false,
+      requestResetPasswordFollowUp: false
     };
   }
 
@@ -29,9 +33,22 @@ class LogIn extends React.Component {
     });
   }
 
-  requestResetPassword() {
+  handleRequestResetPassword() {
     this.setState({
-      requestedResetPassword: true
+      requestResetPassword: true
+    })
+  }
+
+  handleRequestResetPasswordFollowUp() {
+    this.setState({
+      requestResetPassword: false,
+      requestResetPasswordFollowUp: true
+    })
+  }
+
+  handlePasswordReset() {
+    this.setState({
+      requestResetPasswordFollowUp: false
     })
   }
 
@@ -40,9 +57,14 @@ class LogIn extends React.Component {
       this.setState({
         loggedInWithoutVerification: false
       });
-    } else if (this.state.requestedResetPassword) {
+    } else if (this.state.requestResetPassword) {
       this.setState({
-        requestedResetPassword: false
+        requestResetPassword: false
+      })
+    } else if (this.state.requestResetPasswordFollowUp) {
+      this.setState({
+        requestResetPassword: true,
+        requestResetPasswordFollowUp: false
       })
     } else {
       this.props.updateLogInOrSignUpStatus(false, false)
@@ -54,12 +76,15 @@ class LogIn extends React.Component {
     if (this.state.loggedInWithoutVerification) {
       content =
         <AccountVerification verified={this.verified} back={this.back}/>
-    } else if (this.state.requestedResetPassword) {
+    } else if (this.state.requestResetPassword) {
       content =
-        <RequestPasswordReset back={this.back}/>
+        <RequestPasswordReset back={this.back} passwordResetRequested={this.handleRequestResetPasswordFollowUp}/>
+    } else if (this.state.requestResetPasswordFollowUp) {
+      content =
+        <ResetPasswordWithCode updatePasswordReset={this.handlePasswordReset}/>
     } else {
       content =
-        <LogInDetails updateLoggedIn={this.props.updateLoggedIn} logInWithoutVerification={this.logInWithoutVerification} requestResetPassword={this.requestResetPassword} back={this.back}/>
+        <LogInDetails updateLoggedIn={this.props.updateLoggedIn} logInWithoutVerification={this.logInWithoutVerification} requestResetPassword={this.handleRequestResetPassword} back={this.back}/>
     }
 
     return (

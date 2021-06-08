@@ -2,7 +2,7 @@ import React from 'react';
 import client from '../../client';
 import { Col, Row, Form, Button, Alert } from "react-bootstrap";
 
-const RequestPasswordReset = ({ back }) => {
+const RequestPasswordReset = ({ back, passwordResetRequested }) => {
 
   const [validated, setValidated] = React.useState(false);
   const [serverError, setServerError] = React.useState(null);
@@ -23,7 +23,7 @@ const RequestPasswordReset = ({ back }) => {
       }).then(response => {
         setLoading(false);
         if (response.status.code === 200) {
-          back()
+          passwordResetRequested()
         } else if (response.status.code === 422) {
           setServerError(response.entity.error)
         }

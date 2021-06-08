@@ -44,6 +44,12 @@ public class VerificationAPIController {
 	@PostMapping(value = "/api/verifications/verify", params = {"passwordResetToken", "type=1"})
 	@ResponseStatus(HttpStatus.OK)
 	public void resetUserPasswordWithToken(@RequestBody VerificationDTO verificationDTO, @RequestParam String passwordResetToken, @RequestParam Integer type) {
-		verificationService.resetPasswordWithToken(verificationDTO.getUserPassword(), passwordResetToken);
+		verificationService.resetPasswordWithToken(verificationDTO.getUsernameOrEmail(), verificationDTO.getUserPassword(), passwordResetToken);
+	}
+
+	@PostMapping(value = "/api/verifications/verify", params = {"type=1"})
+	@ResponseStatus(HttpStatus.OK)
+	public void resetUserPasswordWithCode(@RequestBody VerificationDTO verificationDTO, @RequestParam Integer type) {
+		verificationService.resetPasswordWithCode(verificationDTO.getUsernameOrEmail(), verificationDTO.getUserPassword(), verificationDTO.getCode());
 	}
 }

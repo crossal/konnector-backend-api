@@ -2,7 +2,7 @@ import React from 'react';
 import client from '../../client';
 import { Col, Row, Form, Button, Alert } from "react-bootstrap";
 
-const ResetPassword = ({ token, updatePasswordReset }) => {
+const ResetPasswordWithCode = ({ updatePasswordReset }) => {
 
   const [validated, setValidated] = React.useState(false);
   const [serverError, setServerError] = React.useState(null);
@@ -22,7 +22,7 @@ const ResetPassword = ({ token, updatePasswordReset }) => {
       const formData = new FormData(event.target), formDataObj = Object.fromEntries(formData.entries())
       client({
         method: 'POST',
-        path: '/api/verifications/verify?type=1&passwordResetToken=' + token,
+        path: '/api/verifications/verify?type=1',
         entity: formDataObj
       }).then(response => {
         setLoading(false);
@@ -55,6 +55,12 @@ const ResetPassword = ({ token, updatePasswordReset }) => {
       <h3 className="mb-4">Password Reset</h3>
       <Form noValidate validated={validated} onSubmit={handleSubmit}>
         <Form.Row>
+          <Form.Group as={Col} controlId="formGridCode">
+            <Form.Control required placeholder="Code" name="code" />
+            <Form.Control.Feedback type="invalid">Please add a code.</Form.Control.Feedback>
+          </Form.Group>
+        </Form.Row>
+        <Form.Row>
           <Form.Group as={Col} controlId="formGridUsernameOrEmail">
             <Form.Control required placeholder="Username or Email" name="usernameOrEmail" />
             <Form.Control.Feedback type="invalid">Please add a username or email.</Form.Control.Feedback>
@@ -79,4 +85,4 @@ const ResetPassword = ({ token, updatePasswordReset }) => {
   )
 }
 
-export default ResetPassword;
+export default ResetPasswordWithCode;

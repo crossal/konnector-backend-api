@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.konnector.backendapi.notifications.EmailTransportWrapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -29,8 +28,9 @@ public class VerificationIT {
 
 	private static final String USER_EMAIL_FOR_VERIFICATION = "email";
 	private static final String USER_EMAIL_WITH_VERIFICATION_NOT_ALLOWED_TO_REVERIFY_YET = "email_2";
-	private static final String USER_EMAIL_FOR_PASSWORD_RESET = "email_3";
+	private static final String USER_EMAIL_FOR_PASSWORD_RESET_WITH_TOKEN = "email_3";
 	private static final String USER_EMAIL_WITH_PASSWORD_RESET_NOT_ALLOWED_AGAIN_YET = "email_4";
+	private static final String USER_EMAIL_FOR_PASSWORD_RESET_WITH_CODE = "email_5";
 	private static final String VERIFICATION_TOKEN = "token";
 	private static final String VERIFICATION_CODE = "123456";
 	private static final String PASSWORD = "password";
@@ -44,13 +44,6 @@ public class VerificationIT {
 
 	private final ObjectMapper objectMapper = new ObjectMapper().configure(MapperFeature.USE_ANNOTATIONS, false).configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	private final VerificationDTO verificationDTO = new VerificationDTO();
-
-	@BeforeEach
-	public void setup() {
-		verificationDTO.setUsernameOrEmail(USER_EMAIL_FOR_VERIFICATION);
-		verificationDTO.setCode(VERIFICATION_CODE);
-		verificationDTO.setUserPassword(PASSWORD);
-	}
 
 	@Test
 	public void createEmailVerificationForUser_createsEmailVerification() {
@@ -91,6 +84,9 @@ public class VerificationIT {
 		String url = "http://localhost:" + randomServerPort + "/api/verifications/verify";
 		UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString(url)
 				.queryParam("type", VerificationType.EMAIL.getValue());
+		verificationDTO.setUsernameOrEmail(USER_EMAIL_FOR_VERIFICATION);
+		verificationDTO.setCode(VERIFICATION_CODE);
+		verificationDTO.setUserPassword(PASSWORD);
 		String verificationJson = objectMapper.writeValueAsString(verificationDTO);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
@@ -107,6 +103,8 @@ public class VerificationIT {
 				.queryParam("type", VerificationType.EMAIL.getValue());
 		url = uriComponentsBuilder.build().toUriString();
 		verificationDTO.setCode("some_wrong_code");
+		verificationDTO.setUsernameOrEmail(USER_EMAIL_FOR_VERIFICATION);
+		verificationDTO.setUserPassword(PASSWORD);
 		String verificationJson = objectMapper.writeValueAsString(verificationDTO);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
@@ -127,7 +125,7 @@ public class VerificationIT {
 	public void createPasswordResetForUser_createsPasswordReset() {
 		String url = "http://localhost:" + randomServerPort + "/api/verifications";
 		UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString(url)
-				.queryParam("usernameOrEmail", USER_EMAIL_FOR_PASSWORD_RESET)
+				.queryParam("usernameOrEmail", USER_EMAIL_FOR_PASSWORD_RESET_WITH_TOKEN)
 				.queryParam("type", VerificationType.PASSWORD.getValue());
 		ResponseEntity<String> response = testRestTemplate.postForEntity(uriComponentsBuilder.build().toUriString(), null, String.class);
 
@@ -146,11 +144,31 @@ public class VerificationIT {
 	}
 
 	@Test
-	public void resetPassword_resetsPassword() throws JsonProcessingException {
+	public void resetPassword_withToken_resetsPassword() throws JsonProcessingException {
 		String url = "http://localhost:" + randomServerPort + "/api/verifications/verify";
 		UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString(url)
 				.queryParam("passwordResetToken", VERIFICATION_TOKEN)
-				.queryParam("type", VerificationType.EMAIL.getValue());
+				.queryParam("type", VerificationType.PASSWORD.getValue());
+		verificationDTO.setUsernameOrEmail(USER_EMAIL_FOR_PASSWORD_RESET_WITH_TOKEN);
+		verificationDTO.setCode(VERIFICATION_CODE);
+		verificationDTO.setUserPassword(PASSWORD);
+		String verificationJson = objectMapper.writeValueAsString(verificationDTO);
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<String> entity = new HttpEntity<>(verificationJson, headers);
+		ResponseEntity<String> response = testRestTemplate.postForEntity(uriComponentsBuilder.build().toUriString(), entity, String.class);
+
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+	}
+
+	@Test
+	public void resetPassword_withCode_resetsPassword() throws JsonProcessingException {
+		String url = "http://localhost:" + randomServerPort + "/api/verifications/verify";
+		UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString(url)
+				.queryParam("type", VerificationType.PASSWORD.getValue());
+		verificationDTO.setUsernameOrEmail(USER_EMAIL_FOR_PASSWORD_RESET_WITH_CODE);
+		verificationDTO.setCode(VERIFICATION_CODE);
+		verificationDTO.setUserPassword(PASSWORD);
 		String verificationJson = objectMapper.writeValueAsString(verificationDTO);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);

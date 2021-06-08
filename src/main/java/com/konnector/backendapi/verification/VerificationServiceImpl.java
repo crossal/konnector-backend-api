@@ -137,6 +137,8 @@ public class VerificationServiceImpl implements VerificationService {
 				verificationDao.update(verification); // not working?
 				throw new InvalidVerificationCodeException("Code incorrect.");
 			}
+		} else if (!urlTokenOrCode.equals(verification.getUrlToken())) {
+			throw new InvalidVerificationCodeException("URL token incorrect.");
 		}
 
 		user.setEmailVerified(true);
@@ -166,24 +168,42 @@ public class VerificationServiceImpl implements VerificationService {
 				UUID.randomUUID().toString(), LocalDateTime.now().plusDays(URL_TOKEN_EXPIRATION_IN_DAYS), LocalDateTime.now().plusMinutes(RESEND_ALLOWED_IN_MINUTES));
 		verificationDao.save(verification);
 
-		emailNotificationService.sendPasswordResetEmail(user.getEmail(), verification.getUrlToken());
+		emailNotificationService.sendPasswordResetEmail(user.getEmail(), verification.getCode(), verification.getUrlToken());
 
 		return verification;
 	}
 
 	@Override
 	@Transactional
-	public void resetPasswordWithToken(String userPassword, String passwordResetToken) {
+	public void resetPasswordWithToken(String usernameOrEmail, String userPassword, String passwordResetToken) {
+		if (passwordResetToken == null || passwordResetToken.isEmpty()) {
+			throw new InvalidDataException("URL token cannot be empty.");
+		}
+
+		resetPasswordWithTokenOrCode(usernameOrEmail, userPassword, passwordResetToken, false);
+	}
+
+	@Override
+	@Transactional
+	public void resetPasswordWithCode(String usernameOrEmail, String userPassword, String passwordResetCode) {
+		if (passwordResetCode == null || passwordResetCode.isEmpty()) {
+			throw new InvalidDataException("Code cannot be empty.");
+		}
+
+		resetPasswordWithTokenOrCode(usernameOrEmail, userPassword, passwordResetCode, true);
+	}
+
+	private void resetPasswordWithTokenOrCode(String usernameOrEmail, String userPassword, String passwordResetUrlTokenOrCode, boolean usingCode) {
+		validateUsernameOrEmail(usernameOrEmail);
+
 		if (userPassword == null || userPassword.isEmpty()) {
 			throw new InvalidDataException("Password cannot be empty.");
 		}
 
-		if (passwordResetToken == null || passwordResetToken.isEmpty()) {
-			throw new InvalidDataException("Token cannot be empty.");
-		}
-
-		Optional<Verification> optionalVerification = verificationRepository.findFirstByUrlTokenAndTypeOrderByCreatedOnDesc(passwordResetToken, VerificationType.PASSWORD);
-		Verification verification = optionalVerification.orElseThrow(() -> new InvalidDataException("No verification found for token."));
+		Optional<User> optionalUser = userRepository.findByEmailOrUsername(usernameOrEmail, usernameOrEmail);
+		User user = optionalUser.orElseThrow(() -> new InvalidDataException("User not found."));
+		Optional<Verification> optionalVerification = verificationRepository.findFirstByUserIdAndTypeOrderByCreatedOnDesc(user.getId(), VerificationType.PASSWORD);
+		Verification verification = optionalVerification.orElseThrow(() -> new InvalidDataException("No verification found for user."));
 
 		if (verification.getStatus().equals(VerificationStatus.COMPLETE)) {
 			throw new InvalidDataException("Already verified.");
@@ -193,7 +213,20 @@ public class VerificationServiceImpl implements VerificationService {
 			throw new InvalidDataException("Reset expired.");
 		}
 
-		User user = userDao.get(verification.getUserId()).get();
+		if (usingCode) {
+			if (verification.getCodeAttemptsLeft() == 0) {
+				throw new NoVerificationAttemptsLeftException("No verification code attempts left.");
+			}
+
+			if (!passwordResetUrlTokenOrCode.equals(verification.getCode())) {
+				verification.setCodeAttemptsLeft(verification.getCodeAttemptsLeft() - 1);
+				verificationDao.update(verification); // not working?
+				throw new InvalidVerificationCodeException("Code incorrect.");
+			}
+		} else if (!passwordResetUrlTokenOrCode.equals(verification.getUrlToken())) {
+			throw new InvalidVerificationCodeException("URL token incorrect.");
+		}
+
 		userService.updateUserPassword(user, userPassword);
 
 		verification.setStatus(VerificationStatus.COMPLETE);
