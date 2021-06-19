@@ -17,8 +17,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource("classpath:application-integration-test.properties")
@@ -27,6 +31,8 @@ public class LoginIT {
 
 	private static final String EMAIL = "email";
 	private static final String PASSWORD = "password";
+	private static final String HEADER_SET_COOKIE = "Set-Cookie";
+	private static final String HEADER_SET_COOKIE_EXPECTED_ATTRIBUTES = "Secure; HttpOnly; SameSite=Strict";
 
 	private TestRestTemplate testRestTemplate = new TestRestTemplate();
 	@LocalServerPort
@@ -51,6 +57,11 @@ public class LoginIT {
 
 		UserDTO loggedInUser = objectMapper.readValue(response.getBody(), UserDTO.class);
 		assertEquals(EMAIL, loggedInUser.getEmail());
+
+		assertFalse(response.getHeaders().isEmpty());
+		assertTrue(response.getHeaders().containsKey(HEADER_SET_COOKIE));
+		List<String> setCookieHeader = response.getHeaders().get(HEADER_SET_COOKIE);
+		assertTrue(setCookieHeader.get(0).contains(HEADER_SET_COOKIE_EXPECTED_ATTRIBUTES));
 	}
 
 	@Test
