@@ -1,6 +1,9 @@
 package com.konnector.backendapi.session;
 
+import com.konnector.backendapi.security.SessionCookieFilter;
 import com.konnector.backendapi.security.UserDetailsServiceImpl;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -14,7 +17,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationFilter;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 
 @Configuration
 @EnableWebSecurity
@@ -37,6 +45,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //				.password("password")
 //				.roles("ADMIN", "USER");
 //	}
+
+	@Bean
+	public ServletContextInitializer servletContextInitializer() {
+		return new ServletContextInitializer() {
+			@Override
+			public void onStartup(ServletContext servletContext) throws ServletException {
+				servletContext.getSessionCookieConfig().setSecure(true);
+			}
+		};
+	}
 
 	@Bean
 	public UserDetailsService userDetailsService() {
@@ -86,6 +104,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //				.and()
 //				.exceptionHandling().accessDeniedHandler(new AccessDeniedExceptionHandler())
 //				.and()
+				.addFilterAfter(new SessionCookieFilter(), BasicAuthenticationFilter.class)
+//				.addFilter(new SessionCookieFilter())
 				.logout().deleteCookies("JSESSIONID")
 				.and()
 				.rememberMe().key("uniqueAndSecret").tokenValiditySeconds(86400)

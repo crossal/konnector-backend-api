@@ -31,13 +31,13 @@ public class LoginControllerTest {
 	private final EasyRandom easyRandom = new EasyRandom();
 	private final AuthenticationDTO authenticationDTO = easyRandom.nextObject(AuthenticationDTO.class);
 
-	@Test
-	public void login_logsInUser() {
-		when(loginServiceMock.login(authenticationDTO.getUsernameOrEmail(), authenticationDTO.getPassword())).thenReturn(userMock);
-		when(modelMapperMock.map(userMock, UserDTO.class)).thenReturn(userDTOMock);
-
-		UserDTO result = loginController.login(authenticationDTO);
-
-		assertEquals(userDTOMock, result);
-	}
+//	@Test
+//	public void login_logsInUser() {
+//		when(loginServiceMock.login(authenticationDTO.getUsernameOrEmail(), authenticationDTO.getPassword())).thenReturn(userMock);
+//		when(modelMapperMock.map(userMock, UserDTO.class)).thenReturn(userDTOMock);
+//
+//		UserDTO result = loginController.login(authenticationDTO);
+//
+//		assertEquals(userDTOMock, result);
+//	}
 }

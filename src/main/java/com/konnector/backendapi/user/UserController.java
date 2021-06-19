@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
+
 @RestController
 public class UserController {
 
@@ -34,7 +36,7 @@ public class UserController {
 
 	@GetMapping("/api/users/{id}")
 	@ResponseStatus(HttpStatus.OK)
-	public UserDTO getUser(@PathVariable("id") String userId) {
+	public UserDTO getUser(@PathVariable("id") String userId, HttpServletResponse response) {
 		User user = userService.getUser(Long.parseLong(userId));
 
 		return modelMapper.map(user, UserDTO.class);

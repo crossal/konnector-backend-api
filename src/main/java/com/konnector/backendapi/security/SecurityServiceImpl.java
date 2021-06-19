@@ -29,7 +29,7 @@ public class SecurityServiceImpl implements SecurityService {
 		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
 		Authentication authentication = authenticationManager.authenticate(authenticationToken);
 		SecurityContext securityContext = SecurityContextHolder.getContext();
-		securityContext.setAuthentication(authentication);
+		securityContext.setAuthentication(authentication); // is this set required?
 		HttpSession session = request.getSession(true);
 		session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
 	}

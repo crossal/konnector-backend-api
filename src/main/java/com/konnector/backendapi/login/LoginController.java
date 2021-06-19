@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
+
 @RestController
 public class LoginController {
 
@@ -20,7 +22,7 @@ public class LoginController {
 
 	@PostMapping("/api/authenticate")
 	@ResponseStatus(HttpStatus.OK)
-	public UserDTO login(@RequestBody AuthenticationDTO authenticationDTO) {
+	public UserDTO login(@RequestBody AuthenticationDTO authenticationDTO, HttpServletResponse response) {
 		User user = loginService.login(authenticationDTO.getUsernameOrEmail(), authenticationDTO.getPassword());
 
 		return modelMapper.map(user, UserDTO.class);
