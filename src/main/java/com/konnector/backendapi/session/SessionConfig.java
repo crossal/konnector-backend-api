@@ -5,17 +5,10 @@ import org.apache.tomcat.util.http.SameSiteCookies;
 import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-public class SessionConfig extends WebMvcConfigurerAdapter {
-
-	@Override
-	public void addInterceptors(InterceptorRegistry registry) {
-//		registry.addInterceptor(new ResponseInterceptor()).addPathPatterns("/account/login");
-		registry.addInterceptor(new ResponseInterceptor());
-	}
+public class SessionConfig implements WebMvcConfigurer {
 
 	@Bean
 	public TomcatContextCustomizer sameSiteCookiesConfig() {

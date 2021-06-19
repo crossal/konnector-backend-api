@@ -30,12 +30,12 @@ public class CookieInterceptor {
 //        cookieSerializer.setSameSite("strict");
 //    }
 
-    @EventListener
-    public void onEvent(ContextRefreshedEvent contextRefreshedEvent) {
-        DefaultCookieSerializer cookieSerializer = contextRefreshedEvent.getApplicationContext().getBean(DefaultCookieSerializer.class);
-//        log.info("Received DefaultCookieSerializer, Overriding SameSite Strict");
-        cookieSerializer.setUseHttpOnlyCookie(true);
-        cookieSerializer.setUseSecureCookie(true);
-        cookieSerializer.setSameSite("strict");
-    }
+//    @EventListener
+//    public void onEvent(ContextRefreshedEvent contextRefreshedEvent) {
+//        DefaultCookieSerializer cookieSerializer = contextRefreshedEvent.getApplicationContext().getBean(DefaultCookieSerializer.class);
+////        log.info("Received DefaultCookieSerializer, Overriding SameSite Strict");
+//        cookieSerializer.setUseHttpOnlyCookie(true);
+//        cookieSerializer.setUseSecureCookie(true);
+//        cookieSerializer.setSameSite("strict");
+//    }
 }

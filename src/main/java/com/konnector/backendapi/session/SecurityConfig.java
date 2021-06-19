@@ -46,15 +46,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //				.roles("ADMIN", "USER");
 //	}
 
-	@Bean
-	public ServletContextInitializer servletContextInitializer() {
-		return new ServletContextInitializer() {
-			@Override
-			public void onStartup(ServletContext servletContext) throws ServletException {
-				servletContext.getSessionCookieConfig().setSecure(true);
-			}
-		};
-	}
+//	@Bean
+//	public ServletContextInitializer servletContextInitializer() {
+//		return new ServletContextInitializer() {
+//			@Override
+//			public void onStartup(ServletContext servletContext) throws ServletException {
+//				servletContext.getSessionCookieConfig().setSecure(true);
+//			}
+//		};
+//	}
 
 	@Bean
 	public UserDetailsService userDetailsService() {
