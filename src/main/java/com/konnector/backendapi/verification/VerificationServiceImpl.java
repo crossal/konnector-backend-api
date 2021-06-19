@@ -155,10 +155,6 @@ public class VerificationServiceImpl implements VerificationService {
 
 		Optional<Verification> optionalExistingVerification = verificationRepository.findFirstByUserIdAndTypeOrderByCreatedOnDesc(user.getId(), VerificationType.PASSWORD);
 		optionalExistingVerification.ifPresent(verification -> {
-			if (verification.getStatus().equals(VerificationStatus.COMPLETE)) {
-				throw new InvalidDataException("Already reset.");
-			}
-
 			if (verification.getReverifyAllowedOn().isAfter(LocalDateTime.now())) {
 				throw new InvalidDataException("Reset not allowed so soon.");
 			}

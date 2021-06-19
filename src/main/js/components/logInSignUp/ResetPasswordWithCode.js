@@ -68,7 +68,7 @@ const ResetPasswordWithCode = ({ updatePasswordReset }) => {
         </Form.Row>
         <Form.Row>
           <Form.Group as={Col} controlId="formGridPassword">
-            <Form.Control ref={password} required placeholder="Password" name="userPassword" />
+            <Form.Control ref={password} required type="password" placeholder="Password" name="userPassword" />
             <Form.Control.Feedback type="invalid">Please add a password.</Form.Control.Feedback>
           </Form.Group>
         </Form.Row>

@@ -363,21 +363,10 @@ public class VerificationServiceImplTest {
 	}
 
 	@Test
-	public void createPasswordResetForUser_existingPasswordResetAndAlreadyReset_throwsException() {
-		when(userRepositoryMock.findByEmailOrUsername(username, username)).thenReturn(Optional.of(userMock));
-		when(userMock.getId()).thenReturn(userId);
-		when(verificationRepositoryMock.findFirstByUserIdAndTypeOrderByCreatedOnDesc(userId, VerificationType.PASSWORD)).thenReturn(Optional.of(verificationMock));
-		when(verificationMock.getStatus()).thenReturn(VerificationStatus.COMPLETE);
-
-		assertThrows(InvalidDataException.class, () -> verificationService.createPasswordResetForUser(username));
-	}
-
-	@Test
 	public void createPasswordResetForUser_existingPasswordResetAndNotAllowedReverifyYet_throwsException() {
 		when(userRepositoryMock.findByEmailOrUsername(username, username)).thenReturn(Optional.of(userMock));
 		when(userMock.getId()).thenReturn(userId);
 		when(verificationRepositoryMock.findFirstByUserIdAndTypeOrderByCreatedOnDesc(userId, VerificationType.PASSWORD)).thenReturn(Optional.of(verificationMock));
-		when(verificationMock.getStatus()).thenReturn(VerificationStatus.INCOMPLETE);
 		when(verificationMock.getReverifyAllowedOn()).thenReturn(LocalDateTime.now().plusDays(1));
 
 		assertThrows(InvalidDataException.class, () -> verificationService.createPasswordResetForUser(username));
@@ -388,7 +377,6 @@ public class VerificationServiceImplTest {
 		when(userRepositoryMock.findByEmailOrUsername(username, username)).thenReturn(Optional.of(userMock));
 		when(userMock.getId()).thenReturn(userId);
 		when(verificationRepositoryMock.findFirstByUserIdAndTypeOrderByCreatedOnDesc(userId, VerificationType.PASSWORD)).thenReturn(Optional.of(verificationMock));
-		when(verificationMock.getStatus()).thenReturn(VerificationStatus.INCOMPLETE);
 		when(verificationMock.getReverifyAllowedOn()).thenReturn(LocalDateTime.now().minusDays(1));
 		when(codeGenerationServiceMock.generateCode(anyInt())).thenReturn(code);
 		when(userMock.getEmail()).thenReturn(email);
