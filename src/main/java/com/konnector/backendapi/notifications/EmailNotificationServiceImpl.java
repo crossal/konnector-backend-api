@@ -23,6 +23,7 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
 	private static final Logger LOGGER = LogManager.getLogger(EmailNotificationServiceImpl.class);
 
 	private static final String FROM_ADDRESS = "support@konnector.io";
+	private static final String FROM_NAME = "Konnector";
 	private static final String PROPERTY_KEY_HOST = "mail.smtp.host";
 	private static final String HOST = "smtp.gmail.com";
 	private static final String PROPERTY_KEY_PORT = "mail.smtp.port";
@@ -72,7 +73,7 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
 		String verificationBody = getVerificationBody(code, verificationUrl);
 
 		try {
-			message.setFrom(new InternetAddress(FROM_ADDRESS));
+			message.setFrom(new InternetAddress(FROM_ADDRESS, FROM_NAME));
 			message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
 			message.setSubject(VERIFICATION_EMAIL_SUBJECT);
 			message.setText(verificationBody);
@@ -99,7 +100,7 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
 		String passwordResetBody = getPasswordResetBody(code, passwordResetUrl);
 
 		try {
-			message.setFrom(new InternetAddress(FROM_ADDRESS));
+			message.setFrom(new InternetAddress(FROM_ADDRESS, FROM_NAME));
 			message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
 			message.setSubject(RESET_PASSWORD_EMAIL_SUBJECT);
 			message.setText(passwordResetBody);

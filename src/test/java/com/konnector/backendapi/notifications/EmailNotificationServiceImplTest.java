@@ -32,6 +32,7 @@ public class EmailNotificationServiceImplTest {
 
 	private static final String RECIPIENT = "recipient@something.com";
 	private static final String SENDER = "support@konnector.io";
+	private static final String SENDER_NAME = "Konnector";
 	private static final String CODE = "code";
 	private static final String URL_TOKEN = "token";
 	private static final String VERIFICATION_SUBJECT = "Verify your email address";
@@ -66,10 +67,12 @@ public class EmailNotificationServiceImplTest {
 
 		verify(emailTransportWrapperMock, times(1)).send(messageCaptor.capture());
 		Message message = messageCaptor.getValue();
-		List<String> recipients = Arrays.asList(message.getAllRecipients()).stream().map(address -> ((InternetAddress) address).getAddress()).collect(Collectors.toList());
+		List<String> recipients = Arrays.stream(message.getAllRecipients()).map(address -> ((InternetAddress) address).getAddress()).collect(Collectors.toList());
 		assertTrue(recipients.contains(RECIPIENT));
-		List<String> senders = Arrays.asList(message.getFrom()).stream().map(address -> ((InternetAddress) address).getAddress()).collect(Collectors.toList());
+		List<String> senders = Arrays.stream(message.getFrom()).map(address -> ((InternetAddress) address).getAddress()).collect(Collectors.toList());
 		assertTrue(senders.contains(SENDER));
+		List<String> senderNames = Arrays.stream(message.getFrom()).map(address -> ((InternetAddress) address).getPersonal()).collect(Collectors.toList());
+		assertTrue(senderNames.contains(SENDER_NAME));
 		assertEquals(VERIFICATION_SUBJECT, message.getSubject());
 		assertEquals(VERIFICATION_BODY, message.getContent().toString());
 	}
@@ -87,10 +90,12 @@ public class EmailNotificationServiceImplTest {
 
 		verify(emailTransportWrapperMock, times(1)).send(messageCaptor.capture());
 		Message message = messageCaptor.getValue();
-		List<String> recipients = Arrays.asList(message.getAllRecipients()).stream().map(address -> ((InternetAddress) address).getAddress()).collect(Collectors.toList());
+		List<String> recipients = Arrays.stream(message.getAllRecipients()).map(address -> ((InternetAddress) address).getAddress()).collect(Collectors.toList());
 		assertTrue(recipients.contains(RECIPIENT));
-		List<String> senders = Arrays.asList(message.getFrom()).stream().map(address -> ((InternetAddress) address).getAddress()).collect(Collectors.toList());
+		List<String> senders = Arrays.stream(message.getFrom()).map(address -> ((InternetAddress) address).getAddress()).collect(Collectors.toList());
 		assertTrue(senders.contains(SENDER));
+		List<String> senderNames = Arrays.stream(message.getFrom()).map(address -> ((InternetAddress) address).getPersonal()).collect(Collectors.toList());
+		assertTrue(senderNames.contains(SENDER_NAME));
 		assertEquals(PASSWORD_RESET_SUBJECT, message.getSubject());
 		assertEquals(PASSWORD_RESET_BODY, message.getContent().toString());
 	}
