@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+	<Appenders>
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout
+					pattern="%style{%d{ISO8601}}{black} %highlight{%-5level }[%style{%t}{bright,blue}] %style{%C{1.}}{bright,yellow}: %msg%n%throwable"/>
+		</Console>
+
+		<RollingFile
+				name="RollingFile"
+				fileName="./logs/konnector-backend-api.log"
+				filePattern="./logs/konnector-backend-api-%d{dd-MM-yyyy}-%i.log.gz">
+			<PatternLayout>
+				<pattern>%d{dd/MM/yyyy HH:mm:ss,SSS} %p %C{10} [%t] %m%n</pattern>
+			</PatternLayout>
+			<Policies>
+				<OnStartupTriggeringPolicy/>
+				<SizeBasedTriggeringPolicy size="10 MB"/>
+			</Policies>
+			<DefaultRolloverStrategy max="5"/>
+		</RollingFile>
+
+		<!--<appender name="RollingFileAppender" class="org.apache.log4j2.RollingFileAppender">-->
+		<!--<param name="file" value="./logs/konnector-log4j2.log" />-->
+		<!--<param name="MaxFileSize" value="10MB" />-->
+		<!--<param name="MaxBackupIndex" value="5" />-->
+		<!--<layout class="org.apache.log4j.PatternLayout">-->
+		<!--<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %-5p %m%n" />-->
+		<!--</layout>-->
+		<!--</appender>-->
+
+		<!--<appender-->
+				<!--name="RollingFileAppender"-->
+				<!--class="org.apache.log4j2.RollingFileAppender"-->
+				<!--fileName="./logs/konnector.log"-->
+				<!--filePattern="./logs/konnector.%i.log.gz">-->
+			<!--<Policies>-->
+				<!--<OnStartupTriggeringPolicy/>-->
+			<!--</Policies>-->
+			<!--<param name="append" value="false"/>-->
+			<!--<param name="maxFileSize" value="10MB"/>-->
+			<!--<param name="maxBackupIndex" value="5"/>-->
+			<!--&lt;!&ndash; For Tomcat &ndash;&gt;-->
+			<!--&lt;!&ndash;<param name="file" value="${catalina.home}/logs/myStruts1App.log" />&ndash;&gt;-->
+			<!--<layout class="org.apache.log4j.PatternLayout">-->
+				<!--<param name="ConversionPattern" value="%d{dd/MM/yyyy HH:mm:ss,SSS} %p %C{1.} [%t] %m%n"/>-->
+			<!--</layout>-->
+		<!--</appender>-->
+
+		<!--<SizeBasedTriggeringPolicy size="5 KB" />-->
+		<!--<appender-->
+		<!--name="RollingFileAppender"-->
+		<!--class="org.apache.log4j2.RollingFileAppender"-->
+		<!--fileName="target/log4j2/roll-by-size/app.log"-->
+		<!--filePattern="target/log4j2/roll-by-size/app.%i.log.gz" >-->
+		<!--<param name="append" value="false" />-->
+		<!--<param name="maxFileSize" value="10KB" />-->
+		<!--<param name="maxBackupIndex" value="5" />-->
+		<!--&lt;!&ndash; For Tomcat &ndash;&gt;-->
+		<!--<param name="file" value="${catalina.home}/logs/myStruts1App.log" />-->
+		<!--<layout class="org.apache.log4j.PatternLayout">-->
+		<!--<param name="ConversionPattern" value="%d{dd/MM/yyyy HH:mm:ss,SSS} %p %C{1.} [%t] %m%n" />-->
+		<!--</layout>-->
+		<!--</appender>-->
+	</Appenders>
+
+	<Loggers>
+		<Root level="error">
+			<AppenderRef ref="Console"/>
+			<AppenderRef ref="RollingFile"/>
+		</Root>
+	</Loggers>
+</Configuration>

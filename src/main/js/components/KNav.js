@@ -1,0 +1,48 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import Navbar from 'react-bootstrap/Navbar';
+import Nav from 'react-bootstrap/Nav';
+import { Button } from "react-bootstrap";
+
+class KNav extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.updateLoggedIn = this.updateLoggedIn.bind(this);
+  }
+
+  updateLoggedIn(e){
+    this.props.updateLoggedIn(false, null)
+  }
+
+  render() {
+    let content;
+    if (this.props.loggedIn) {
+      content =
+        <Navbar bg="dark" variant="dark">
+          <Navbar.Brand href="#home">Konnector</Navbar.Brand>
+          <Nav className="mr-auto">
+            <Nav.Link as={Link} to="/">Home</Nav.Link>
+            <Nav.Link as={Link} to="/profile">Profile</Nav.Link>
+            <Nav.Link as={Link} to="/connections">Connections</Nav.Link>
+          </Nav>
+          <Nav>
+            <Button variant="link" onClick={this.updateLoggedIn}>Log Out</Button>
+          </Nav>
+        </Navbar>
+    } else {
+      content =
+        <Navbar bg="dark" variant="dark">
+          <Navbar.Brand href="#home">Konnector</Navbar.Brand>
+        </Navbar>
+    }
+
+    return (
+      <>
+        {content}
+      </>
+    )
+  }
+}
+
+export default KNav;

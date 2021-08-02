@@ -13,7 +13,11 @@ dist/
 # Compiled Python bytecode
 *.py[cod]
 
+# Javascript built files
+src/main/resources/static/built/
+
 # Log files
+logs/
 *.log
 
 # Package files
@@ -25,6 +29,7 @@ dist/
 
 # JetBrains IDE
 .idea/
+*.iml
 
 # Unit test reports
 TEST*.xml
