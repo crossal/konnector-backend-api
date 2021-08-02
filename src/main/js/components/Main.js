@@ -1,6 +1,7 @@
 import React from 'react';
 import KNav from './KNav';
 import MainContent from './MainContent';
+import client from '../client';
 
 class Main extends React.Component {
 
@@ -34,6 +35,21 @@ class Main extends React.Component {
      this.setState({
        resetPasswordToken: null
      });
+   }
+
+   componentDidMount() {
+     // check if user session is still valid
+     // if not, clean up state
+     client({method: 'GET', path: '/api/authHealth'}).then(
+       response => {
+         if (response.status.code === 401) {
+           this.setState({
+             loggedIn: false,
+             userId: null
+           });
+         }
+       }
+     );
    }
 
   render() {

@@ -15,4 +15,11 @@ public class HealthController {
 	public String getHealth() {
 		return "Ok";
 	}
+
+	@GetMapping("/api/authHealth")
+	@ResponseStatus(HttpStatus.OK)
+	@ResponseBody
+	public String getAuthHealth() {
+		return "Ok";
+	}
 }
