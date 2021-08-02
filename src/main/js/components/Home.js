@@ -1,22 +1,11 @@
 import React from 'react';
 
-class Home extends React.Component { // <1>
+class Home extends React.Component {
 
-//	constructor(props) {
-//		super(props);
-//		this.state = {employees: []};
-//	}
-//
-//	componentDidMount() { // <2>
-//		client({method: 'GET', path: '/api/employees'}).then(response => {
-//			this.setState({employees: response.entity._embedded.employees});
-//		});
-//	}
-
-	render() { // <3>
+	render() {
 		return (
 			<div>
-				<h1>Welcome to the Tornadoes Website!</h1>
+				<h1>Welcome!</h1>
 			</div>
 		)
 	}

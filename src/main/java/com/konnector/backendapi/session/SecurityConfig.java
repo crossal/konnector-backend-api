@@ -22,31 +22,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	private static final int BCRYPT_STRENGTH = 12;
 
-//	@Autowired
-//	private UserDetailsService userDetailsService;
-
-//	@Override
-//	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//		auth
-//				.inMemoryAuthentication()
-//				.withUser("user")
-//				.password("password")
-//				.roles("USER")
-//				.and()
-//				.withUser("admin")
-//				.password("password")
-//				.roles("ADMIN", "USER");
-//	}
-
 	@Bean
 	public UserDetailsService userDetailsService() {
 		return new UserDetailsServiceImpl();
 	}
-
-//	@Bean
-//	public PasswordEncoder passwordEncoder() {
-//		return new Pbkdf2PasswordEncoder();
-//	}
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -55,7 +34,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//		auth.userDetailsService(userDetailsService);
 		auth.userDetailsService(userDetailsService()).passwordEncoder(passwordEncoder());
 	}
 
@@ -75,17 +53,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.POST, "/api/verifications/verify*").permitAll()
 				.antMatchers(HttpMethod.POST, "/api/verifications*").permitAll()
 				.antMatchers(HttpMethod.POST, "/api/authenticate").permitAll()
-//				.antMatchers(HttpMethod.GET, "/api/users/*").permitAll()
 				.antMatchers("/api/**").authenticated() // comment this line out for testing
 				.anyRequest().permitAll()
-//				.anyRequest().authenticated()
 				.and()
 				.exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
 				.and()
-//				.exceptionHandling().authenticationEntryPoint(new AuthenticationEntryPointImpl())
-//				.and()
-//				.exceptionHandling().accessDeniedHandler(new AccessDeniedExceptionHandler())
-//				.and()
 				.logout().deleteCookies("JSESSIONID")
 				.and()
 				.rememberMe().key("uniqueAndSecret").tokenValiditySeconds(86400)

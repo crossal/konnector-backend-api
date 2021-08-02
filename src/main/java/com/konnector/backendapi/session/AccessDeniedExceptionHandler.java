@@ -15,7 +15,6 @@ public class AccessDeniedExceptionHandler implements AccessDeniedHandler {
 
 	@Override
 	public void handle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AccessDeniedException e) {
-		LOGGER.error("***here");
 		httpServletResponse.setStatus(HttpStatus.FORBIDDEN.value());
 	}
 }

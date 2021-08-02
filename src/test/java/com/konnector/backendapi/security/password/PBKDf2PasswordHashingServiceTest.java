@@ -52,11 +52,8 @@ public class PBKDf2PasswordHashingServiceTest {
 	private ArgumentCaptor<PBEKeySpec> pbeKeySpecArgumentCaptor;
 
 	@BeforeEach
-	public void setup() throws NoSuchAlgorithmException, InvalidKeySpecException {
+	public void setup() {
 		random.nextBytes(secret);
-//		when(secretKeyFactoryWrapperServiceMock.getInstance(anyString())).thenReturn(secretKeyFactoryMock);
-//		when(secretKeyFactoryMock.generateSecret(any(KeySpec.class))).thenReturn(secretKeyMock);
-//		when(secretKeyMock.getEncoded()).thenReturn(secret);
 	}
 
 	@Test

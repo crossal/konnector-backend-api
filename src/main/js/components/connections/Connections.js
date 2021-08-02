@@ -1,25 +1,13 @@
 import React from 'react';
 
-class Connections extends React.Component { // <1>
+class Connections extends React.Component {
 
-//	constructor(props) {
-//		super(props);
-//		this.state = {employees: []};
-//	}
-//
-//	componentDidMount() { // <2>
-//		client({method: 'GET', path: '/api/employees'}).then(response => {
-//			this.setState({employees: response.entity._embedded.employees});
-//		});
-//	}
-
-	render() { // <3>
+	render() {
 		return (
 			<div>
 				<ul>
-					<li>6/5 @ Evergreens</li>
-					<li>6/8 vs Kickers</li>
-					<li>6/14 @ United</li>
+					<li>John</li>
+					<li>Bill</li>
 				</ul>
 			</div>
 		)
