@@ -17,7 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(VerificationAPIController.class)
+@WebMvcTest(VerificationController.class)
 @TestPropertySource("classpath:application-integration-test.properties")
 public class VerificationWebIT {
 

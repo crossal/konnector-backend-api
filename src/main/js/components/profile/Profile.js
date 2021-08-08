@@ -24,11 +24,40 @@ class Profile extends React.Component {
     );
   }
 
+  handleSubmit() {
+    event.preventDefault();
+    event.stopPropagation();
+
+    setServerError(null);
+
+    const form = event.currentTarget;
+    if (form.checkValidity() === true) {
+      setLoading(true);
+      const formData = new FormData(event.target), formDataObj = Object.fromEntries(formData.entries())
+      client({
+        method: 'POST',
+        path: '/api/authenticate',
+        entity: formDataObj
+      }).then(response => {
+        setLoading(false);
+        if (response.status.code === 200) {
+          updateLoggedIn(true, response.entity.id)
+        } else if (response.status.code === 401) {
+          setServerError("Username/email or password incorrect.")
+        } else if (response.status.code === 422 && response.entity.code === 1) {
+          logInWithoutVerification()
+        }
+      })
+    } else {
+      setValidated(true);
+    }
+  }
+
   render() {
       return (
         <div>
           <h2>Account Details</h2>
-          <Form>
+          <Form noValidate validated={validated} onSubmit={handleSubmit}>
             <Form.Row>
               <Form.Group as={Col} controlId="formGridEmail">
                 <Form.Label>Email</Form.Label>
@@ -61,6 +90,8 @@ class Profile extends React.Component {
                 <Form.Control placeholder="Last name" defaultValue={this.state.user.lastName || ''} />
               </Form.Group>
             </Form.Row>
+            { serverError ? <Alert variant="danger">{serverError}</Alert> : <div/> }
+            <Button variant="primary" type="submit" disabled={loading}>{loading ? 'Loading...' : 'Save'}</Button>
           </Form>
 
           <br />

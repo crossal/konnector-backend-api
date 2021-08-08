@@ -50,6 +50,23 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@Transactional
+	public User updateUser(User user) {
+		userValidator.validateUserUpdateArgument(user);
+
+		Optional<User> optionalUser = userRepository.findById(user.getId());
+
+		return optionalUser.map(
+				existingUser -> {
+					Authentication authentication = authenticationFacade.getAuthentication();
+					userAuthorizationValidator.validateUserRequest(user.getId(), authentication);
+
+					return existingUser;
+				}
+		).orElseThrow(() -> new NotFoundException("User not found."));
+	}
+
+	@Override
 	public User getUser(Long id) {
 		userValidator.validateUserFetchRequest(id);
 
@@ -58,7 +75,7 @@ public class UserServiceImpl implements UserService {
 		return optionalUser.map(
 				user -> {
 					Authentication authentication = authenticationFacade.getAuthentication();
-					userAuthorizationValidator.validateUserFetchRequest(user, authentication);
+					userAuthorizationValidator.validateUserRequest(id, authentication);
 
 					return user;
 				}

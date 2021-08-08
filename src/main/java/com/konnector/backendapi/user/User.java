@@ -128,6 +128,32 @@ public class User {
 		if (id != null) {
 			throw new InvalidDataException("Id should be empty.");
 		}
+		if (password == null || password.isEmpty()) {
+			throw new InvalidDataException("Password cannot be empty.");
+		}
+		if (password.length() < MIN_PASSWORD_LENGTH) {
+			throw new InvalidDataException("Password cannot be less than " + MIN_PASSWORD_LENGTH + " characters.");
+		}
+		if (password.length() > MAX_PASSWORD_LENGTH) {
+			throw new InvalidDataException("Password cannot be greater than " + MAX_PASSWORD_LENGTH + " characters.");
+		}
+
+		validateForCreationAndUpdate();
+	}
+
+	public void validateForUpdate() {
+		if (id != null) {
+			throw new InvalidDataException("Id cannot be empty.");
+		}
+
+		if (password != null) {
+			throw new InvalidDataException("Password should be updated via login screen.");
+		}
+
+		validateForCreationAndUpdate();
+	}
+
+	private void validateForCreationAndUpdate() {
 		if (email == null || email.isEmpty()) {
 			throw new InvalidDataException("Email cannot be empty.");
 		}
@@ -142,15 +168,6 @@ public class User {
 		}
 		if (lastName == null || lastName.isEmpty()) {
 			throw new InvalidDataException("Last name cannot be empty.");
-		}
-		if (password == null || password.isEmpty()) {
-			throw new InvalidDataException("Password cannot be empty.");
-		}
-		if (password.length() < MIN_PASSWORD_LENGTH) {
-			throw new InvalidDataException("Password cannot be less than " + MIN_PASSWORD_LENGTH + " characters.");
-		}
-		if (password.length() > MAX_PASSWORD_LENGTH) {
-			throw new InvalidDataException("Password cannot be greater than " + MAX_PASSWORD_LENGTH + " characters.");
 		}
 	}
 }

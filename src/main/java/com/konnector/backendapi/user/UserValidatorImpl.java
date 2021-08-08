@@ -31,6 +31,15 @@ public class UserValidatorImpl implements UserValidator {
 	}
 
 	@Override
+	public void validateUserUpdateArgument(User user) {
+		if (user == null) {
+			throw new InvalidDataException("User cannot be empty.");
+		}
+
+		user.validateForUpdate();
+	}
+
+	@Override
 	public void validateUserFetchRequest(Long userId) {
 		if (userId == null) {
 			throw new InvalidDataException("User Id cannot be empty.");

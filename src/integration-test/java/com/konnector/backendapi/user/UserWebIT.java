@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserController.class)
@@ -59,6 +60,25 @@ public class UserWebIT {
 		when(modelMapperMock.map(userMock, UserDTO.class)).thenReturn(userDTO);
 
 		MvcResult result = mockMvc.perform(post("/api/users").contentType(MediaType.APPLICATION_JSON).content(userJson)).andExpect(status().isCreated()).andReturn();
+		UserDTO userDTOResponse = objectMapper.readValue(result.getResponse().getContentAsString(), UserDTO.class);
+
+		userDTO.setPassword(null);
+		assertEquals(userDTO, userDTOResponse);
+	}
+
+	@Test
+	public void updateUser_withoutAuthentication_returnsFailure() throws Exception {
+		mockMvc.perform(put("/api/users").contentType(MediaType.APPLICATION_JSON).content(userJson)).andExpect(status().isUnauthorized());
+	}
+
+	@Test
+	@WithMockUser
+	public void updateUser_returnsSuccessAndUpdatedUser() throws Exception {
+		when(modelMapperMock.map(any(UserDTO.class), eq(User.class))).thenReturn(userMock);
+		when(userServiceMock.updateUser(userMock)).thenReturn(userMock);
+		when(modelMapperMock.map(userMock, UserDTO.class)).thenReturn(userDTO);
+
+		MvcResult result = mockMvc.perform(put("/api/users").contentType(MediaType.APPLICATION_JSON).content(userJson)).andExpect(status().isOk()).andReturn();
 		UserDTO userDTOResponse = objectMapper.readValue(result.getResponse().getContentAsString(), UserDTO.class);
 
 		userDTO.setPassword(null);

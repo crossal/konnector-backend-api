@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.konnector.backendapi.AuthenticatedTest;
 import com.konnector.backendapi.notifications.EmailTransportWrapper;
-import com.konnector.backendapi.session.SecurityConfigTest;
+import com.konnector.backendapi.session.SecurityTestConfig;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = SecurityConfigTest.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = SecurityTestConfig.class)
 @TestPropertySource("classpath:application-integration-test.properties")
 @Sql({ "/data/truncate-all-data.sql", "/data/user/user-insert-data.sql" })
 public class UserIT extends AuthenticatedTest {
@@ -62,6 +62,30 @@ public class UserIT extends AuthenticatedTest {
 		assertEquals(userDTO.getFirstName(), createdUser.getFirstName());
 		assertEquals(userDTO.getLastName(), createdUser.getLastName());
 		assertFalse(createdUser.isEmailVerified());
+	}
+
+	@Test
+	public void updateUserEndpoint_createsUser() throws Exception {
+		// TODO
+//		userDTO.setEmail("someemail@userit.com");
+//		userDTO.setId(null);
+//		String userJson = objectMapper.writeValueAsString(userDTO);
+//		HttpHeaders headers = new HttpHeaders();
+//		headers.setContentType(MediaType.APPLICATION_JSON);
+//		HttpEntity<String> entity = new HttpEntity<>(userJson, headers);
+//
+//		ResponseEntity<String> response = testRestTemplate.postForEntity("http://localhost:" + randomServerPort + "/api/users", entity, String.class);
+//
+//		assertEquals(HttpStatus.CREATED.value(), response.getStatusCodeValue());
+//		assertNotNull(response.getBody());
+//
+//		UserDTO createdUser = objectMapper.readValue(response.getBody(), UserDTO.class);
+//		assertNotNull(createdUser.getId());
+//		assertNull(createdUser.getPassword());
+//		assertEquals(userDTO.getEmail(), createdUser.getEmail());
+//		assertEquals(userDTO.getFirstName(), createdUser.getFirstName());
+//		assertEquals(userDTO.getLastName(), createdUser.getLastName());
+//		assertFalse(createdUser.isEmailVerified());
 	}
 
 	@Test
