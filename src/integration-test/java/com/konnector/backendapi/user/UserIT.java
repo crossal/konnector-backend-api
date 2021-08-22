@@ -45,6 +45,7 @@ public class UserIT extends AuthenticatedTest {
 	public void createUserEndpoint_createsUser() throws Exception {
 		userDTO.setEmail("someemail@userit.com");
 		userDTO.setId(null);
+		userDTO.setEmailVerified(false);
 		String userJson = objectMapper.writeValueAsString(userDTO);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
@@ -65,32 +66,36 @@ public class UserIT extends AuthenticatedTest {
 	}
 
 	@Test
-	public void updateUserEndpoint_createsUser() throws Exception {
-		// TODO
-//		userDTO.setEmail("someemail@userit.com");
-//		userDTO.setId(null);
-//		String userJson = objectMapper.writeValueAsString(userDTO);
-//		HttpHeaders headers = new HttpHeaders();
-//		headers.setContentType(MediaType.APPLICATION_JSON);
-//		HttpEntity<String> entity = new HttpEntity<>(userJson, headers);
-//
-//		ResponseEntity<String> response = testRestTemplate.postForEntity("http://localhost:" + randomServerPort + "/api/users", entity, String.class);
-//
-//		assertEquals(HttpStatus.CREATED.value(), response.getStatusCodeValue());
-//		assertNotNull(response.getBody());
-//
-//		UserDTO createdUser = objectMapper.readValue(response.getBody(), UserDTO.class);
-//		assertNotNull(createdUser.getId());
-//		assertNull(createdUser.getPassword());
-//		assertEquals(userDTO.getEmail(), createdUser.getEmail());
-//		assertEquals(userDTO.getFirstName(), createdUser.getFirstName());
-//		assertEquals(userDTO.getLastName(), createdUser.getLastName());
-//		assertFalse(createdUser.isEmailVerified());
+	public void updateUserEndpoint_updatesUser() throws Exception {
+		userDTO.setEmail("test@email.com");
+		userDTO.setUsername("username");
+		userDTO.setFirstName("first_name_new");
+		userDTO.setLastName("last_name_new");
+		userDTO.setEmailVerified(true);
+		userDTO.setPassword(null);
+		userDTO.setId(1L);
+		String userJson = objectMapper.writeValueAsString(userDTO);
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<String> entity = getEntityWithAuth(userJson, headers);
+
+		ResponseEntity<String> response = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/api/users/1", HttpMethod.PUT, entity, String.class);
+
+		assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+		assertNotNull(response.getBody());
+
+		UserDTO updatedUser = objectMapper.readValue(response.getBody(), UserDTO.class);
+		assertEquals(userDTO.getId(), updatedUser.getId());
+		assertNull(updatedUser.getPassword());
+		assertEquals(userDTO.getEmail(), updatedUser.getEmail());
+		assertEquals(userDTO.getFirstName(), updatedUser.getFirstName());
+		assertEquals(userDTO.getLastName(), updatedUser.getLastName());
+		assertEquals(userDTO.isEmailVerified(), updatedUser.isEmailVerified());
 	}
 
 	@Test
 	public void getUserEndpoint_getsUser() throws Exception {
-		ResponseEntity<String> response = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/api/users/1", HttpMethod.GET, getEntityWithAuth(), String.class);
+		ResponseEntity<String> response = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/api/users/1", HttpMethod.GET, getEntityWithAuth(null, null), String.class);
 
 		assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
 		assertNotNull(response.getBody());

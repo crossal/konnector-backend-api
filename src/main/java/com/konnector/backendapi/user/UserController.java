@@ -33,12 +33,12 @@ public class UserController {
 		return modelMapper.map(user, UserDTO.class);
 	}
 
-	@PutMapping("/api/users")
+	@PutMapping("/api/users/{id}")
 	@ResponseStatus(HttpStatus.OK)
-	public UserDTO updateUser(@RequestBody UserDTO userDTO) {
+	public UserDTO updateUser(@RequestBody UserDTO userDTO, @PathVariable("id") String userId) {
 		User user = modelMapper.map(userDTO, User.class);
 
-		user = userService.updateUser(user);
+		user = userService.updateUser(user, Long.parseLong(userId));
 
 		return modelMapper.map(user, UserDTO.class);
 	}

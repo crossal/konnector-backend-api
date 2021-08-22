@@ -28,15 +28,20 @@ public abstract class AuthenticatedTest {
 
 	protected String jSessionIdCookie;
 
-	protected HttpHeaders getHttpHeadersWithAuth() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.add(HttpHeaders.COOKIE, jSessionIdCookie);
+	protected HttpHeaders getHttpHeadersWithAuth(HttpHeaders httpHeadersIn) {
+		HttpHeaders httpHeaders = new HttpHeaders();
 
-		return headers;
+		if (httpHeadersIn != null) {
+			httpHeaders.addAll(httpHeadersIn);
+		}
+
+		httpHeaders.add(HttpHeaders.COOKIE, jSessionIdCookie);
+
+		return httpHeaders;
 	}
 
-	protected HttpEntity getEntityWithAuth() {
-		return new HttpEntity(getHttpHeadersWithAuth());
+	protected HttpEntity getEntityWithAuth(String body, HttpHeaders httpHeaders) {
+		return new HttpEntity(body, getHttpHeadersWithAuth(httpHeaders));
 	}
 
 	@BeforeEach

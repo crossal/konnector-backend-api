@@ -51,15 +51,18 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Transactional
-	public User updateUser(User user) {
-		userValidator.validateUserUpdateArgument(user);
-
-		Optional<User> optionalUser = userRepository.findById(user.getId());
+	public User updateUser(User user, Long id) {
+		Optional<User> optionalUser = userRepository.findById(id);
 
 		return optionalUser.map(
 				existingUser -> {
+					userValidator.validateUserUpdateArgument(existingUser, user, id);
+
 					Authentication authentication = authenticationFacade.getAuthentication();
-					userAuthorizationValidator.validateUserRequest(user.getId(), authentication);
+					userAuthorizationValidator.validateUserRequest(id, authentication);
+
+					existingUser.merge(user);
+					userDao.update(existingUser);
 
 					return existingUser;
 				}

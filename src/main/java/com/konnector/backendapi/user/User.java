@@ -53,17 +53,6 @@ public class User {
 	@UpdateTimestamp
 	private LocalDateTime updatedOn;
 
-	public User() {
-	}
-
-	public User(String email, String username, String password, String firstName, String lastName) {
-		this.email = email;
-		this.username = username;
-		this.password = password;
-		this.firstName = firstName;
-		this.lastName = lastName;
-	}
-
 	public Long getId() {
 		return id;
 	}
@@ -137,12 +126,15 @@ public class User {
 		if (password.length() > MAX_PASSWORD_LENGTH) {
 			throw new InvalidDataException("Password cannot be greater than " + MAX_PASSWORD_LENGTH + " characters.");
 		}
+		if (emailVerified != false) {
+			throw new InvalidDataException("Email verification flag should be false on creation.");
+		}
 
 		validateForCreationAndUpdate();
 	}
 
 	public void validateForUpdate() {
-		if (id != null) {
+		if (id == null) {
 			throw new InvalidDataException("Id cannot be empty.");
 		}
 
@@ -169,5 +161,10 @@ public class User {
 		if (lastName == null || lastName.isEmpty()) {
 			throw new InvalidDataException("Last name cannot be empty.");
 		}
+	}
+
+	public void merge(User user) {
+		this.firstName = user.firstName;
+		this.lastName = user.lastName;
 	}
 }

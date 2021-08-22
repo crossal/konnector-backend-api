@@ -31,12 +31,32 @@ public class UserValidatorImpl implements UserValidator {
 	}
 
 	@Override
-	public void validateUserUpdateArgument(User user) {
-		if (user == null) {
+	public void validateUserUpdateArgument(User existingUser, User userArg, Long userId) {
+		if (userArg == null) {
 			throw new InvalidDataException("User cannot be empty.");
 		}
 
-		user.validateForUpdate();
+		if (userId == null) {
+			throw new InvalidDataException("User Id cannot be empty.");
+		}
+
+		userArg.validateForUpdate();
+
+		if (!userArg.getId().equals(userId)) {
+			throw new InvalidDataException("User Id does not equal Id in path.");
+		}
+
+		if (!existingUser.getEmail().equals(userArg.getEmail())) {
+			throw new InvalidDataException("Cannot update email address.");
+		}
+
+		if (!existingUser.getUsername().equals(userArg.getUsername())) {
+			throw new InvalidDataException("Cannot update username.");
+		}
+
+		if (existingUser.isEmailVerified() != userArg.isEmailVerified()) {
+			throw new InvalidDataException("Cannot update verification status.");
+		}
 	}
 
 	@Override

@@ -13,7 +13,7 @@ public class UserDTO {
 	private String password;
 	private String firstName;
 	private String lastName;
-	@JsonProperty(value = "emailVerified", access = JsonProperty.Access.READ_ONLY)
+	@JsonProperty(value = "emailVerified")
 	private Boolean emailVerified;
 
 	public Long getId() {

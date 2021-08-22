@@ -2,15 +2,23 @@ package com.konnector.backendapi.user;
 
 import com.konnector.backendapi.exceptions.InvalidDataException;
 import org.jeasy.random.EasyRandom;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class UserTest {
 
 	private final EasyRandom easyRandom = new EasyRandom();
 	private final User user = easyRandom.nextObject(User.class);
+
+	@BeforeEach
+	public void setup() {
+		user.setEmailVerified(false);
+	}
 
 	@Test
 	public void validateForCreation_idIsNotNull_throwsException() {
@@ -97,7 +105,14 @@ public class UserTest {
 	}
 
 	@Test
+	public void validateForCreation_emailVerificationIsTrue_throwsException() {
+		user.setEmailVerified(true);
+		assertThrows(InvalidDataException.class, () -> user.validateForCreation());
+	}
+
+	@Test
 	public void validateForUpdate_idIsNull_throwsException() {
+		ReflectionTestUtils.setField(user, "id", null);
 		assertThrows(InvalidDataException.class, () -> user.validateForUpdate());
 	}
 
@@ -167,5 +182,35 @@ public class UserTest {
 		user.setPassword(null);
 		user.setLastName("");
 		assertThrows(InvalidDataException.class, () -> user.validateForUpdate());
+	}
+
+	@Test
+	public void merge_mergesUsers() {
+		User user1 = new User();
+		user1.setEmail("test1@email.com");
+		user1.setUsername("username1");
+		user1.setPassword("password1");
+		user1.setFirstName("first_name1");
+		user1.setLastName("last_name1");
+		user1.setEmailVerified(false);
+		ReflectionTestUtils.setField(user1, "id", 1L);
+
+		User user2 = new User();
+		user2.setEmail("test2@email.com");
+		user2.setUsername("username2");
+		user2.setPassword("password2");
+		user2.setFirstName("first_name2");
+		user2.setLastName("last_name2");
+		user2.setEmailVerified(true);
+		ReflectionTestUtils.setField(user1, "id", 2L);
+
+		user1.merge(user2);
+
+		assertNotEquals(user1.getId(), user2.getId());
+		assertNotEquals(user1.getUsername(), user2.getUsername());
+		assertNotEquals(user1.getEmail(), user2.getEmail());
+		assertNotEquals(user1.isEmailVerified(), user2.isEmailVerified());
+		assertEquals(user1.getFirstName(), user2.getFirstName());
+		assertEquals(user1.getLastName(), user2.getLastName());
 	}
 }
