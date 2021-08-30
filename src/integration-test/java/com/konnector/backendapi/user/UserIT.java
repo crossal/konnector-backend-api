@@ -72,7 +72,7 @@ public class UserIT extends AuthenticatedTest {
 		userDTO.setFirstName("first_name_new");
 		userDTO.setLastName("last_name_new");
 		userDTO.setEmailVerified(true);
-		userDTO.setPassword(null);
+		userDTO.setPassword("new_password");
 		userDTO.setId(1L);
 		String userJson = objectMapper.writeValueAsString(userDTO);
 		HttpHeaders headers = new HttpHeaders();

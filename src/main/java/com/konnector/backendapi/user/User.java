@@ -113,6 +113,15 @@ public class User {
 		return updatedOn;
 	}
 
+	public void validatePassword(String password) {
+		if (password.length() < MIN_PASSWORD_LENGTH) {
+			throw new InvalidDataException("Password cannot be less than " + MIN_PASSWORD_LENGTH + " characters.");
+		}
+		if (password.length() > MAX_PASSWORD_LENGTH) {
+			throw new InvalidDataException("Password cannot be greater than " + MAX_PASSWORD_LENGTH + " characters.");
+		}
+	}
+
 	public void validateForCreation() {
 		if (id != null) {
 			throw new InvalidDataException("Id should be empty.");
@@ -120,12 +129,7 @@ public class User {
 		if (password == null || password.isEmpty()) {
 			throw new InvalidDataException("Password cannot be empty.");
 		}
-		if (password.length() < MIN_PASSWORD_LENGTH) {
-			throw new InvalidDataException("Password cannot be less than " + MIN_PASSWORD_LENGTH + " characters.");
-		}
-		if (password.length() > MAX_PASSWORD_LENGTH) {
-			throw new InvalidDataException("Password cannot be greater than " + MAX_PASSWORD_LENGTH + " characters.");
-		}
+		validatePassword(password);
 		if (emailVerified != false) {
 			throw new InvalidDataException("Email verification flag should be false on creation.");
 		}
@@ -138,8 +142,8 @@ public class User {
 			throw new InvalidDataException("Id cannot be empty.");
 		}
 
-		if (password != null) {
-			throw new InvalidDataException("Password should be updated via login screen.");
+		if (password != null && !password.isEmpty()) {
+			validatePassword(password);
 		}
 
 		validateForCreationAndUpdate();

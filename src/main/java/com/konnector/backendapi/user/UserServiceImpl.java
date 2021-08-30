@@ -57,11 +57,18 @@ public class UserServiceImpl implements UserService {
 		return optionalUser.map(
 				existingUser -> {
 					userValidator.validateUserUpdateArgument(existingUser, user, id);
+					user.validateForUpdate();
 
 					Authentication authentication = authenticationFacade.getAuthentication();
 					userAuthorizationValidator.validateUserRequest(id, authentication);
 
+					if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+						String hashedPassword = passwordEncoder.encode(user.getPassword());
+						user.setPassword(hashedPassword);
+					}
+
 					existingUser.merge(user);
+
 					userDao.update(existingUser);
 
 					return existingUser;
@@ -87,9 +94,10 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void updateUserPassword(User user, String password) {
+		user.validatePassword(password);
 		String hashedPassword = passwordEncoder.encode(password);
 		user.setPassword(hashedPassword);
 
-		userDao.save(user);
+		userDao.update(user);
 	}
 }

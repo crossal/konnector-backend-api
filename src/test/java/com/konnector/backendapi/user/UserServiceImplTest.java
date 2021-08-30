@@ -121,12 +121,20 @@ public class UserServiceImplTest {
 		Long userId = 1L;
 		when(userRepositoryMock.findById(userId)).thenReturn(Optional.of(userMock));
 		when(authenticationFacadeMock.getAuthentication()).thenReturn(authenticationMock);
+		String password = "12345678";
+		when(userMock.getPassword()).thenReturn(password);
+		String hashedPassword = "12345678b";
+		when(passwordEncoderMock.encode(password)).thenReturn(hashedPassword);
 
 		User updatedUser = userService.updateUser(userMock, userId);
 
 		assertEquals(userMock, updatedUser);
 		verify(userValidatorMock, times(1)).validateUserUpdateArgument(userMock, userMock, userId);
+		verify(userMock).validateForUpdate();
 		verify(userAuthorizationValidatorMock, times(1)).validateUserRequest(userId, authenticationMock);
+		verify(userMock).setPassword(hashedPassword);
+		verify(userMock).merge(userMock);
+		verify(userDaoMock).update(userMock);
 	}
 
 	@Test
@@ -135,8 +143,9 @@ public class UserServiceImplTest {
 
 		userService.updateUserPassword(userMock, password);
 
+		verify(userMock).validatePassword(password);
 		verify(passwordEncoderMock).encode(password);
 		verify(userMock).setPassword(hashedPassword);
-		verify(userDaoMock).save(userMock);
+		verify(userDaoMock).update(userMock);
 	}
 }

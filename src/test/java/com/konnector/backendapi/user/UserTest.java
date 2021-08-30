@@ -117,7 +117,14 @@ public class UserTest {
 	}
 
 	@Test
-	public void validateForUpdate_passwordIsNotNull_throwsException() {
+	public void validateForUpdate_passwordIsTooShort_throwsException() {
+		user.setPassword("123456");
+		assertThrows(InvalidDataException.class, () -> user.validateForUpdate());
+	}
+
+	@Test
+	public void validateForUpdate_passwordIsTooLong_throwsException() {
+		user.setPassword("123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890");
 		assertThrows(InvalidDataException.class, () -> user.validateForUpdate());
 	}
 
