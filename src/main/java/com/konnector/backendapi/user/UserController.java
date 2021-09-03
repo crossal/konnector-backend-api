@@ -38,7 +38,7 @@ public class UserController {
 	public UserDTO updateUser(@RequestBody UserDTO userDTO, @PathVariable("id") String userId) {
 		User user = modelMapper.map(userDTO, User.class);
 
-		user = userService.updateUser(user, Long.parseLong(userId));
+		user = userService.updateUser(user, Long.parseLong(userId), userDTO.getOldPassword());
 
 		return modelMapper.map(user, UserDTO.class);
 	}

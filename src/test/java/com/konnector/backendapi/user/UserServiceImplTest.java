@@ -113,7 +113,7 @@ public class UserServiceImplTest {
 		Long userId = 1L;
 		when(userRepositoryMock.findById(userId)).thenReturn(Optional.empty());
 
-		assertThrows(NotFoundException.class, () -> userService.updateUser(userMock, userId));
+		assertThrows(NotFoundException.class, () -> userService.updateUser(userMock, userId, null));
 	}
 
 	@Test
@@ -121,16 +121,18 @@ public class UserServiceImplTest {
 		Long userId = 1L;
 		when(userRepositoryMock.findById(userId)).thenReturn(Optional.of(userMock));
 		when(authenticationFacadeMock.getAuthentication()).thenReturn(authenticationMock);
-		String password = "12345678";
+		String password = "password";
 		when(userMock.getPassword()).thenReturn(password);
-		String hashedPassword = "12345678b";
+		String hashedPassword = "password_hashed";
 		when(passwordEncoderMock.encode(password)).thenReturn(hashedPassword);
+		String oldPassword = "old_password";
+		String oldPasswordHashed = "old_password_hashed";
+		when(passwordEncoderMock.encode(oldPassword)).thenReturn(oldPasswordHashed);
 
-		User updatedUser = userService.updateUser(userMock, userId);
+		User updatedUser = userService.updateUser(userMock, userId, oldPassword);
 
 		assertEquals(userMock, updatedUser);
-		verify(userValidatorMock, times(1)).validateUserUpdateArgument(userMock, userMock, userId);
-		verify(userMock).validateForUpdate();
+		verify(userValidatorMock, times(1)).validateUserUpdateArgument(userMock, userMock, userId, oldPasswordHashed);
 		verify(userAuthorizationValidatorMock, times(1)).validateUserRequest(userId, authenticationMock);
 		verify(userMock).setPassword(hashedPassword);
 		verify(userMock).merge(userMock);

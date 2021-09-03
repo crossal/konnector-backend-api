@@ -75,7 +75,7 @@ public class UserWebIT {
 	@WithMockUser
 	public void updateUser_returnsSuccessAndUpdatedUser() throws Exception {
 		when(modelMapperMock.map(any(UserDTO.class), eq(User.class))).thenReturn(userMock);
-		when(userServiceMock.updateUser(userMock, 1L)).thenReturn(userMock);
+		when(userServiceMock.updateUser(userMock, 1L, userDTO.getOldPassword())).thenReturn(userMock);
 		when(modelMapperMock.map(userMock, UserDTO.class)).thenReturn(userDTO);
 
 		MvcResult result = mockMvc.perform(put("/api/users/1").contentType(MediaType.APPLICATION_JSON).content(userJson)).andExpect(status().isOk()).andReturn();

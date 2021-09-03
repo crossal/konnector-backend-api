@@ -31,7 +31,7 @@ public class UserValidatorImpl implements UserValidator {
 	}
 
 	@Override
-	public void validateUserUpdateArgument(User existingUser, User userArg, Long userId) {
+	public void validateUserUpdateArgument(User existingUser, User userArg, Long userId, String hashedOldPassword) {
 		if (userArg == null) {
 			throw new InvalidDataException("User cannot be empty.");
 		}
@@ -56,6 +56,14 @@ public class UserValidatorImpl implements UserValidator {
 
 		if (existingUser.isEmailVerified() != userArg.isEmailVerified()) {
 			throw new InvalidDataException("Cannot update verification status.");
+		}
+
+		if (userArg.getPassword() != null && !userArg.getPassword().isEmpty()) {
+			if (hashedOldPassword == null || hashedOldPassword.isEmpty()) {
+				throw new InvalidDataException("Cannot set new password without current password.");
+			} else if (!existingUser.getPassword().equals(hashedOldPassword)) {
+				throw new InvalidDataException("Cannot set new password as current password provided is incorrect.");
+			}
 		}
 	}
 
