@@ -2,6 +2,7 @@ package com.konnector.backendapi.user;
 
 import com.konnector.backendapi.exceptions.InvalidDataException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -31,7 +32,7 @@ public class UserValidatorImpl implements UserValidator {
 	}
 
 	@Override
-	public void validateUserUpdateArgument(User existingUser, User userArg, Long userId, String hashedOldPassword) {
+	public void validateUserUpdateArgument(User existingUser, User userArg, Long userId, String oldPassword, PasswordEncoder passwordEncoder) {
 		if (userArg == null) {
 			throw new InvalidDataException("User cannot be empty.");
 		}
@@ -59,9 +60,9 @@ public class UserValidatorImpl implements UserValidator {
 		}
 
 		if (userArg.getPassword() != null && !userArg.getPassword().isEmpty()) {
-			if (hashedOldPassword == null || hashedOldPassword.isEmpty()) {
+			if (oldPassword == null || oldPassword.isEmpty()) {
 				throw new InvalidDataException("Cannot set new password without current password.");
-			} else if (!existingUser.getPassword().equals(hashedOldPassword)) {
+			} else if (!passwordEncoder.matches(oldPassword, existingUser.getPassword())) {
 				throw new InvalidDataException("Cannot set new password as current password provided is incorrect.");
 			}
 		}

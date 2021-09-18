@@ -53,6 +53,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.POST, "/api/verifications/verify*").permitAll()
 				.antMatchers(HttpMethod.POST, "/api/verifications*").permitAll()
 				.antMatchers(HttpMethod.POST, "/api/authenticate").permitAll()
+				.antMatchers(HttpMethod.GET, "/verifications*").permitAll()
 				.antMatchers("/api/**").authenticated() // comment this line out for testing
 				.anyRequest().permitAll()
 				.and()

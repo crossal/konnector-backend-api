@@ -7,6 +7,7 @@ const SignUpDetails = ({ signedUp, back }) => {
   const [validated, setValidated] = React.useState(false);
   const [serverError, setServerError] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
+  const [passwordConfirmationMatching, setPasswordConfirmationMatching] = React.useState(false);
   const password = React.useRef(null);
   const passwordConfirmation = React.useRef(null);
 
@@ -17,7 +18,7 @@ const SignUpDetails = ({ signedUp, back }) => {
     setServerError(null);
 
     const form = event.currentTarget;
-    if (form.checkValidity() === true) {
+    if (form.checkValidity() === true && passwordConfirmationMatching === true) {
       setLoading(true);
       const formData = new FormData(event.target), formDataObj = Object.fromEntries(formData.entries())
       client({
@@ -43,8 +44,10 @@ const SignUpDetails = ({ signedUp, back }) => {
 
   const checkPasswordMatching = () => {
     if (password.current.value != passwordConfirmation.current.value) {
-      passwordConfirmation.current.setCustomValidity('Passwords must match.');
+      setPasswordConfirmationMatching(false);
+      passwordConfirmation.current.setCustomValidity('Something.');
     } else {
+      setPasswordConfirmationMatching(true);
       passwordConfirmation.current.setCustomValidity('');
     }
   }
@@ -80,14 +83,14 @@ const SignUpDetails = ({ signedUp, back }) => {
         </Form.Row>
         <Form.Row>
           <Form.Group as={Col} controlId="formGridPassword">
-            <Form.Control ref={password} required minlength="7" type="password" placeholder="Password" name="password" />
+            <Form.Control ref={password} required minlength="7" type="password" placeholder="Password" name="password" onChange={checkPasswordMatching} />
             <Form.Control.Feedback type="invalid">Please add a password greater than 7 characters.</Form.Control.Feedback>
           </Form.Group>
         </Form.Row>
         <Form.Row>
           <Form.Group as={Col} controlId="formGridPasswordConfirmation">
-            <Form.Control ref={passwordConfirmation} required type="password" placeholder="Confirm password" name="passwordConfirmation" onChange={checkPasswordMatching} />
-            <Form.Control.Feedback type="invalid">Please add a password confirmation.</Form.Control.Feedback>
+            <Form.Control isInvalid={!passwordConfirmationMatching && validated} ref={passwordConfirmation} required type="password" placeholder="Confirm password" name="passwordConfirmation" onChange={checkPasswordMatching} />
+            <Form.Control.Feedback type="invalid">Please add a matching password confirmation.</Form.Control.Feedback>
           </Form.Group>
         </Form.Row>
         { serverError ? <Alert variant="danger">{serverError}</Alert> : <div/> }

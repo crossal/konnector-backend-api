@@ -126,13 +126,11 @@ public class UserServiceImplTest {
 		String hashedPassword = "password_hashed";
 		when(passwordEncoderMock.encode(password)).thenReturn(hashedPassword);
 		String oldPassword = "old_password";
-		String oldPasswordHashed = "old_password_hashed";
-		when(passwordEncoderMock.encode(oldPassword)).thenReturn(oldPasswordHashed);
 
 		User updatedUser = userService.updateUser(userMock, userId, oldPassword);
 
 		assertEquals(userMock, updatedUser);
-		verify(userValidatorMock, times(1)).validateUserUpdateArgument(userMock, userMock, userId, oldPasswordHashed);
+		verify(userValidatorMock, times(1)).validateUserUpdateArgument(userMock, userMock, userId, oldPassword, passwordEncoderMock);
 		verify(userAuthorizationValidatorMock, times(1)).validateUserRequest(userId, authenticationMock);
 		verify(userMock).setPassword(hashedPassword);
 		verify(userMock).merge(userMock);

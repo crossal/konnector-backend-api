@@ -56,12 +56,7 @@ public class UserServiceImpl implements UserService {
 
 		return optionalUser.map(
 				existingUser -> {
-					String hashedOldPassword = null;
-					if (oldPassword != null && !oldPassword.isEmpty()) {
-						hashedOldPassword = passwordEncoder.encode(oldPassword);
-					}
-
-					userValidator.validateUserUpdateArgument(existingUser, user, id, hashedOldPassword);
+					userValidator.validateUserUpdateArgument(existingUser, user, id, oldPassword, passwordEncoder);
 
 					Authentication authentication = authenticationFacade.getAuthentication();
 					userAuthorizationValidator.validateUserRequest(id, authentication);

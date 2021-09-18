@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
@@ -22,6 +23,8 @@ public class UserValidatorImplTest {
 
 	@Mock
 	private UserRepository userRepositoryMock;
+	@Mock
+	private PasswordEncoder passwordEncoderMock;
 
 	@Mock
 	private User userMock;
@@ -52,28 +55,30 @@ public class UserValidatorImplTest {
 
 	@Test
 	public void validateUserUpdateArgument_argumentsAreValid_doesNotThrowException() {
+		String password = "password";
 		when(userMock.getId()).thenReturn(1L);
 		when(userMock.getEmail()).thenReturn("test@email.com");
 		when(userMock.getUsername()).thenReturn("username");
-		when(userMock.getPassword()).thenReturn("password");
-		userValidator.validateUserUpdateArgument(userMock, userMock, 1L, "password");
+		when(userMock.getPassword()).thenReturn(password);
+		when(passwordEncoderMock.matches(password, password)).thenReturn(true);
+		userValidator.validateUserUpdateArgument(userMock, userMock, 1L, password, passwordEncoderMock);
 		verify(userMock, times(1)).validateForUpdate();
 	}
 
 	@Test
 	public void validateUserUpdateArgument_userArgIsNull_throwsException() {
-		assertThrows(InvalidDataException.class, () -> userValidator.validateUserUpdateArgument(userMock, null, 1L, null));
+		assertThrows(InvalidDataException.class, () -> userValidator.validateUserUpdateArgument(userMock, null, 1L, null, passwordEncoderMock));
 	}
 
 	@Test
 	public void validateUserUpdateArgument_userArgIdIsNull_throwsException() {
-		assertThrows(InvalidDataException.class, () -> userValidator.validateUserUpdateArgument(userMock, userMock, null, null));
+		assertThrows(InvalidDataException.class, () -> userValidator.validateUserUpdateArgument(userMock, userMock, null, null, passwordEncoderMock));
 	}
 
 	@Test
 	public void validateUserUpdateArgument_userArgIdDoesNotEqualUserId_throwsException() {
 		when(userMock.getId()).thenReturn(1L);
-		assertThrows(InvalidDataException.class, () -> userValidator.validateUserUpdateArgument(userMock, userMock, 2L, null));
+		assertThrows(InvalidDataException.class, () -> userValidator.validateUserUpdateArgument(userMock, userMock, 2L, null, passwordEncoderMock));
 	}
 
 	@Test
@@ -81,7 +86,7 @@ public class UserValidatorImplTest {
 		when(userMock.getId()).thenReturn(1L);
 		when(existingUserMock.getEmail()).thenReturn("test1@email.com");
 		when(userMock.getEmail()).thenReturn("test2@email.com");
-		assertThrows(InvalidDataException.class, () -> userValidator.validateUserUpdateArgument(existingUserMock, userMock, 1L, null));
+		assertThrows(InvalidDataException.class, () -> userValidator.validateUserUpdateArgument(existingUserMock, userMock, 1L, null, passwordEncoderMock));
 	}
 
 	@Test
@@ -92,7 +97,7 @@ public class UserValidatorImplTest {
 		when(userMock.getEmail()).thenReturn(email);
 		when(existingUserMock.getUsername()).thenReturn("username1");
 		when(userMock.getUsername()).thenReturn("username2");
-		assertThrows(InvalidDataException.class, () -> userValidator.validateUserUpdateArgument(existingUserMock, userMock, 1L, null));
+		assertThrows(InvalidDataException.class, () -> userValidator.validateUserUpdateArgument(existingUserMock, userMock, 1L, null, passwordEncoderMock));
 	}
 
 	@Test
@@ -106,7 +111,7 @@ public class UserValidatorImplTest {
 		when(userMock.getUsername()).thenReturn(username);
 		when(existingUserMock.isEmailVerified()).thenReturn(false);
 		when(userMock.isEmailVerified()).thenReturn(true);
-		assertThrows(InvalidDataException.class, () -> userValidator.validateUserUpdateArgument(existingUserMock, userMock, 1L, null));
+		assertThrows(InvalidDataException.class, () -> userValidator.validateUserUpdateArgument(existingUserMock, userMock, 1L, null, passwordEncoderMock));
 	}
 
 	@Test
@@ -121,7 +126,7 @@ public class UserValidatorImplTest {
 		when(existingUserMock.isEmailVerified()).thenReturn(true);
 		when(userMock.isEmailVerified()).thenReturn(true);
 		when(userMock.getPassword()).thenReturn("password");
-		assertThrows(InvalidDataException.class, () -> userValidator.validateUserUpdateArgument(existingUserMock, userMock, 1L, null));
+		assertThrows(InvalidDataException.class, () -> userValidator.validateUserUpdateArgument(existingUserMock, userMock, 1L, null, passwordEncoderMock));
 	}
 
 	@Test
@@ -137,7 +142,7 @@ public class UserValidatorImplTest {
 		when(userMock.isEmailVerified()).thenReturn(true);
 		when(userMock.getPassword()).thenReturn("password");
 		when(existingUserMock.getPassword()).thenReturn("password");
-		assertThrows(InvalidDataException.class, () -> userValidator.validateUserUpdateArgument(existingUserMock, userMock, 1L, "incorrect_password"));
+		assertThrows(InvalidDataException.class, () -> userValidator.validateUserUpdateArgument(existingUserMock, userMock, 1L, "incorrect_password", passwordEncoderMock));
 	}
 
 	@Test
