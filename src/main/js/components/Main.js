@@ -16,7 +16,7 @@ class Main extends React.Component {
       updatePasswordReset: updatePasswordReset,
       resetPasswordToken: sessionStorage.getItem('resetPasswordToken')
     };
-    if (this.state.resetPasswordToken) {
+    if (this.state.resetPasswordToken === true) {
       window.history.replaceState({}, "Konnector", "/")
     }
     sessionStorage.removeItem('resetPasswordToken')

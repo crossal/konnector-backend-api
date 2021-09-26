@@ -36,7 +36,7 @@ class SignUp extends React.Component {
 
   render() {
     let content;
-    if (this.state.signedUp) {
+    if (this.state.signedUp === true) {
       content =
         <AccountVerification verified={this.verified} back={this.back}/>
     } else {

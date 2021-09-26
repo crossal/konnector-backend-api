@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.konnector.backendapi.login.AuthenticationDTO;
-import com.konnector.backendapi.session.SecurityConfigTest;
+import com.konnector.backendapi.session.SecurityTestConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -16,11 +16,9 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = SecurityConfigTest.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = SecurityTestConfig.class)
 public abstract class AuthenticatedTest {
 
-	private static final String USERNAME = "username";
-	private static final String PASSWORD = "password";
 	private static final String JSESSIONID_COOKIE_NAME = "JSESSIONID";
 	private static final TestRestTemplate testRestTemplate = new TestRestTemplate();
 	private static final ObjectMapper objectMapper = new ObjectMapper().configure(MapperFeature.USE_ANNOTATIONS, false).configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -30,22 +28,27 @@ public abstract class AuthenticatedTest {
 
 	protected String jSessionIdCookie;
 
-	protected HttpHeaders getHttpHeadersWithAuth() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.add(HttpHeaders.COOKIE, jSessionIdCookie);
+	protected HttpHeaders getHttpHeadersWithAuth(HttpHeaders httpHeadersIn) {
+		HttpHeaders httpHeaders = new HttpHeaders();
 
-		return headers;
+		if (httpHeadersIn != null) {
+			httpHeaders.addAll(httpHeadersIn);
+		}
+
+		httpHeaders.add(HttpHeaders.COOKIE, jSessionIdCookie);
+
+		return httpHeaders;
 	}
 
-	protected HttpEntity getEntityWithAuth() {
-		return new HttpEntity(getHttpHeadersWithAuth());
+	protected HttpEntity getEntityWithAuth(String body, HttpHeaders httpHeaders) {
+		return new HttpEntity(body, getHttpHeadersWithAuth(httpHeaders));
 	}
 
 	@BeforeEach
 	protected void setup() throws Exception {
 		AuthenticationDTO authenticationDTO = new AuthenticationDTO();
-		authenticationDTO.setUsernameOrEmail(USERNAME);
-		authenticationDTO.setPassword(PASSWORD);
+		authenticationDTO.setUsernameOrEmail(SecurityTestConfig.USERNAME);
+		authenticationDTO.setPassword(SecurityTestConfig.PASSWORD);
 		String authenticationJson = objectMapper.writeValueAsString(authenticationDTO);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);

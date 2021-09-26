@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,6 +29,16 @@ public class UserController {
 		User user = modelMapper.map(userDTO, User.class);
 
 		user = userService.createUser(user);
+
+		return modelMapper.map(user, UserDTO.class);
+	}
+
+	@PutMapping("/api/users/{id}")
+	@ResponseStatus(HttpStatus.OK)
+	public UserDTO updateUser(@RequestBody UserDTO userDTO, @PathVariable("id") String userId) {
+		User user = modelMapper.map(userDTO, User.class);
+
+		user = userService.updateUser(user, Long.parseLong(userId), userDTO.getOldPassword());
 
 		return modelMapper.map(user, UserDTO.class);
 	}

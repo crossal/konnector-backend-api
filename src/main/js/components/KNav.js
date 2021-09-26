@@ -17,7 +17,7 @@ class KNav extends React.Component {
 
   render() {
     let content;
-    if (this.props.loggedIn) {
+    if (this.props.loggedIn === true) {
       content =
         <Navbar bg="dark" variant="dark">
           <Navbar.Brand href="#home">Konnector</Navbar.Brand>

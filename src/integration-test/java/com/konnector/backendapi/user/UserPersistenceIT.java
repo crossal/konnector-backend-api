@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.jeasy.random.FieldPredicates.named;
@@ -36,6 +37,15 @@ public class UserPersistenceIT {
 		userDao.save(user);
 		assertEquals(user, userDao.get(user.getId()).get());
 		assertEquals(sixtyCharacterHashedPassword, user.getPassword());
+	}
+
+	@Test
+	@Transactional
+	public void updateUser_updatesUser() {
+		ReflectionTestUtils.setField(user, "id", 1L);
+		userDao.update(user);
+		User updatedUser = userDao.get(user.getId()).get();
+		assertEquals(user.getUsername(), updatedUser.getUsername());
 	}
 
 	@Test

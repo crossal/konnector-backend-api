@@ -27,10 +27,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
 		Optional<User> optionalUser = userRepository.findByEmailOrUsername(usernameOrEmail, usernameOrEmail);
 
-		return optionalUser.map(user -> new org.springframework.security.core.userdetails.User(
+		return optionalUser.map(user -> new SecurityUser(
 				user.getUsername(),
 				user.getPassword(),
-				getAuthorities()
+				getAuthorities(),
+				user.getId()
 		)).orElseThrow(() -> new InvalidLoginDetailsException("Invalid username or email."));
 	}
 

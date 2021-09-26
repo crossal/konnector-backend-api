@@ -1,31 +1,49 @@
 package com.konnector.backendapi.session;
 
+import com.konnector.backendapi.security.SecurityUser;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @TestConfiguration
-public class SecurityConfigTest {
+public class SecurityTestConfig {
 
-	private static final String USERNAME = "username";
-	private static final String PASSWORD = "password";
+	public static final String USERNAME = "username";
+	public static final String PASSWORD = "password";
+	private static final Long USER_ID = 1L;
 	private static final String USER_ROLE = "USER";
 
 	@Bean
 	@Primary
 	public UserDetailsService userDetailsService() {
 		List<UserDetails> userDetailsList = new ArrayList<>();
-		userDetailsList.add(User.withUsername(USERNAME).password(PASSWORD).roles(USER_ROLE).build());
+		userDetailsList.add(new SecurityUser(USERNAME, PASSWORD, List.of(new SimpleGrantedAuthority(USER_ROLE)), USER_ID));
 
-		return new InMemoryUserDetailsManager(userDetailsList);
+		return new TestInMemoryUserDetailsManager(userDetailsList);
+	}
+
+	private class TestInMemoryUserDetailsManager extends InMemoryUserDetailsManager {
+
+		public TestInMemoryUserDetailsManager(Collection<UserDetails> users) {
+			super(users);
+		}
+
+		@Override
+		public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+			UserDetails userDetails = super.loadUserByUsername(username);
+			SecurityUser securityUser = new SecurityUser(userDetails, USER_ID);
+			return securityUser;
+		}
 	}
 
 	@Bean

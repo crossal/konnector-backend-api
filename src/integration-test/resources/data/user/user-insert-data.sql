@@ -1,1 +1,1 @@
-INSERT INTO `user` (`email`, `username`, `password`, `first_name`, `last_name`, `is_email_verified`) VALUES ('email', 'username', '$2a$12$sqWRJxiHKNC63bpSHZFrG.muOCeMwX2iwDGXYp/BNGNTOtzpSk9Dm', 'first_name', 'last_name', true);
+INSERT INTO `user` (`email`, `username`, `password`, `first_name`, `last_name`, `is_email_verified`) VALUES ('test@email.com', 'username', 'password', 'first_name', 'last_name', true);

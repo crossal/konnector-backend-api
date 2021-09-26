@@ -73,13 +73,13 @@ class LogIn extends React.Component {
 
   render() {
     let content;
-    if (this.state.loggedInWithoutVerification) {
+    if (this.state.loggedInWithoutVerification === true) {
       content =
         <AccountVerification verified={this.verified} back={this.back}/>
-    } else if (this.state.requestResetPassword) {
+    } else if (this.state.requestResetPassword === true) {
       content =
         <RequestPasswordReset back={this.back} passwordResetRequested={this.handleRequestResetPasswordFollowUp}/>
-    } else if (this.state.requestResetPasswordFollowUp) {
+    } else if (this.state.requestResetPasswordFollowUp === true) {
       content =
         <ResetPasswordWithCode updatePasswordReset={this.handlePasswordReset}/>
     } else {

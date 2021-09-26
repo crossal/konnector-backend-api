@@ -53,17 +53,6 @@ public class User {
 	@UpdateTimestamp
 	private LocalDateTime updatedOn;
 
-	public User() {
-	}
-
-	public User(String email, String username, String password, String firstName, String lastName) {
-		this.email = email;
-		this.username = username;
-		this.password = password;
-		this.firstName = firstName;
-		this.lastName = lastName;
-	}
-
 	public Long getId() {
 		return id;
 	}
@@ -124,10 +113,43 @@ public class User {
 		return updatedOn;
 	}
 
+	public void validatePassword(String password) {
+		if (password.length() < MIN_PASSWORD_LENGTH) {
+			throw new InvalidDataException("Password cannot be less than " + MIN_PASSWORD_LENGTH + " characters.");
+		}
+		if (password.length() > MAX_PASSWORD_LENGTH) {
+			throw new InvalidDataException("Password cannot be greater than " + MAX_PASSWORD_LENGTH + " characters.");
+		}
+	}
+
 	public void validateForCreation() {
 		if (id != null) {
 			throw new InvalidDataException("Id should be empty.");
 		}
+		if (password == null || password.isEmpty()) {
+			throw new InvalidDataException("Password cannot be empty.");
+		}
+		validatePassword(password);
+		if (emailVerified != false) {
+			throw new InvalidDataException("Email verification flag should be false on creation.");
+		}
+
+		validateForCreationAndUpdate();
+	}
+
+	public void validateForUpdate() {
+		if (id == null) {
+			throw new InvalidDataException("Id cannot be empty.");
+		}
+
+		if (password != null && !password.isEmpty()) {
+			validatePassword(password);
+		}
+
+		validateForCreationAndUpdate();
+	}
+
+	private void validateForCreationAndUpdate() {
 		if (email == null || email.isEmpty()) {
 			throw new InvalidDataException("Email cannot be empty.");
 		}
@@ -143,14 +165,10 @@ public class User {
 		if (lastName == null || lastName.isEmpty()) {
 			throw new InvalidDataException("Last name cannot be empty.");
 		}
-		if (password == null || password.isEmpty()) {
-			throw new InvalidDataException("Password cannot be empty.");
-		}
-		if (password.length() < MIN_PASSWORD_LENGTH) {
-			throw new InvalidDataException("Password cannot be less than " + MIN_PASSWORD_LENGTH + " characters.");
-		}
-		if (password.length() > MAX_PASSWORD_LENGTH) {
-			throw new InvalidDataException("Password cannot be greater than " + MAX_PASSWORD_LENGTH + " characters.");
-		}
+	}
+
+	public void merge(User user) {
+		this.firstName = user.firstName;
+		this.lastName = user.lastName;
 	}
 }

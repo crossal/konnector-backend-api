@@ -15,14 +15,14 @@ class MainContent extends React.Component {
 
   render() {
     let content;
-    if (this.props.loggedIn) {
+    if (this.props.loggedIn === true) {
       content =
         <Switch>
           <Route exact path='/' component={Home}/>
           <Route path='/profile' render={() => <Profile {...this.props}/>}/>
           <Route path='/connections' component={Connections}/>
         </Switch>
-    } else if (this.props.resetPasswordToken) {
+    } else if (this.props.resetPasswordToken === true) {
       content =
         <ResetPassword token={this.props.resetPasswordToken} updatePasswordReset={this.props.updatePasswordReset}/>
     } else {

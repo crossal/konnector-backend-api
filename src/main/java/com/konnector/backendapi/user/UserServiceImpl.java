@@ -50,6 +50,32 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@Transactional
+	public User updateUser(User user, Long id, String oldPassword) {
+		Optional<User> optionalUser = userRepository.findById(id);
+
+		return optionalUser.map(
+				existingUser -> {
+					userValidator.validateUserUpdateArgument(existingUser, user, id, oldPassword, passwordEncoder);
+
+					Authentication authentication = authenticationFacade.getAuthentication();
+					userAuthorizationValidator.validateUserRequest(id, authentication);
+
+					if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+						String hashedPassword = passwordEncoder.encode(user.getPassword());
+						user.setPassword(hashedPassword);
+					}
+
+					existingUser.merge(user);
+
+					userDao.update(existingUser);
+
+					return existingUser;
+				}
+		).orElseThrow(() -> new NotFoundException("User not found."));
+	}
+
+	@Override
 	public User getUser(Long id) {
 		userValidator.validateUserFetchRequest(id);
 
@@ -58,7 +84,7 @@ public class UserServiceImpl implements UserService {
 		return optionalUser.map(
 				user -> {
 					Authentication authentication = authenticationFacade.getAuthentication();
-					userAuthorizationValidator.validateUserFetchRequest(user, authentication);
+					userAuthorizationValidator.validateUserRequest(id, authentication);
 
 					return user;
 				}
@@ -67,9 +93,10 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void updateUserPassword(User user, String password) {
+		user.validatePassword(password);
 		String hashedPassword = passwordEncoder.encode(password);
 		user.setPassword(hashedPassword);
 
-		userDao.save(user);
+		userDao.update(user);
 	}
 }

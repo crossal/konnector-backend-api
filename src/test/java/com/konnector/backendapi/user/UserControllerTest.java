@@ -42,6 +42,17 @@ public class UserControllerTest {
 	}
 
 	@Test
+	public void updateUser_returnsSuccessAndUpdatedUser() {
+		when(modelMapperMock.map(any(UserDTO.class), eq(User.class))).thenReturn(userMock);
+		when(userServiceMock.updateUser(userMock, 1L, userDTO.getOldPassword())).thenReturn(userMock);
+		when(modelMapperMock.map(userMock, UserDTO.class)).thenReturn(userDTO);
+
+		UserDTO result = userController.updateUser(userDTO, "1");
+
+		assertEquals(userDTO, result);
+	}
+
+	@Test
 	public void getUser_returnsSuccessAndUser() {
 		when(userServiceMock.getUser(userDTO.getId())).thenReturn(userMock);
 		when(modelMapperMock.map(userMock, UserDTO.class)).thenReturn(userDTO);

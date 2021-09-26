@@ -1,44 +1,26 @@
 package com.konnector.backendapi.security;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
-public class SecurityUser implements UserDetails {
+public class SecurityUser extends User {
 
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return null;
+	private final Long userId;
+
+	public SecurityUser(String username, String password, Collection<? extends GrantedAuthority> authorities, Long userId) {
+		super(username, password, authorities);
+		this.userId = userId;
 	}
 
-	@Override
-	public String getPassword() {
-		return null;
+	public SecurityUser(UserDetails userDetails, Long userId) {
+		super(userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities());
+		this.userId = userId;
 	}
 
-	@Override
-	public String getUsername() {
-		return null;
-	}
-
-	@Override
-	public boolean isAccountNonExpired() {
-		return false;
-	}
-
-	@Override
-	public boolean isAccountNonLocked() {
-		return false;
-	}
-
-	@Override
-	public boolean isCredentialsNonExpired() {
-		return false;
-	}
-
-	@Override
-	public boolean isEnabled() {
-		return false;
+	public Long getUserId() {
+		return userId;
 	}
 }

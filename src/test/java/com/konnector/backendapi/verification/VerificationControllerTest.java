@@ -10,10 +10,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class VerificationAPIControllerTest {
+public class VerificationControllerTest {
 
 	@InjectMocks
-	private VerificationAPIController verificationAPIController = new VerificationAPIController();
+	private VerificationController verificationController = new VerificationController();
 
 	@Mock
 	private VerificationService verificationServiceMock;
@@ -25,42 +25,42 @@ public class VerificationAPIControllerTest {
 
 	@Test
 	public void createEmailVerificationForUser_createsEmailVerification() {
-		verificationAPIController.createEmailVerificationForUser(verificationDTO.getUsernameOrEmail(), VerificationType.EMAIL.getValue());
+		verificationController.createEmailVerificationForUser(verificationDTO.getUsernameOrEmail(), VerificationType.EMAIL.getValue());
 
 		verify(verificationServiceMock).createEmailVerificationForUser(verificationDTO.getUsernameOrEmail());
 	}
 
 	@Test
 	public void verifyUserEmailByCode_verifiesEmailByCode() {
-		verificationAPIController.verifyUserEmailByCode(verificationDTO, VerificationType.EMAIL.getValue());
+		verificationController.verifyUserEmailByCode(verificationDTO, VerificationType.EMAIL.getValue());
 
 		verify(verificationServiceMock).verifyEmailByCode(verificationDTO.getUsernameOrEmail(), verificationDTO.getCode());
 	}
 
 	@Test
 	public void verifyUserEmailByToken_verifiesEmailByToken() {
-		verificationAPIController.verifyUserEmailByToken(usernameOrEmail, token, VerificationType.EMAIL.getValue());
+		verificationController.verifyUserEmailByToken(usernameOrEmail, token, VerificationType.EMAIL.getValue());
 
 		verify(verificationServiceMock).verifyEmailByUrlToken(usernameOrEmail, token);
 	}
 
 	@Test
 	public void createPasswordResetForUser_createsPasswordReset() {
-		verificationAPIController.createPasswordResetForUser(usernameOrEmail, VerificationType.PASSWORD.getValue());
+		verificationController.createPasswordResetForUser(usernameOrEmail, VerificationType.PASSWORD.getValue());
 
 		verify(verificationServiceMock).createPasswordResetForUser(usernameOrEmail);
 	}
 
 	@Test
 	public void resetUserPasswordWithToken_resetsUserPasswordWithToken() {
-		verificationAPIController.resetUserPasswordWithToken(verificationDTO, token, VerificationType.PASSWORD.getValue());
+		verificationController.resetUserPasswordWithToken(verificationDTO, token, VerificationType.PASSWORD.getValue());
 
 		verify(verificationServiceMock).resetPasswordWithToken(verificationDTO.getUsernameOrEmail(), verificationDTO.getUserPassword(), token);
 	}
 
 	@Test
 	public void resetUserPasswordWithCode_resetsUserPasswordWithCode() {
-		verificationAPIController.resetUserPasswordWithCode(verificationDTO, VerificationType.PASSWORD.getValue());
+		verificationController.resetUserPasswordWithCode(verificationDTO, VerificationType.PASSWORD.getValue());
 
 		verify(verificationServiceMock).resetPasswordWithCode(verificationDTO.getUsernameOrEmail(), verificationDTO.getUserPassword(), verificationDTO.getCode());
 	}

@@ -36,7 +36,7 @@ public class EmailNotificationServiceImplTest {
 	private static final String CODE = "code";
 	private static final String URL_TOKEN = "token";
 	private static final String VERIFICATION_SUBJECT = "Verify your email address";
-	private static final String VERIFICATION_BODY = "Verification code: " + CODE + "\nVerification link: konnector.io/api/verifications/verify?type=0&token=" + URL_TOKEN;
+	private static final String VERIFICATION_BODY = "Verification code: " + CODE + "\nVerification link: konnector.io/verifications/verify?type=0&token=" + URL_TOKEN + "&usernameOrEmail=" + RECIPIENT;
 	private static final String PASSWORD_RESET_SUBJECT = "Reset your password";
 	private static final String PASSWORD_RESET_BODY = "Password Reset code: " + CODE + "\nPassword Reset link: konnector.io/verifications/verify?type=1&token=" + URL_TOKEN;
 

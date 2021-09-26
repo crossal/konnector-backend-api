@@ -11,9 +11,11 @@ public class UserDTO {
 	private String username;
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private String password;
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	private String oldPassword;
 	private String firstName;
 	private String lastName;
-	@JsonProperty(value = "emailVerified", access = JsonProperty.Access.READ_ONLY)
+	@JsonProperty(value = "emailVerified")
 	private Boolean emailVerified;
 
 	public Long getId() {
@@ -46,6 +48,14 @@ public class UserDTO {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getOldPassword() {
+		return oldPassword;
+	}
+
+	public void setOldPassword(String oldPassword) {
+		this.oldPassword = oldPassword;
 	}
 
 	public String getFirstName() {
