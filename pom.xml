@@ -220,9 +220,9 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <!-- Uncomment this to allow attaching debugger -->
-                    <!--<jvmArguments>-->
-                            <!-- -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005-->
-                    <!--</jvmArguments>-->
+<!--                    <jvmArguments>-->
+<!--                        -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005-->
+<!--                    </jvmArguments>-->
                 </configuration>
             </plugin>
             <plugin>
