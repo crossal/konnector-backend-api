@@ -68,7 +68,7 @@ public class UserWebIT {
 
 	@Test
 	public void updateUser_withoutAuthentication_returnsFailure() throws Exception {
-		mockMvc.perform(put("/api/users").contentType(MediaType.APPLICATION_JSON).content(userJson)).andExpect(status().isUnauthorized());
+		mockMvc.perform(put("/api/users/1").contentType(MediaType.APPLICATION_JSON).content(userJson)).andExpect(status().isUnauthorized());
 	}
 
 	@Test

@@ -35,18 +35,18 @@ public class UserController {
 
 	@PutMapping("/api/users/{id}")
 	@ResponseStatus(HttpStatus.OK)
-	public UserDTO updateUser(@RequestBody UserDTO userDTO, @PathVariable("id") String userId) {
+	public UserDTO updateUser(@RequestBody UserDTO userDTO, @PathVariable("id") Long userId) {
 		User user = modelMapper.map(userDTO, User.class);
 
-		user = userService.updateUser(user, Long.parseLong(userId), userDTO.getOldPassword());
+		user = userService.updateUser(user, userId, userDTO.getOldPassword());
 
 		return modelMapper.map(user, UserDTO.class);
 	}
 
 	@GetMapping("/api/users/{id}")
 	@ResponseStatus(HttpStatus.OK)
-	public UserDTO getUser(@PathVariable("id") String userId) {
-		User user = userService.getUser(Long.parseLong(userId));
+	public UserDTO getUser(@PathVariable("id") Long userId) {
+		User user = userService.getUser(userId);
 
 		return modelMapper.map(user, UserDTO.class);
 	}

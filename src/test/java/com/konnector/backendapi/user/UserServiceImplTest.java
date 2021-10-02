@@ -3,26 +3,19 @@ package com.konnector.backendapi.user;
 import com.konnector.backendapi.authentication.AuthenticationFacade;
 import com.konnector.backendapi.data.Dao;
 import com.konnector.backendapi.exceptions.NotFoundException;
-import com.konnector.backendapi.notifications.EmailNotificationService;
-import com.konnector.backendapi.verification.Verification;
 import com.konnector.backendapi.verification.VerificationService;
-import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.Answer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -42,11 +35,7 @@ public class UserServiceImplTest {
 	@Mock
 	private VerificationService verificationServiceMock;
 	@Mock
-	private EmailNotificationService emailNotificationServiceMock;
-	@Mock
 	private PasswordEncoder passwordEncoderMock;
-	@Mock
-	private Verification verificationMock;
 	@Mock
 	private AuthenticationFacade authenticationFacadeMock;
 	@Mock
@@ -56,31 +45,21 @@ public class UserServiceImplTest {
 	@Mock
 	private User userMock;
 
-	private final EasyRandom easyRandom = new EasyRandom();
-	private final User user = easyRandom.nextObject(User.class);
 	private final String hashedPassword = "hashed_password";
-	private final String verificationCode = "1234";
-	private final String verificationUrlToken = "5678";
 	private final String password = "password";
 
 	@Test
 	public void createUser_createsUser() {
-		when(passwordEncoderMock.encode(user.getPassword())).thenReturn(hashedPassword);
-		doAnswer(new Answer() {
-			@Override
-			public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
-				ReflectionTestUtils.setField(user, "id", 1L);
-				return null;
-			}
-		}).when(userDaoMock).save(user);
+		when(userMock.getPassword()).thenReturn(password);
+		when(passwordEncoderMock.encode(password)).thenReturn(hashedPassword);
 
-		User createdUser = userService.createUser(user);
+		User createdUser = userService.createUser(userMock);
 
-		verify(userValidatorMock, times(1)).validateUserCreationArgument(user);
-		verify(userDaoMock, times(1)).save(user);
-		verify(verificationServiceMock, times(1)).createEmailVerificationForUser(user);
-		assertEquals(user, createdUser);
-		assertEquals(hashedPassword, user.getPassword());
+		verify(userValidatorMock).validateUserCreationArgument(userMock);
+		verify(userDaoMock).save(userMock);
+		verify(verificationServiceMock).createEmailVerificationForUser(userMock);
+		verify(userMock).setPassword(hashedPassword);
+		assertEquals(userMock, createdUser);
 	}
 
 	@Test

@@ -17,6 +17,7 @@ public class UserTest {
 
 	@BeforeEach
 	public void setup() {
+		user.setEmail("something@email.com");
 		user.setEmailVerified(false);
 	}
 
@@ -111,6 +112,12 @@ public class UserTest {
 	}
 
 	@Test
+	public void validateForCreation_noDataIssues_doesNotThrowException() {
+		ReflectionTestUtils.setField(user, "id", null);
+		user.validateForCreation();
+	}
+
+	@Test
 	public void validateForUpdate_idIsNull_throwsException() {
 		ReflectionTestUtils.setField(user, "id", null);
 		assertThrows(InvalidDataException.class, () -> user.validateForUpdate());
@@ -192,7 +199,12 @@ public class UserTest {
 	}
 
 	@Test
-	public void merge_mergesUsers() {
+	public void validateForUpdate_noDataIssues_doesNotThrowException() {
+		user.validateForUpdate();
+	}
+
+	@Test
+	public void merge_merges() {
 		User user1 = new User();
 		user1.setEmail("test1@email.com");
 		user1.setUsername("username1");
