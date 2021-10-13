@@ -6,6 +6,7 @@ const mime = require('rest/interceptor/mime');
 const uriTemplateInterceptor = require('./api/uriTemplateInterceptor');
 const errorCode = require('rest/interceptor/errorCode');
 const baseRegistry = require('rest/mime/registry');
+const template = require('rest/interceptor/template');
 
 const registry = baseRegistry.child();
 
@@ -16,4 +17,5 @@ module.exports = rest
   .wrap(mime, { registry: registry })
   .wrap(uriTemplateInterceptor)
   .wrap(errorCode, { code: 500 }) // client requests with response >= 500 will require additional promise clause to catch these exceptions
-  .wrap(defaultRequest, { headers: { 'Accept': 'application/hal+json', 'Content-Type': 'application/json' }});
+  .wrap(defaultRequest, { headers: { 'Accept': 'application/hal+json', 'Content-Type': 'application/json' }})
+  .wrap(template, {});

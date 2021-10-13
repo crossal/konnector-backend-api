@@ -1,6 +1,7 @@
 import React from 'react';
 import client from '../../client';
 import { Col, Row, Form, Button, Alert } from "react-bootstrap";
+import ContactDetails from './contactDetails/ContactDetails';
 
 class Profile extends React.Component {
 
@@ -122,6 +123,8 @@ class Profile extends React.Component {
         </Form>
 
         <br />
+
+        <ContactDetails {...this.props} />
 
         <h2>Contact Details</h2>
         <Form>
