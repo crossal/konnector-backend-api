@@ -125,6 +125,22 @@ public class ContactDetailsServiceImplTest {
 	}
 
 	@Test
+	public void getContactDetailsCount_getsContactDetailsCount() {
+		long count = 10L;
+		Long userId = 1L;
+		when(authenticationFacadeMock.getAuthentication()).thenReturn(authenticationMock);
+
+		when(contactDetailRepositoryMock.countByUserId(userId)).thenReturn(count);
+
+		long returnedContactDetailsCount = contactDetailService.getContactDetailsCount(userId);
+
+		assertEquals(count, returnedContactDetailsCount);
+		verify(contactDetailValidatorMock).validateContactDetailsCountFetchRequest(userId);
+		verify(userAuthorizationValidatorMock).validateUserRequest(userId, authenticationMock);
+		verify(contactDetailRepositoryMock).countByUserId(userId);
+	}
+
+	@Test
 	public void deleteContactDetail_deletesContactDetail() {
 		Long contactDetailId = 1L;
 		Long userId = 1L;

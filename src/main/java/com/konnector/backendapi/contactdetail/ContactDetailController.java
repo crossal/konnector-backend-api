@@ -1,5 +1,6 @@
 package com.konnector.backendapi.contactdetail;
 
+import com.konnector.backendapi.http.Headers;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RestController
@@ -28,7 +30,7 @@ public class ContactDetailController {
 	@Autowired
 	private ModelMapper modelMapper;
 
-	@PostMapping("/api/contactDetails")
+	@PostMapping("/api/contact-details")
 	@ResponseStatus(HttpStatus.CREATED)
 	public ContactDetailDTO createContactDetail(@RequestBody ContactDetailDTO contactDetailDTO) {
 		ContactDetail contactDetail = modelMapper.map(contactDetailDTO, ContactDetail.class);
@@ -38,7 +40,7 @@ public class ContactDetailController {
 		return modelMapper.map(contactDetail, ContactDetailDTO.class);
 	}
 
-	@PutMapping("/api/contactDetails/{id}")
+	@PutMapping("/api/contact-details/{id}")
 	@ResponseStatus(HttpStatus.OK)
 	public ContactDetailDTO updateContactDetail(@RequestBody ContactDetailDTO contactDetailDTO, @PathVariable("id") Long contactDetailId) {
 		ContactDetail contactDetail = modelMapper.map(contactDetailDTO, ContactDetail.class);
@@ -48,15 +50,19 @@ public class ContactDetailController {
 		return modelMapper.map(contactDetail, ContactDetailDTO.class);
 	}
 
-	@GetMapping(value = "/api/contactDetails", params = { "userId", "pageNumber", "pageSize"})
+	@GetMapping(value = "/api/contact-details", params = { "userId", "pageNumber", "pageSize"})
 	@ResponseStatus(HttpStatus.OK)
-	public List<ContactDetailDTO> getContactDetails(@RequestParam("userId") Long userId, @RequestParam("pageNumber") Integer pageNumber, @RequestParam("pageSize") Integer pageSize) {
+	public List<ContactDetailDTO> getContactDetails(@RequestParam("userId") Long userId, @RequestParam("pageNumber") Integer pageNumber, @RequestParam("pageSize") Integer pageSize,
+	                                                HttpServletResponse response) {
 		List<ContactDetail> contactDetails = contactDetailService.getContactDetails(userId, pageNumber, pageSize);
+
+		long totalContactDetailsCount = contactDetailService.getContactDetailsCount(userId);
+		response.setHeader(Headers.HEADER_TOTAL_COUNT, String.valueOf(totalContactDetailsCount));
 
 		return modelMapper.map(contactDetails, new TypeToken<List<ContactDetailDTO>>() {}.getType());
 	}
 
-	@DeleteMapping("/api/contactDetails/{id}")
+	@DeleteMapping("/api/contact-details/{id}")
 	@ResponseStatus(HttpStatus.OK)
 	public void deleteContactDetail(@PathVariable("id") Long id) {
 		contactDetailService.deleteContactDetail(id);

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.konnector.backendapi.AuthenticatedTest;
+import com.konnector.backendapi.http.Headers;
 import com.konnector.backendapi.notifications.EmailTransportWrapper;
 import com.konnector.backendapi.session.SecurityTestConfig;
 import org.jeasy.random.EasyRandom;
@@ -51,7 +52,7 @@ public class ContactDetailIT extends AuthenticatedTest {
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		HttpEntity<String> entity = getEntityWithAuth(contactDetailJson, headers);
 
-		ResponseEntity<String> response = testRestTemplate.postForEntity("http://localhost:" + randomServerPort + "/api/contactDetails", entity, String.class);
+		ResponseEntity<String> response = testRestTemplate.postForEntity("http://localhost:" + randomServerPort + "/api/contact-details", entity, String.class);
 
 		assertEquals(HttpStatus.CREATED.value(), response.getStatusCodeValue());
 		assertNotNull(response.getBody());
@@ -74,7 +75,7 @@ public class ContactDetailIT extends AuthenticatedTest {
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		HttpEntity<String> entity = getEntityWithAuth(contactDetailJson, headers);
 
-		ResponseEntity<String> response = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/api/contactDetails/1", HttpMethod.PUT, entity, String.class);
+		ResponseEntity<String> response = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/api/contact-details/1", HttpMethod.PUT, entity, String.class);
 
 		assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
 		assertNotNull(response.getBody());
@@ -87,7 +88,7 @@ public class ContactDetailIT extends AuthenticatedTest {
 
 	@Test
 	public void getContactDetailsEndpoint_getsContactDetails() throws Exception {
-		ResponseEntity<String> response = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/api/contactDetails?userId=1&pageNumber=2&pageSize=2", HttpMethod.GET, getEntityWithAuth(null, null), String.class);
+		ResponseEntity<String> response = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/api/contact-details?userId=1&pageNumber=2&pageSize=2", HttpMethod.GET, getEntityWithAuth(null, null), String.class);
 
 		assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
 		assertNotNull(response.getBody());
@@ -96,11 +97,12 @@ public class ContactDetailIT extends AuthenticatedTest {
 		assertEquals(2, contactDetailDTOs.size());
 		assertEquals("c", contactDetailDTOs.get(0).getName());
 		assertEquals("d", contactDetailDTOs.get(1).getName());
+		assertEquals("6", response.getHeaders().get(Headers.HEADER_TOTAL_COUNT).get(0));
 	}
 
 	@Test
 	public void deleteContactDetailEndpoint_deletesContactDetail() {
-		ResponseEntity<String> response = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/api/contactDetails/1", HttpMethod.DELETE, getEntityWithAuth(null, null), String.class);
+		ResponseEntity<String> response = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/api/contact-details/1", HttpMethod.DELETE, getEntityWithAuth(null, null), String.class);
 
 		assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
 	}

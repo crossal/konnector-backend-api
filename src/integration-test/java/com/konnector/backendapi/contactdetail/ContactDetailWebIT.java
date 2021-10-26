@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.konnector.backendapi.http.Headers;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -66,7 +67,7 @@ public class ContactDetailWebIT {
 		when(contactDetailServiceMock.createContactDetail(contactDetailMock)).thenReturn(contactDetailMock);
 		when(modelMapperMock.map(contactDetailMock, ContactDetailDTO.class)).thenReturn(contactDetailDTO);
 
-		MvcResult result = mockMvc.perform(post("/api/contactDetails").contentType(MediaType.APPLICATION_JSON).content(contactDetailJson)).andExpect(status().isCreated()).andReturn();
+		MvcResult result = mockMvc.perform(post("/api/contact-details").contentType(MediaType.APPLICATION_JSON).content(contactDetailJson)).andExpect(status().isCreated()).andReturn();
 		ContactDetailDTO contactDetailDTOResponse = objectMapper.readValue(result.getResponse().getContentAsString(), ContactDetailDTO.class);
 
 		assertEquals(contactDetailDTO, contactDetailDTOResponse);
@@ -74,7 +75,7 @@ public class ContactDetailWebIT {
 
 	@Test
 	public void createContactDetail_withoutAuthentication_returnsFailure() throws Exception {
-		mockMvc.perform(post("/api/contactDetails").contentType(MediaType.APPLICATION_JSON).content(contactDetailJson)).andExpect(status().isUnauthorized());
+		mockMvc.perform(post("/api/contact-details").contentType(MediaType.APPLICATION_JSON).content(contactDetailJson)).andExpect(status().isUnauthorized());
 	}
 
 	@Test
@@ -84,7 +85,7 @@ public class ContactDetailWebIT {
 		when(contactDetailServiceMock.updateContactDetail(contactDetailMock, 1L)).thenReturn(contactDetailMock);
 		when(modelMapperMock.map(contactDetailMock, ContactDetailDTO.class)).thenReturn(contactDetailDTO);
 
-		MvcResult result = mockMvc.perform(put("/api/contactDetails/1").contentType(MediaType.APPLICATION_JSON).content(contactDetailJson)).andExpect(status().isOk()).andReturn();
+		MvcResult result = mockMvc.perform(put("/api/contact-details/1").contentType(MediaType.APPLICATION_JSON).content(contactDetailJson)).andExpect(status().isOk()).andReturn();
 		ContactDetailDTO contactDetailDTOResponse = objectMapper.readValue(result.getResponse().getContentAsString(), ContactDetailDTO.class);
 
 		assertEquals(contactDetailDTO, contactDetailDTOResponse);
@@ -92,7 +93,7 @@ public class ContactDetailWebIT {
 
 	@Test
 	public void updateContactDetail_withoutAuthentication_returnsFailure() throws Exception {
-		mockMvc.perform(put("/api/contactDetails/1").contentType(MediaType.APPLICATION_JSON).content(contactDetailJson)).andExpect(status().isUnauthorized());
+		mockMvc.perform(put("/api/contact-details/1").contentType(MediaType.APPLICATION_JSON).content(contactDetailJson)).andExpect(status().isUnauthorized());
 	}
 
 	@Test
@@ -101,28 +102,30 @@ public class ContactDetailWebIT {
 		List<ContactDetail> contactDetails = List.of(contactDetailMock);
 		List<ContactDetailDTO> contactDetailDTOs = List.of(contactDetailDTO);
 		when(contactDetailServiceMock.getContactDetails(1L, 1, 1)).thenReturn(contactDetails);
+		when(contactDetailServiceMock.getContactDetailsCount(1L)).thenReturn(10L);
 		Type listType = new TypeToken<List<ContactDetailDTO>>() {}.getType();
 		when(modelMapperMock.map(contactDetails, listType)).thenReturn(contactDetailDTOs);
 
-		MvcResult result = mockMvc.perform(get("/api/contactDetails?userId=1&pageNumber=1&pageSize=1").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+		MvcResult result = mockMvc.perform(get("/api/contact-details?userId=1&pageNumber=1&pageSize=1").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 		List<ContactDetailDTO> contactDetailDTOsResponse = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
 
 		assertEquals(contactDetailDTOs, contactDetailDTOsResponse);
+		assertEquals("10", result.getResponse().getHeader(Headers.HEADER_TOTAL_COUNT));
 	}
 
 	@Test
 	public void getContactDetails_withoutAuthentication_returnsFailure() throws Exception {
-		mockMvc.perform(get("/api/contactDetails?userId=1&pageNumber=1&pageSize=1")).andExpect(status().isUnauthorized());
+		mockMvc.perform(get("/api/contact-details?userId=1&pageNumber=1&pageSize=1")).andExpect(status().isUnauthorized());
 	}
 
 	@Test
 	@WithMockUser
 	public void deleteContactDetail_returnsSuccess() throws Exception {
-		mockMvc.perform(delete("/api/contactDetails/1")).andExpect(status().isOk());
+		mockMvc.perform(delete("/api/contact-details/1")).andExpect(status().isOk());
 	}
 
 	@Test
 	public void deleteContactDetail_withoutAuthentication_returnsFailure() throws Exception {
-		mockMvc.perform(delete("/api/contactDetails/1")).andExpect(status().isUnauthorized());
+		mockMvc.perform(delete("/api/contact-details/1")).andExpect(status().isUnauthorized());
 	}
 }

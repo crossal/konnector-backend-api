@@ -6,4 +6,5 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 public interface ContactDetailRepository extends PagingAndSortingRepository<ContactDetail, Long> {
 	Page findByUserId(Long userId, Pageable pageable);
+	long countByUserId(Long userId);
 }

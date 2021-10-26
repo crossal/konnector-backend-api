@@ -96,6 +96,17 @@ public class ContactDetailServiceImpl implements ContactDetailService {
 
 	@Override
 	@Transactional
+	public long getContactDetailsCount(Long userId) {
+		contactDetailValidator.validateContactDetailsCountFetchRequest(userId);
+
+		Authentication authentication = authenticationFacade.getAuthentication();
+		userAuthorizationValidator.validateUserRequest(userId, authentication);
+
+		return contactDetailRepository.countByUserId(userId);
+	}
+
+	@Override
+	@Transactional
 	public void deleteContactDetail(Long id) {
 		Optional<ContactDetail> optionalContactDetail = contactDetailDao.get(id);
 

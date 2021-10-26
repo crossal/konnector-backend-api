@@ -3,15 +3,14 @@ package com.konnector.backendapi.contactdetail;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 
+import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Type;
-import java.util.Collection;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,6 +31,8 @@ public class ContactDetailControllerTest {
 	private ModelMapper modelMapperMock;
 	@Mock
 	private ContactDetail contactDetailMock;
+	@Mock
+	private HttpServletResponse httpServletResponseMock;
 
 	private final EasyRandom easyRandom = new EasyRandom();
 	private final ContactDetailDTO contactDetailDTO = easyRandom.nextObject(ContactDetailDTO.class);
@@ -66,7 +67,7 @@ public class ContactDetailControllerTest {
 		Type listType = new TypeToken<List<ContactDetailDTO>>() {}.getType();
 		when(modelMapperMock.map(contactDetails, listType)).thenReturn(contactDetailDTOs);
 
-		List<ContactDetailDTO> result = contactDetailController.getContactDetails(1L, 1, 1);
+		List<ContactDetailDTO> result = contactDetailController.getContactDetails(1L, 1, 1, httpServletResponseMock);
 
 		assertEquals(contactDetailDTOs, result);
 	}

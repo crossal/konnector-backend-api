@@ -13,6 +13,9 @@ class ContactDetails extends React.Component {
       <div>
         <h2>Contact Details</h2>
         <ContactDetailsList {...this.props} />
+
+        <br />
+
         <ContactDetailsForm {...this.props} />
       </div>
     )

@@ -125,18 +125,6 @@ class Profile extends React.Component {
         <br />
 
         <ContactDetails {...this.props} />
-
-        <h2>Contact Details</h2>
-        <Form>
-          <Form.Row>
-            <Form.Group as={Col} controlId="formGridContactType">
-              <Form.Control placeholder="Type" />
-            </Form.Group>
-            <Form.Group as={Col} controlId="formGridLastContactValue">
-              <Form.Control placeholder="Value" />
-            </Form.Group>
-          </Form.Row>
-        </Form>
       </div>
     )
   }

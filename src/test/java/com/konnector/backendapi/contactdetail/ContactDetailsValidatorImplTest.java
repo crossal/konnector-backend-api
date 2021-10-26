@@ -93,4 +93,14 @@ public class ContactDetailsValidatorImplTest {
 	public void validateContactDetailsFetchRequest_pageSizeIsTooBig_throwsException() {
 		assertThrows(InvalidDataException.class, () -> contactDetailValidator.validateContactDetailsFetchRequest(1L, 1, 11));
 	}
+
+	@Test
+	public void validateContactDetailsCountFetchRequest_validArgs_doesNotThrowException() {
+		contactDetailValidator.validateContactDetailsCountFetchRequest(1L);
+	}
+
+	@Test
+	public void validateContactDetailsCountFetchRequest_userIdIsNull_throwsException() {
+		assertThrows(InvalidDataException.class, () -> contactDetailValidator.validateContactDetailsCountFetchRequest(null));
+	}
 }

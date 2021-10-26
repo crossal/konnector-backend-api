@@ -56,4 +56,11 @@ public class ContactDetailValidatorImpl implements ContactDetailValidator {
 			throw new InvalidDataException("Page size cannot be larger than " + MAX_PAGE_SIZE + ".");
 		}
 	}
+
+	@Override
+	public void validateContactDetailsCountFetchRequest(Long userId) {
+		if (userId == null) {
+			throw new InvalidDataException("User Id cannot be empty.");
+		}
+	}
 }
