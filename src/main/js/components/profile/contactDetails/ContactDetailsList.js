@@ -1,6 +1,7 @@
 import React from 'react';
 import client from '../../../client';
-import { ListGroup, Pagination, PageItem } from "react-bootstrap";
+import { ListGroup, Pagination, PageItem, Button } from "react-bootstrap";
+import { BiRefresh } from "react-icons/bi";
 
 class ContactDetailsList extends React.Component {
 
@@ -10,6 +11,7 @@ class ContactDetailsList extends React.Component {
     this.totalCountHeader = 'Total-Count';
     this.getPage = this.getPage.bind(this);
     this.handlePageNavigation = this.handlePageNavigation.bind(this);
+    this.refresh = this.refresh.bind(this);
     this.state = {
       currentPage: 1,
       contactDetails: [],
@@ -50,6 +52,10 @@ class ContactDetailsList extends React.Component {
     this.getPage(nextPageNumber);
   }
 
+  refresh() {
+    this.getPage(1);
+  }
+
   render() {
     return (
       <>
@@ -67,6 +73,7 @@ class ContactDetailsList extends React.Component {
           { this.state.currentPage == 1 ? <div/> : <Pagination.Prev onClick={() => this.handlePageNavigation(0)} /> }
           <Pagination.Item>{ this.state.currentPage }</Pagination.Item>
           { this.state.currentPage < this.state.totalPages ? <Pagination.Next onClick={() => this.handlePageNavigation(1)} /> : <div/>}
+          <Button variant="light" onClick={this.refresh} style={{ display: "flex", alignItems: "center" }}><BiRefresh /></Button>
         </Pagination>
       </>
     )
