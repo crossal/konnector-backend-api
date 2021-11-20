@@ -6,7 +6,7 @@ public class ContactDetailDTO {
 
 	private Long id;
 	private Long userId;
-	private String name;
+	private String type;
 	private String value;
 
 	public Long getId() {
@@ -25,12 +25,12 @@ public class ContactDetailDTO {
 		this.userId = userId;
 	}
 
-	public String getName() {
-		return name;
+	public String getType() {
+		return type;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public String getValue() {
@@ -46,11 +46,11 @@ public class ContactDetailDTO {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		ContactDetailDTO that = (ContactDetailDTO) o;
-		return Objects.equals(id, that.id) && Objects.equals(userId, that.userId) && Objects.equals(name, that.name) && Objects.equals(value, that.value);
+		return Objects.equals(id, that.id) && Objects.equals(userId, that.userId) && Objects.equals(type, that.type) && Objects.equals(value, that.value);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, userId, name, value);
+		return Objects.hash(id, userId, type, value);
 	}
 }

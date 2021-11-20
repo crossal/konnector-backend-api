@@ -21,8 +21,8 @@ public class ContactDetail {
 	@Column(name = "user_id")
 	private Long userId;
 
-	@Column(name = "name")
-	private String name;
+	@Column(name = "type")
+	private String type;
 
 	@Column(name = "value")
 	private String value;
@@ -47,12 +47,12 @@ public class ContactDetail {
 		this.userId = userId;
 	}
 
-	public String getName() {
-		return name;
+	public String getType() {
+		return type;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public String getValue() {
@@ -91,8 +91,8 @@ public class ContactDetail {
 		if (userId == null) {
 			throw new InvalidDataException("User Id cannot be empty.");
 		}
-		if (name == null || name.isEmpty()) {
-			throw new InvalidDataException("Name cannot be empty.");
+		if (type == null || type.isEmpty()) {
+			throw new InvalidDataException("Type cannot be empty.");
 		}
 		if (value == null || value.isEmpty()) {
 			throw new InvalidDataException("Value cannot be empty.");
@@ -100,7 +100,7 @@ public class ContactDetail {
 	}
 
 	public void merge(ContactDetail contactDetail) {
-		this.name = contactDetail.name;
+		this.type = contactDetail.type;
 		this.value = contactDetail.value;
 	}
 }

@@ -62,7 +62,7 @@ class ContactDetailsList extends React.Component {
         <ListGroup>
           {this.state.contactDetails.map(contactDetail =>
             <ListGroup.Item key={contactDetail.id} className="contactDetailsListRow">
-              {contactDetail.name}: {contactDetail.value}
+              {contactDetail.type}: {contactDetail.value}
             </ListGroup.Item>
           )}
         </ListGroup>

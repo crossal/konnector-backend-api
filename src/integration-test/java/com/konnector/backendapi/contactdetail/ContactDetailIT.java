@@ -60,7 +60,7 @@ public class ContactDetailIT extends AuthenticatedTest {
 		ContactDetailDTO createdContactDetailDTO = objectMapper.readValue(response.getBody(), ContactDetailDTO.class);
 		assertNotNull(createdContactDetailDTO.getId());
 		assertEquals(contactDetailDTO.getUserId(), createdContactDetailDTO.getUserId());
-		assertEquals(contactDetailDTO.getName(), createdContactDetailDTO.getName());
+		assertEquals(contactDetailDTO.getType(), createdContactDetailDTO.getType());
 		assertEquals(contactDetailDTO.getValue(), createdContactDetailDTO.getValue());
 	}
 
@@ -68,8 +68,8 @@ public class ContactDetailIT extends AuthenticatedTest {
 	public void updateContactDetailEndpoint_updatesContactDetail() throws Exception {
 		contactDetailDTO.setId(1L);
 		contactDetailDTO.setUserId(1L);
-		contactDetailDTO.setName("some new name");
-		contactDetailDTO.setName("some new value");
+		contactDetailDTO.setType("some new type");
+		contactDetailDTO.setType("some new value");
 		String contactDetailJson = objectMapper.writeValueAsString(contactDetailDTO);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
@@ -82,7 +82,7 @@ public class ContactDetailIT extends AuthenticatedTest {
 
 		ContactDetailDTO updatedContactDetailDTO = objectMapper.readValue(response.getBody(), ContactDetailDTO.class);
 		assertEquals(contactDetailDTO.getId(), updatedContactDetailDTO.getId());
-		assertEquals(contactDetailDTO.getName(), updatedContactDetailDTO.getName());
+		assertEquals(contactDetailDTO.getType(), updatedContactDetailDTO.getType());
 		assertEquals(contactDetailDTO.getValue(), updatedContactDetailDTO.getValue());
 	}
 
@@ -95,8 +95,8 @@ public class ContactDetailIT extends AuthenticatedTest {
 
 		List<ContactDetailDTO> contactDetailDTOs = objectMapper.readValue(response.getBody(), new TypeReference<>() {});
 		assertEquals(2, contactDetailDTOs.size());
-		assertEquals("c", contactDetailDTOs.get(0).getName());
-		assertEquals("d", contactDetailDTOs.get(1).getName());
+		assertEquals("c", contactDetailDTOs.get(0).getType());
+		assertEquals("d", contactDetailDTOs.get(1).getType());
 		assertEquals("6", response.getHeaders().get(Headers.HEADER_TOTAL_COUNT).get(0));
 	}
 

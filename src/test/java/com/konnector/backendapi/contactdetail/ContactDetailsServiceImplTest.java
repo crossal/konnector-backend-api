@@ -120,7 +120,7 @@ public class ContactDetailsServiceImplTest {
 		assertEquals(pageNumber - 1, pageable.getPageNumber());
 		assertEquals(pageSize, pageable.getPageSize());
 		Sort.Order order = pageable.getSort().stream().iterator().next();
-		assertEquals("name", order.getProperty());
+		assertEquals("type", order.getProperty());
 		assertEquals(Sort.Direction.ASC, order.getDirection());
 	}
 

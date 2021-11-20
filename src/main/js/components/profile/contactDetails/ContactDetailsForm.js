@@ -6,7 +6,7 @@ class ContactDetailsForm extends React.Component {
 
   constructor(props) {
     super(props);
-    this.name = React.createRef();
+    this.type = React.createRef();
     this.value = React.createRef();
     this.handleSubmit = this.handleSubmit.bind(this);
     this.state = {
@@ -46,7 +46,7 @@ class ContactDetailsForm extends React.Component {
   }
 
   clearForm() {
-    this.name.current.value = '';
+    this.type.current.value = '';
     this.value.current.value = '';
   }
 
@@ -56,7 +56,7 @@ class ContactDetailsForm extends React.Component {
         <Form.Row>
           <input hidden name="userId" defaultValue={this.props.userId} />
           <Form.Group as={Col} controlId="formGridContactType">
-            <Form.Control ref={this.name} required placeholder="Type" name="name" />
+            <Form.Control ref={this.type} required placeholder="Type" name="type" />
             <Form.Control.Feedback type="invalid">Cannot be empty.</Form.Control.Feedback>
           </Form.Group>
           <Form.Group as={Col} controlId="formGridContactValue">

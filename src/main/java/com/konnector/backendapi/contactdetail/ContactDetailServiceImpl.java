@@ -88,8 +88,8 @@ public class ContactDetailServiceImpl implements ContactDetailService {
 		Authentication authentication = authenticationFacade.getAuthentication();
 		userAuthorizationValidator.validateUserRequest(userId, authentication);
 
-		Pageable sortedByNameAscPageable = PageRequest.of(pageNumber - 1, pageSize, Sort.by("name").ascending());
-		Page page = contactDetailRepository.findByUserId(userId, sortedByNameAscPageable);
+		Pageable sortedByTypeAscPageable = PageRequest.of(pageNumber - 1, pageSize, Sort.by("type").ascending());
+		Page page = contactDetailRepository.findByUserId(userId, sortedByTypeAscPageable);
 
 		return page.getContent();
 	}
