@@ -1,7 +1,7 @@
 import React from 'react';
 import client from '../../../client';
 import { ListGroup, Pagination, PageItem, Button } from "react-bootstrap";
-import { BiRefresh } from "react-icons/bi";
+import { BiX, BiRefresh } from "react-icons/bi";
 
 class ContactDetailsList extends React.Component {
 
@@ -12,6 +12,7 @@ class ContactDetailsList extends React.Component {
     this.getPage = this.getPage.bind(this);
     this.handlePageNavigation = this.handlePageNavigation.bind(this);
     this.refresh = this.refresh.bind(this);
+    this.deleteContactDetail = this.deleteContactDetail.bind(this);
     this.state = {
       currentPage: 1,
       contactDetails: [],
@@ -52,6 +53,23 @@ class ContactDetailsList extends React.Component {
     this.getPage(nextPageNumber);
   }
 
+  deleteContactDetail(contactDetail, index) {
+    client({method: 'DELETE', path: '/api/contact-details/' + contactDetail.id}).then(
+      response => {
+        let newContactDetails = [...this.state.contactDetails];
+        newContactDetails.splice(index, 1);
+        this.setState({
+          contactDetails: newContactDetails
+        });
+      },
+      response => {
+        if (response.status.code === 401) {
+          this.props.updateLoggedIn(false, null)
+        }
+      }
+    );
+  }
+
   refresh() {
     this.getPage(1);
   }
@@ -60,9 +78,10 @@ class ContactDetailsList extends React.Component {
     return (
       <>
         <ListGroup>
-          {this.state.contactDetails.map(contactDetail =>
-            <ListGroup.Item key={contactDetail.id} className="contactDetailsListRow">
-              {contactDetail.type}: {contactDetail.value}
+          {this.state.contactDetails.map((contactDetail, index) =>
+            <ListGroup.Item key={index} style={{ display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center" }} className="contactDetailsListRow">
+              <div style={{ flex: "1" }}>{contactDetail.type}: {contactDetail.value}</div>
+              <Button variant="light" onClick={() => this.deleteContactDetail(contactDetail, index)} style={{ display: "flex", alignItems: "center" }}><BiX /></Button>
             </ListGroup.Item>
           )}
         </ListGroup>
