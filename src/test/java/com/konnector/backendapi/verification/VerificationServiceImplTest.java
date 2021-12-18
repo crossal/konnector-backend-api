@@ -29,7 +29,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -66,7 +65,7 @@ public class VerificationServiceImplTest {
 	private final static String password = "password";
 
 	@Captor
-	ArgumentCaptor<Verification> verificationCaptor;
+	private ArgumentCaptor<Verification> verificationCaptor;
 
 	@BeforeEach
 	public void setup() {
@@ -85,9 +84,9 @@ public class VerificationServiceImplTest {
 
 		Verification verification = verificationService.createEmailVerificationForUser(username);
 
-		verify(codeGenerationServiceMock, times(1)).generateCode(anyInt());
-		verify(verificationDaoMock, times(1)).save(verification);
-		verify(emailNotificationServiceMock, times(1)).sendVerificationEmail(eq(email), eq(code), anyString());
+		verify(codeGenerationServiceMock).generateCode(anyInt());
+		verify(verificationDaoMock).save(verification);
+		verify(emailNotificationServiceMock).sendVerificationEmail(eq(email), eq(code), anyString());
 		assertEquals(userId, verification.getUserId());
 		assertEquals(VerificationType.EMAIL, verification.getType());
 		assertEquals(code, verification.getCode());
@@ -157,9 +156,9 @@ public class VerificationServiceImplTest {
 
 		Verification verification = verificationService.createEmailVerificationForUser(userMock);
 
-		verify(codeGenerationServiceMock, times(1)).generateCode(anyInt());
-		verify(verificationDaoMock, times(1)).save(any(Verification.class));
-		verify(emailNotificationServiceMock, times(1)).sendVerificationEmail(eq(email), eq(code), anyString());
+		verify(codeGenerationServiceMock).generateCode(anyInt());
+		verify(verificationDaoMock).save(any(Verification.class));
+		verify(emailNotificationServiceMock).sendVerificationEmail(eq(email), eq(code), anyString());
 		assertEquals(userId, verification.getUserId());
 		assertEquals(VerificationType.EMAIL, verification.getType());
 		assertEquals(code, verification.getCode());
@@ -180,9 +179,9 @@ public class VerificationServiceImplTest {
 
 		Verification verification = verificationService.createEmailVerificationForUser(userMock);
 
-		verify(codeGenerationServiceMock, times(1)).generateCode(anyInt());
-		verify(verificationDaoMock, times(1)).save(any(Verification.class));
-		verify(emailNotificationServiceMock, times(1)).sendVerificationEmail(eq(email), eq(code), anyString());
+		verify(codeGenerationServiceMock).generateCode(anyInt());
+		verify(verificationDaoMock).save(any(Verification.class));
+		verify(emailNotificationServiceMock).sendVerificationEmail(eq(email), eq(code), anyString());
 		assertEquals(userId, verification.getUserId());
 		assertEquals(VerificationType.EMAIL, verification.getType());
 		assertEquals(code, verification.getCode());
@@ -336,8 +335,8 @@ public class VerificationServiceImplTest {
 
 		assertThrows(InvalidVerificationCodeException.class, () -> verificationService.verifyEmailByCode(username, code));
 
-		verify(verificationDaoMock, times(1)).update(verificationCaptor.capture());
-		verify(verificationCaptor.getValue(), times(1)).setCodeAttemptsLeft(4);
+		verify(verificationDaoMock).update(verificationCaptor.capture());
+		verify(verificationCaptor.getValue()).setCodeAttemptsLeft(4);
 	}
 
 	@Test
@@ -383,7 +382,7 @@ public class VerificationServiceImplTest {
 
 		Verification passwordReset = verificationService.createPasswordResetForUser(username);
 
-		verify(codeGenerationServiceMock, times(1)).generateCode(anyInt());
+		verify(codeGenerationServiceMock).generateCode(anyInt());
 		verify(verificationDaoMock).save(passwordReset);
 		verify(emailNotificationServiceMock).sendPasswordResetEmail(email, passwordReset.getCode(), passwordReset.getUrlToken());
 		assertEquals(userId, passwordReset.getUserId());

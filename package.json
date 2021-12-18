@@ -13,7 +13,8 @@
     "react-bootstrap": "^1.4.3",
     "react-dom": "^17.0.1",
     "rest": "^2.0.0",
-    "react-router-dom": "^5.2.0"
+    "react-router-dom": "^5.2.0",
+    "react-icons": "^4.3.1"
   },
   "scripts": {
     "watch": "webpack --watch -d --output ./target/classes/static/built/bundle.js"

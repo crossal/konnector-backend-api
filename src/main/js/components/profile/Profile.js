@@ -1,6 +1,7 @@
 import React from 'react';
 import client from '../../client';
 import { Col, Row, Form, Button, Alert } from "react-bootstrap";
+import ContactDetails from './contactDetails/ContactDetails';
 
 class Profile extends React.Component {
 
@@ -123,17 +124,7 @@ class Profile extends React.Component {
 
         <br />
 
-        <h2>Contact Details</h2>
-        <Form>
-          <Form.Row>
-            <Form.Group as={Col} controlId="formGridContactType">
-              <Form.Control placeholder="Type" />
-            </Form.Group>
-            <Form.Group as={Col} controlId="formGridLastContactValue">
-              <Form.Control placeholder="Value" />
-            </Form.Group>
-          </Form.Row>
-        </Form>
+        <ContactDetails {...this.props} />
       </div>
     )
   }

@@ -51,15 +51,15 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Transactional
-	public User updateUser(User user, Long id, String oldPassword) {
-		Optional<User> optionalUser = userRepository.findById(id);
+	public User updateUser(User user, Long userId, String oldPassword) {
+		Optional<User> optionalUser = userRepository.findById(userId);
 
 		return optionalUser.map(
 				existingUser -> {
-					userValidator.validateUserUpdateArgument(existingUser, user, id, oldPassword, passwordEncoder);
+					userValidator.validateUserUpdateArgument(existingUser, user, userId, oldPassword, passwordEncoder);
 
 					Authentication authentication = authenticationFacade.getAuthentication();
-					userAuthorizationValidator.validateUserRequest(id, authentication);
+					userAuthorizationValidator.validateUserRequest(userId, authentication);
 
 					if (user.getPassword() != null && !user.getPassword().isEmpty()) {
 						String hashedPassword = passwordEncoder.encode(user.getPassword());
