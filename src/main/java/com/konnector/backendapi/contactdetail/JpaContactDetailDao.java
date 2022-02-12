@@ -32,4 +32,9 @@ public class JpaContactDetailDao implements Dao<ContactDetail> {
 	public void delete(ContactDetail contactDetail) {
 		entityManager.remove(contactDetail);
 	}
+
+	@Override
+	public void flush() {
+		entityManager.flush();
+	}
 }

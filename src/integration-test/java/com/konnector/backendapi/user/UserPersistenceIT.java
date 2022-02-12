@@ -42,8 +42,10 @@ public class UserPersistenceIT {
 	@Test
 	@Transactional
 	public void updateUser_updatesUser() {
-		ReflectionTestUtils.setField(user, "id", 1L);
+		User user = userDao.get(1L).get();
+		user.setLastName("some new last name");
 		userDao.update(user);
+		userDao.flush();
 		User updatedUser = userDao.get(user.getId()).get();
 		assertEquals(user.getUsername(), updatedUser.getUsername());
 	}

@@ -1,8 +1,10 @@
 package com.konnector.backendapi.user;
 
+import com.konnector.backendapi.http.Headers;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,8 +12,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 @RestController
 public class UserController {
@@ -49,5 +55,17 @@ public class UserController {
 		User user = userService.getUser(userId);
 
 		return modelMapper.map(user, UserDTO.class);
+	}
+
+	@GetMapping(value = "/api/users", params = { "connectionsOfUserId", "pageNumber", "pageSize"})
+	@ResponseStatus(HttpStatus.OK)
+	public List<UserDTO> getConnectedUsers(@RequestParam("connectionsOfUserId") Long connectionsOfUserId, @RequestParam("pageNumber") Integer pageNumber, @RequestParam("pageSize") Integer pageSize,
+	                                       HttpServletResponse response) {
+		List<User> connections = userService.getConnections(connectionsOfUserId, pageNumber, pageSize);
+
+		long totalConnectionsCount = userService.getConnectionsCount(connectionsOfUserId);
+		response.setHeader(Headers.HEADER_TOTAL_COUNT, String.valueOf(totalConnectionsCount));
+
+		return modelMapper.map(connections, new TypeToken<List<UserDTO>>() {}.getType());
 	}
 }

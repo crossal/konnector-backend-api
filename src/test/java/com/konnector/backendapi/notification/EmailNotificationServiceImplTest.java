@@ -1,4 +1,4 @@
-package com.konnector.backendapi.notifications;
+package com.konnector.backendapi.notification;
 
 import com.konnector.backendapi.exceptions.EmailVerificationSendException;
 import org.junit.jupiter.api.BeforeEach;

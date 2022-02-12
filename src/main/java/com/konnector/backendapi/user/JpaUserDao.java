@@ -32,4 +32,9 @@ public class JpaUserDao implements Dao<User> {
 	public void delete(User user) {
 		entityManager.remove(user);
 	}
+
+	@Override
+	public void flush() {
+		entityManager.flush();
+	}
 }

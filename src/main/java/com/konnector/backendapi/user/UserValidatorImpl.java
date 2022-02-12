@@ -10,6 +10,8 @@ import java.util.Optional;
 @Service
 public class UserValidatorImpl implements UserValidator {
 
+	private static final int MAX_PAGE_SIZE = 10;
+
 	@Autowired
 	private UserRepository userRepository;
 
@@ -70,6 +72,32 @@ public class UserValidatorImpl implements UserValidator {
 
 	@Override
 	public void validateUserFetchRequest(Long userId) {
+		if (userId == null) {
+			throw new InvalidDataException("User Id cannot be empty.");
+		}
+	}
+
+	@Override
+	public void validateConnectionsFetchRequest(Long userId, Integer pageNumber, Integer pageSize) {
+		if (userId == null) {
+			throw new InvalidDataException("User Id cannot be empty.");
+		}
+
+		if (pageNumber == null) {
+			throw new InvalidDataException("Page number cannot be empty.");
+		}
+
+		if (pageSize == null) {
+			throw new InvalidDataException("Page size cannot be empty.");
+		}
+
+		if (pageSize > MAX_PAGE_SIZE) {
+			throw new InvalidDataException("Page size cannot be larger than " + MAX_PAGE_SIZE + ".");
+		}
+	}
+
+	@Override
+	public void validateConnectionsCountFetchRequest(Long userId) {
 		if (userId == null) {
 			throw new InvalidDataException("User Id cannot be empty.");
 		}

@@ -3,7 +3,6 @@ package com.konnector.backendapi.contactdetail;
 import com.konnector.backendapi.authentication.AuthenticationFacade;
 import com.konnector.backendapi.data.Dao;
 import com.konnector.backendapi.exceptions.NotFoundException;
-import com.konnector.backendapi.user.User;
 import com.konnector.backendapi.user.UserAuthorizationValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,8 +34,6 @@ public class ContactDetailsServiceImplTest {
 	@Mock
 	private Dao<ContactDetail> contactDetailDaoMock;
 	@Mock
-	private Dao<User> userDaoMock;
-	@Mock
 	private ContactDetailValidator contactDetailValidatorMock;
 	@Mock
 	private AuthenticationFacade authenticationFacadeMock;
@@ -50,15 +47,13 @@ public class ContactDetailsServiceImplTest {
 	private ContactDetail contactDetailMock;
 	@Mock
 	private Page pageMock;
-	@Mock
-	private User userMock;
 
 	@Captor
 	private ArgumentCaptor<Pageable> pageableCaptor;
 
 	@BeforeEach
 	public void setup() {
-		contactDetailService = new ContactDetailServiceImpl(contactDetailDaoMock, userDaoMock,
+		contactDetailService = new ContactDetailServiceImpl(contactDetailDaoMock,
 				contactDetailValidatorMock, userAuthorizationValidatorMock, authenticationFacadeMock,
 				contactDetailRepositoryMock);
 	}
@@ -146,8 +141,6 @@ public class ContactDetailsServiceImplTest {
 		Long userId = 1L;
 		when(contactDetailDaoMock.get(contactDetailId)).thenReturn(Optional.of(contactDetailMock));
 		when(contactDetailMock.getUserId()).thenReturn(userId);
-		when(userMock.getId()).thenReturn(userId);
-		when(userDaoMock.get(userId)).thenReturn(Optional.of(userMock));
 		when(authenticationFacadeMock.getAuthentication()).thenReturn(authenticationMock);
 
 		contactDetailService.deleteContactDetail(contactDetailId);

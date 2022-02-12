@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.konnector.backendapi.AuthenticatedTest;
-import com.konnector.backendapi.notifications.EmailTransportWrapper;
+import com.konnector.backendapi.notification.EmailTransportWrapper;
 import com.konnector.backendapi.session.SecurityTestConfig;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;

@@ -6,12 +6,10 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.konnector.backendapi.AuthenticatedTest;
 import com.konnector.backendapi.http.Headers;
-import com.konnector.backendapi.notifications.EmailTransportWrapper;
 import com.konnector.backendapi.session.SecurityTestConfig;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
@@ -39,9 +37,6 @@ public class ContactDetailIT extends AuthenticatedTest {
 	private final ObjectMapper objectMapper = new ObjectMapper().configure(MapperFeature.USE_ANNOTATIONS, false).configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	private final EasyRandom easyRandom = new EasyRandom();
 	private final ContactDetailDTO contactDetailDTO = easyRandom.nextObject(ContactDetailDTO.class);
-
-	@MockBean
-	private EmailTransportWrapper emailTransportWrapper;
 
 	@Test
 	public void createContactDetailEndpoint_createsContactDetail() throws Exception {

@@ -63,6 +63,7 @@ public class UserWebIT {
 		UserDTO userDTOResponse = objectMapper.readValue(result.getResponse().getContentAsString(), UserDTO.class);
 
 		userDTO.setPassword(null);
+		userDTO.setOldPassword(null);
 		assertEquals(userDTO, userDTOResponse);
 	}
 
@@ -82,6 +83,7 @@ public class UserWebIT {
 		UserDTO userDTOResponse = objectMapper.readValue(result.getResponse().getContentAsString(), UserDTO.class);
 
 		userDTO.setPassword(null);
+		userDTO.setOldPassword(null);
 		assertEquals(userDTO, userDTOResponse);
 	}
 
@@ -100,6 +102,7 @@ public class UserWebIT {
 		UserDTO userDTOResponse = objectMapper.readValue(result.getResponse().getContentAsString(), UserDTO.class);
 
 		userDTO.setPassword(null);
+		userDTO.setOldPassword(null);
 		assertEquals(userDTO, userDTOResponse);
 	}
 }

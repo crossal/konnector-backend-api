@@ -5,7 +5,7 @@ import com.konnector.backendapi.exceptions.InvalidDataException;
 import com.konnector.backendapi.exceptions.InvalidVerificationCodeException;
 import com.konnector.backendapi.exceptions.NoVerificationAttemptsLeftException;
 import com.konnector.backendapi.exceptions.NotFoundException;
-import com.konnector.backendapi.notifications.EmailNotificationService;
+import com.konnector.backendapi.notification.EmailNotificationService;
 import com.konnector.backendapi.user.User;
 import com.konnector.backendapi.user.UserRepository;
 import com.konnector.backendapi.user.UserService;

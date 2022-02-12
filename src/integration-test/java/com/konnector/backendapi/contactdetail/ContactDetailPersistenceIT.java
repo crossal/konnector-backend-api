@@ -45,8 +45,10 @@ public class ContactDetailPersistenceIT {
 	@Test
 	@Transactional
 	public void updateContactDetail_updatesUser() {
-		ReflectionTestUtils.setField(contactDetail, "id", 1L);
+		ContactDetail contactDetail = jpaContactDetailDao.get(1L).get();
+		contactDetail.setValue("some new value");
 		jpaContactDetailDao.update(contactDetail);
+		jpaContactDetailDao.flush();
 		ContactDetail updatedContactDetail = jpaContactDetailDao.get(contactDetail.getId()).get();
 		assertEquals(contactDetail.getType(), updatedContactDetail.getType());
 	}

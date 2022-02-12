@@ -7,11 +7,15 @@ import com.konnector.backendapi.verification.VerificationService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -98,5 +102,29 @@ public class UserServiceImpl implements UserService {
 		user.setPassword(hashedPassword);
 
 		userDao.update(user);
+	}
+
+	@Override
+	public List<User> getConnections(Long userId, Integer pageNumber, Integer pageSize) {
+		userValidator.validateConnectionsFetchRequest(userId, pageNumber, pageSize);
+
+		Authentication authentication = authenticationFacade.getAuthentication();
+		userAuthorizationValidator.validateUserRequest(userId, authentication);
+
+		Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
+		Page page = userRepository.getConnections(userId, pageable);
+
+		return page.getContent();
+	}
+
+	@Override
+	@Transactional
+	public long getConnectionsCount(Long userId) {
+		userValidator.validateConnectionsCountFetchRequest(userId);
+
+		Authentication authentication = authenticationFacade.getAuthentication();
+		userAuthorizationValidator.validateUserRequest(userId, authentication);
+
+		return userRepository.countConnectionsByUserId(userId);
 	}
 }

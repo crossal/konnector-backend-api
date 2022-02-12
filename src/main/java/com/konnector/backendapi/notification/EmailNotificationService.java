@@ -1,4 +1,4 @@
-package com.konnector.backendapi.notifications;
+package com.konnector.backendapi.notification;
 
 public interface EmailNotificationService {
 	void sendVerificationEmail(String recipient, String code, String urlToken);

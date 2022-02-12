@@ -3,7 +3,6 @@ package com.konnector.backendapi.contactdetail;
 import com.konnector.backendapi.authentication.AuthenticationFacade;
 import com.konnector.backendapi.data.Dao;
 import com.konnector.backendapi.exceptions.NotFoundException;
-import com.konnector.backendapi.user.User;
 import com.konnector.backendapi.user.UserAuthorizationValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,8 +22,6 @@ public class ContactDetailServiceImpl implements ContactDetailService {
 	@Autowired
 	private Dao<ContactDetail> contactDetailDao;
 	@Autowired
-	private Dao<User> userDao;
-	@Autowired
 	private ContactDetailValidator contactDetailValidator;
 	@Autowired
 	private UserAuthorizationValidator userAuthorizationValidator;
@@ -33,13 +30,12 @@ public class ContactDetailServiceImpl implements ContactDetailService {
 	@Autowired
 	private ContactDetailRepository contactDetailRepository;
 
-	public ContactDetailServiceImpl(Dao<ContactDetail> contactDetailDao, Dao<User> userDao,
+	public ContactDetailServiceImpl(Dao<ContactDetail> contactDetailDao,
 	                                ContactDetailValidator contactDetailValidator,
 	                                UserAuthorizationValidator userAuthorizationValidator,
 	                                AuthenticationFacade authenticationFacade,
 	                                ContactDetailRepository contactDetailRepository) {
 		this.contactDetailDao = contactDetailDao;
-		this.userDao = userDao;
 		this.contactDetailValidator = contactDetailValidator;
 		this.userAuthorizationValidator = userAuthorizationValidator;
 		this.authenticationFacade = authenticationFacade;
@@ -112,10 +108,8 @@ public class ContactDetailServiceImpl implements ContactDetailService {
 
 		optionalContactDetail.ifPresentOrElse(
 				existingContactDetail -> {
-					User user = userDao.get(existingContactDetail.getUserId()).get();
-
 					Authentication authentication = authenticationFacade.getAuthentication();
-					userAuthorizationValidator.validateUserRequest(user.getId(), authentication);
+					userAuthorizationValidator.validateUserRequest(existingContactDetail.getUserId(), authentication);
 
 					contactDetailDao.delete(existingContactDetail);
 				},
