@@ -164,14 +164,6 @@ public class UserServiceImplTest {
 		Pageable pageable = pageableCaptor.getValue();
 		assertEquals(pageNumber - 1, pageable.getPageNumber());
 		assertEquals(pageSize, pageable.getPageSize());
-		List<Sort.Order> orders = pageable.getSort().toList();
-		assertEquals(2, orders.size());
-		Sort.Order order = orders.get(0);
-		assertEquals("firstName", order.getProperty());
-		assertEquals(Sort.Direction.ASC, order.getDirection());
-		order = orders.get(1);
-		assertEquals("lastName", order.getProperty());
-		assertEquals(Sort.Direction.ASC, order.getDirection());
 	}
 
 	@Test
@@ -212,12 +204,15 @@ public class UserServiceImplTest {
 		assertEquals(pageNumber - 1, pageable.getPageNumber());
 		assertEquals(pageSize, pageable.getPageSize());
 		List<Sort.Order> orders = pageable.getSort().toList();
-		assertEquals(2, orders.size());
+		assertEquals(3, orders.size());
 		Sort.Order order = orders.get(0);
 		assertEquals("firstName", order.getProperty());
 		assertEquals(Sort.Direction.ASC, order.getDirection());
 		order = orders.get(1);
 		assertEquals("lastName", order.getProperty());
+		assertEquals(Sort.Direction.ASC, order.getDirection());
+		order = orders.get(2);
+		assertEquals("username", order.getProperty());
 		assertEquals(Sort.Direction.ASC, order.getDirection());
 	}
 

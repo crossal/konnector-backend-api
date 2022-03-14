@@ -62,4 +62,11 @@ public class ConnectionControllerTest {
 
 		verify(connectionServiceMock).deleteConnection(1L);
 	}
+
+	@Test
+	public void deleteConnectionByConnectedUserId_returnsSuccessAndDeletesConnection() {
+		connectionController.deleteConnectionByConnectedUserId(1L);
+
+		verify(connectionServiceMock).deleteConnectionByConnectedUserId(1L);
+	}
 }

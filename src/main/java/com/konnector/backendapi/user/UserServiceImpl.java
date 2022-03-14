@@ -113,12 +113,8 @@ public class UserServiceImpl implements UserService {
 		Authentication authentication = authenticationFacade.getAuthentication();
 		userAuthorizationValidator.validateUserRequest(userId, authentication);
 
-		Pageable sortedByNamePageable = PageRequest.of(pageNumber - 1, pageSize,
-				Sort.by(
-						Sort.Order.asc("firstName"),
-						Sort.Order.asc("lastName")
-				));
-		Page page = userRepository.getConnections(userId, sortedByNamePageable);
+		Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
+		Page page = userRepository.getConnections(userId, pageable);
 
 		return page.getContent();
 	}
@@ -144,8 +140,9 @@ public class UserServiceImpl implements UserService {
 		Pageable sortedByNamePageable = PageRequest.of(pageNumber - 1, pageSize,
 				Sort.by(
 						Sort.Order.asc("firstName"),
-						Sort.Order.asc("lastName")
-				));
+						Sort.Order.asc("lastName"),
+						Sort.Order.asc("username"))
+		);
 		Page page = userRepository.findByIdNot(userId, sortedByNamePageable);
 
 		return page.getContent();

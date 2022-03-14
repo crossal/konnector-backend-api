@@ -104,4 +104,6 @@ public class UserIT extends AuthenticatedTest {
 		UserDTO user = objectMapper.readValue(response.getBody(), UserDTO.class);
 		assertEquals(1, user.getId());
 	}
+
+	// TODO: getUsers
 }

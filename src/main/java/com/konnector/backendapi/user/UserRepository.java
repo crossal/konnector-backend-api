@@ -21,7 +21,7 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long> {
 			"  END " +
 			"WHERE c.status = 1 " +
 			"AND (c.requesterId = ?1 OR c.requesteeId = ?1) " +
-			"ORDER BY connected_u.username ASC")
+			"ORDER BY connected_u.firstName ASC, connected_u.lastName ASC, connected_u.username ASC")
 	Page getConnections(Long userId, Pageable pageable);
 
 	@Query("" +

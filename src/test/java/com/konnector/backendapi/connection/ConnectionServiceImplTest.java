@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,6 +45,8 @@ public class ConnectionServiceImplTest {
 	private SecurityUser securityUserMock;
 	@Mock
 	private Connection connectionMock;
+	@Mock
+	private ConnectionRepository connectionRepositoryMock;
 
 	@Test
 	public void createConnection_createsConnection() {
@@ -135,6 +138,35 @@ public class ConnectionServiceImplTest {
 		connectionService.deleteConnection(connectionId);
 
 		verify(userAuthorizationValidatorMock).validateUserRequest(List.of(requesteeId, requesterId), authenticationMock);
+		verify(connectionDaoMock).delete(connectionMock);
+	}
+
+	@Test
+	public void deleteConnectionByConnectedUserId_noConnectionExists_throwsException() {
+		Long userId = 1L;
+		Long connectedUserId = 2L;
+		when(authenticationFacadeMock.getAuthentication()).thenReturn(authenticationMock);
+		when(authenticationMock.getPrincipal()).thenReturn(securityUserMock);
+		when(securityUserMock.getUserId()).thenReturn(userId);
+		when(connectionRepositoryMock.findConnectionBetweenUsersWithAnyStatus(userId, connectedUserId))
+				.thenReturn(Collections.emptyList());
+
+		assertThrows(NotFoundException.class, () -> connectionService.deleteConnectionByConnectedUserId(connectedUserId));
+	}
+
+	@Test
+	public void deleteConnectionByConnectedUserId_deletesConnection() {
+		Long userId = 1L;
+		Long connectedUserId = 2L;
+		when(authenticationFacadeMock.getAuthentication()).thenReturn(authenticationMock);
+		when(authenticationMock.getPrincipal()).thenReturn(securityUserMock);
+		when(securityUserMock.getUserId()).thenReturn(userId);
+		List<Connection> connections = List.of(connectionMock);
+		when(connectionRepositoryMock.findConnectionBetweenUsersWithAnyStatus(userId, connectedUserId))
+				.thenReturn(connections);
+
+		connectionService.deleteConnectionByConnectedUserId(connectedUserId);
+
 		verify(connectionDaoMock).delete(connectionMock);
 	}
 }

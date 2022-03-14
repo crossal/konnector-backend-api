@@ -99,4 +99,15 @@ public class ConnectionWebIT {
 	public void deleteConnection_withoutAuthentication_returnsFailure() throws Exception {
 		mockMvc.perform(delete("/api/connections/1")).andExpect(status().isUnauthorized());
 	}
+
+	@Test
+	@WithMockUser
+	public void deleteConnectionByConnectedUserId_returnsSuccess() throws Exception {
+		mockMvc.perform(delete("/api/connections?connectedUserId=1")).andExpect(status().isOk());
+	}
+
+	@Test
+	public void deleteConnectionByConnectedUserId_withoutAuthentication_returnsFailure() throws Exception {
+		mockMvc.perform(delete("/api/connections?connectedUserId=1")).andExpect(status().isUnauthorized());
+	}
 }

@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +28,8 @@ public class ConnectionServiceImpl implements ConnectionService {
 	private UserAuthorizationValidator userAuthorizationValidator;
 	@Autowired
 	private NotificationService notificationService;
+	@Autowired
+	private ConnectionRepository connectionRepository;
 
 	@Override
 	@Transactional
@@ -87,5 +90,20 @@ public class ConnectionServiceImpl implements ConnectionService {
 					throw new NotFoundException("Connection not found.");
 				}
 		);
+	}
+
+	@Override
+	@Transactional
+	public void deleteConnectionByConnectedUserId(Long connectedUserId) {
+		Authentication authentication = authenticationFacade.getAuthentication();
+		Long userId = AuthenticationUtil.getUserId(authentication);
+		Collection<Connection> connections = connectionRepository.findConnectionBetweenUsersWithAnyStatus(userId, connectedUserId);
+
+		if (connections.isEmpty()) {
+			throw new NotFoundException("Connection not found.");
+		}
+
+		Connection connection = connections.stream().iterator().next();
+		connectionDao.delete(connection);
 	}
 }

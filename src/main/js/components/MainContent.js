@@ -20,7 +20,7 @@ class MainContent extends React.Component {
         <Switch>
           <Route exact path='/' component={Home}/>
           <Route path='/profile' render={() => <Profile {...this.props}/>}/>
-          <Route path='/connections' component={Connections}/>
+          <Route path='/connections' render={() => <Connections {...this.props}/>}/>
         </Switch>
     } else if (this.props.resetPasswordToken === true) {
       content =

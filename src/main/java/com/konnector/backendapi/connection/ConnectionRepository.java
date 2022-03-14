@@ -8,6 +8,6 @@ import java.util.Collection;
 public interface ConnectionRepository extends PagingAndSortingRepository<Connection, Long> {
 	@Query("" +
 			"SELECT c FROM Connection c " +
-			"WHERE (c.requesterId = ?1 OR c.requesteeId = ?2) AND (c.requesterId = ?2 OR c.requesteeId = ?1)")
+			"WHERE (c.requesterId = ?1 AND c.requesteeId = ?2) OR (c.requesterId = ?2 AND c.requesteeId = ?1)")
 	Collection<Connection> findConnectionBetweenUsersWithAnyStatus(Long userIdA, Long userIdB);
 }
