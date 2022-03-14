@@ -9,4 +9,6 @@ public interface UserService {
 	User updateUser(User user, Long userId, String oldPassword);
 	List<User> getConnections(Long userId, Integer pageNumber, Integer pageSize);
 	long getConnectionsCount(Long userId);
+	List<User> getUsers(Integer pageNumber, Integer pageSize);
+	long getUsersCount();
 }

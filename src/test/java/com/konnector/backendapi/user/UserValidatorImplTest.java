@@ -154,4 +154,49 @@ public class UserValidatorImplTest {
 	public void validateUserFetchRequest_requestIsValid_doesNotThrowException() {
 		userValidator.validateUserFetchRequest(1L);
 	}
+
+	@Test
+	public void validateConnectionsFetchRequest_userIdIsNull_throwsException() {
+		assertThrows(InvalidDataException.class, () -> userValidator.validateConnectionsFetchRequest(null, 1, 1));
+	}
+
+	@Test
+	public void validateConnectionsFetchRequest_pageNumberIsNull_throwsException() {
+		assertThrows(InvalidDataException.class, () -> userValidator.validateConnectionsFetchRequest(1l, null, 1));
+	}
+
+	@Test
+	public void validateConnectionsFetchRequest_pageSizeIsNull_throwsException() {
+		assertThrows(InvalidDataException.class, () -> userValidator.validateConnectionsFetchRequest(1l, 1, null));
+	}
+
+	@Test
+	public void validateConnectionsFetchRequest_argsAreValid_doesNotThrowException() {
+		userValidator.validateConnectionsFetchRequest(1l, 1, 1);
+	}
+
+	@Test
+	public void validateConnectionsCountFetchRequest_userIdIsNull_throwsException() {
+		assertThrows(InvalidDataException.class, () -> userValidator.validateConnectionsCountFetchRequest(null));
+	}
+
+	@Test
+	public void validateConnectionsCountFetchRequest_argsAreValid_doesNotThrowException() {
+		userValidator.validateConnectionsCountFetchRequest(1l);
+	}
+
+	@Test
+	public void validateUsersFetchRequest_pageNumberIsNull_throwsException() {
+		assertThrows(InvalidDataException.class, () -> userValidator.validateUsersFetchRequest(null, 1));
+	}
+
+	@Test
+	public void validateUsersFetchRequest_pageSizeIsNull_throwsException() {
+		assertThrows(InvalidDataException.class, () -> userValidator.validateUsersFetchRequest(null, 1));
+	}
+
+	@Test
+	public void validateUsersFetchRequest_argsAreValid_doesNotThrowException() {
+		userValidator.validateUsersFetchRequest(1, 1);
+	}
 }

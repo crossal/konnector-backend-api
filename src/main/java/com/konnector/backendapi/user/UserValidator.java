@@ -8,4 +8,5 @@ public interface UserValidator {
 	void validateUserFetchRequest(Long userId);
 	void validateConnectionsFetchRequest(Long userId, Integer pageNumber, Integer pageSize);
 	void validateConnectionsCountFetchRequest(Long userId);
+	void validateUsersFetchRequest(Integer pageNumber, Integer pageSize);
 }

@@ -3,6 +3,7 @@ package com.konnector.backendapi.user;
 import com.konnector.backendapi.authentication.AuthenticationFacade;
 import com.konnector.backendapi.data.Dao;
 import com.konnector.backendapi.exceptions.NotFoundException;
+import com.konnector.backendapi.security.AuthenticationUtil;
 import com.konnector.backendapi.verification.VerificationService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -111,8 +113,12 @@ public class UserServiceImpl implements UserService {
 		Authentication authentication = authenticationFacade.getAuthentication();
 		userAuthorizationValidator.validateUserRequest(userId, authentication);
 
-		Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
-		Page page = userRepository.getConnections(userId, pageable);
+		Pageable sortedByNamePageable = PageRequest.of(pageNumber - 1, pageSize,
+				Sort.by(
+						Sort.Order.asc("firstName"),
+						Sort.Order.asc("lastName")
+				));
+		Page page = userRepository.getConnections(userId, sortedByNamePageable);
 
 		return page.getContent();
 	}
@@ -126,5 +132,31 @@ public class UserServiceImpl implements UserService {
 		userAuthorizationValidator.validateUserRequest(userId, authentication);
 
 		return userRepository.countConnectionsByUserId(userId);
+	}
+
+	@Override
+	public List<User> getUsers(Integer pageNumber, Integer pageSize) {
+		userValidator.validateUsersFetchRequest(pageNumber, pageSize);
+
+		Authentication authentication = authenticationFacade.getAuthentication();
+		Long userId = AuthenticationUtil.getUserId(authentication);
+
+		Pageable sortedByNamePageable = PageRequest.of(pageNumber - 1, pageSize,
+				Sort.by(
+						Sort.Order.asc("firstName"),
+						Sort.Order.asc("lastName")
+				));
+		Page page = userRepository.findByIdNot(userId, sortedByNamePageable);
+
+		return page.getContent();
+	}
+
+	@Override
+	@Transactional
+	public long getUsersCount() {
+		Authentication authentication = authenticationFacade.getAuthentication();
+		Long userId = AuthenticationUtil.getUserId(authentication);
+
+		return userRepository.countByIdNot(userId);
 	}
 }

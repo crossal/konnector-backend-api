@@ -29,4 +29,7 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long> {
 			"WHERE c.status = 1 " +
 			"AND (c.requesterId = ?1 OR c.requesteeId = ?1)")
 	long countConnectionsByUserId(Long userId);
+
+	Page findByIdNot(Long id, Pageable pageable);
+	long countByIdNot(Long id);
 }

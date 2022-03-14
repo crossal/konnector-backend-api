@@ -52,8 +52,6 @@ public class NotificationServiceImplTest {
 	private Notification notificationMock;
 	@Mock
 	private Page pageMock;
-//	@Mock
-//	private User userMock;
 
 	@Captor
 	private ArgumentCaptor<Pageable> pageableCaptor;

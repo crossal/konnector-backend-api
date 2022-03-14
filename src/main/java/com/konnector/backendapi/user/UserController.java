@@ -57,7 +57,7 @@ public class UserController {
 		return modelMapper.map(user, UserDTO.class);
 	}
 
-	@GetMapping(value = "/api/users", params = { "connectionsOfUserId", "pageNumber", "pageSize"})
+	@GetMapping(value = "/api/users", params = {"connectionsOfUserId", "pageNumber", "pageSize"})
 	@ResponseStatus(HttpStatus.OK)
 	public List<UserDTO> getConnectedUsers(@RequestParam("connectionsOfUserId") Long connectionsOfUserId, @RequestParam("pageNumber") Integer pageNumber, @RequestParam("pageSize") Integer pageSize,
 	                                       HttpServletResponse response) {
@@ -67,5 +67,17 @@ public class UserController {
 		response.setHeader(Headers.HEADER_TOTAL_COUNT, String.valueOf(totalConnectionsCount));
 
 		return modelMapper.map(connections, new TypeToken<List<UserDTO>>() {}.getType());
+	}
+
+	@GetMapping(value = "/api/users", params = {"pageNumber", "pageSize"})
+	@ResponseStatus(HttpStatus.OK)
+	public List<UserDTO> getUsers(@RequestParam("pageNumber") Integer pageNumber, @RequestParam("pageSize") Integer pageSize,
+	                                       HttpServletResponse response) {
+		List<User> users = userService.getUsers(pageNumber, pageSize);
+
+		long totalUsersCount = userService.getUsersCount();
+		response.setHeader(Headers.HEADER_TOTAL_COUNT, String.valueOf(totalUsersCount));
+
+		return modelMapper.map(users, new TypeToken<List<UserDTO>>() {}.getType());
 	}
 }
