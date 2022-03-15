@@ -1,6 +1,8 @@
 package com.konnector.backendapi.user;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.konnector.backendapi.http.Headers;
+import com.konnector.backendapi.http.Views;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
@@ -31,6 +33,7 @@ public class UserController {
 
 	@PostMapping("/api/users")
 	@ResponseStatus(HttpStatus.CREATED)
+	@JsonView(Views.Private.class)
 	public UserDTO createUser(@RequestBody UserDTO userDTO) {
 		User user = modelMapper.map(userDTO, User.class);
 
@@ -41,6 +44,7 @@ public class UserController {
 
 	@PutMapping("/api/users/{id}")
 	@ResponseStatus(HttpStatus.OK)
+	@JsonView(Views.Private.class)
 	public UserDTO updateUser(@RequestBody UserDTO userDTO, @PathVariable("id") Long userId) {
 		User user = modelMapper.map(userDTO, User.class);
 
@@ -49,17 +53,28 @@ public class UserController {
 		return modelMapper.map(user, UserDTO.class);
 	}
 
-	@GetMapping("/api/users/{id}")
+	@GetMapping(value = "/api/users/{id}")
 	@ResponseStatus(HttpStatus.OK)
-	public UserDTO getUser(@PathVariable("id") Long userId) {
+	@JsonView(Views.Public.class)
+	public UserDTO getUser(@PathVariable("id") Long userId, @RequestParam(name = "view-type", required = false) Integer viewType) {
 		User user = userService.getUser(userId);
 
 		return modelMapper.map(user, UserDTO.class);
 	}
 
-	@GetMapping(value = "/api/users", params = {"connectionsOfUserId", "pageNumber", "pageSize"})
+	@GetMapping(value = "/api/users/{id}", params = { "view-type=1" })
 	@ResponseStatus(HttpStatus.OK)
-	public List<UserDTO> getConnectedUsers(@RequestParam("connectionsOfUserId") Long connectionsOfUserId, @RequestParam("pageNumber") Integer pageNumber, @RequestParam("pageSize") Integer pageSize,
+	@JsonView(Views.Private.class)
+	public UserDTO getFullUser(@PathVariable("id") Long userId, @RequestParam("view-type") Integer viewType) {
+		User user = userService.getUser(userId);
+
+		return modelMapper.map(user, UserDTO.class);
+	}
+
+	@GetMapping(value = "/api/users", params = {"connections-of-user-id", "page-number", "page-size"})
+	@ResponseStatus(HttpStatus.OK)
+	public List<UserDTO> getConnectedUsers(@RequestParam("connections-of-user-id") Long connectionsOfUserId, @RequestParam("page-number") Integer pageNumber,
+	                                       @RequestParam("page-size") Integer pageSize,
 	                                       HttpServletResponse response) {
 		List<User> connections = userService.getConnections(connectionsOfUserId, pageNumber, pageSize);
 
@@ -69,9 +84,9 @@ public class UserController {
 		return modelMapper.map(connections, new TypeToken<List<UserDTO>>() {}.getType());
 	}
 
-	@GetMapping(value = "/api/users", params = {"pageNumber", "pageSize"})
+	@GetMapping(value = "/api/users", params = {"page-number", "page-size"})
 	@ResponseStatus(HttpStatus.OK)
-	public List<UserDTO> getUsers(@RequestParam("pageNumber") Integer pageNumber, @RequestParam("pageSize") Integer pageSize,
+	public List<UserDTO> getUsers(@RequestParam("page-number") Integer pageNumber, @RequestParam("page-size") Integer pageSize,
 	                                       HttpServletResponse response) {
 		List<User> users = userService.getUsers(pageNumber, pageSize);
 

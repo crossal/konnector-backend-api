@@ -87,14 +87,7 @@ public class UserServiceImpl implements UserService {
 
 		Optional<User> optionalUser = userDao.get(id);
 
-		return optionalUser.map(
-				user -> {
-					Authentication authentication = authenticationFacade.getAuthentication();
-					userAuthorizationValidator.validateUserRequest(id, authentication);
-
-					return user;
-				}
-		).orElseThrow(() -> new NotFoundException("User not found."));
+		return optionalUser.orElseThrow(() -> new NotFoundException("User not found."));
 	}
 
 	@Override

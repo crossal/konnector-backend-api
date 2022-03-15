@@ -1,8 +1,13 @@
 package com.konnector.backendapi.contactdetail;
 
 import com.konnector.backendapi.authentication.AuthenticationFacade;
+import com.konnector.backendapi.connection.Connection;
+import com.konnector.backendapi.connection.ConnectionRepository;
+import com.konnector.backendapi.connection.ConnectionStatus;
 import com.konnector.backendapi.data.Dao;
 import com.konnector.backendapi.exceptions.NotFoundException;
+import com.konnector.backendapi.exceptions.UnauthorizedException;
+import com.konnector.backendapi.security.SecurityUser;
 import com.konnector.backendapi.user.UserAuthorizationValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,6 +53,12 @@ public class ContactDetailsServiceImplTest {
 	private ContactDetail contactDetailMock;
 	@Mock
 	private Page pageMock;
+	@Mock
+	private SecurityUser securityUserMock;
+	@Mock
+	private ConnectionRepository connectionRepositoryMock;
+	@Mock
+	private Connection connectionMock;
 
 	@Captor
 	private ArgumentCaptor<Pageable> pageableCaptor;
@@ -55,7 +67,7 @@ public class ContactDetailsServiceImplTest {
 	public void setup() {
 		contactDetailService = new ContactDetailServiceImpl(contactDetailDaoMock,
 				contactDetailValidatorMock, userAuthorizationValidatorMock, authenticationFacadeMock,
-				contactDetailRepositoryMock);
+				contactDetailRepositoryMock, connectionRepositoryMock);
 	}
 
 	@Test
@@ -95,11 +107,13 @@ public class ContactDetailsServiceImplTest {
 	}
 
 	@Test
-	public void getContactDetails_getsContactDetails() {
+	public void getContactDetails_forLoggedInUser_getsContactDetails() {
 		Long userId = 1L;
 		Integer pageNumber = 2;
 		Integer pageSize = 5;
 		when(authenticationFacadeMock.getAuthentication()).thenReturn(authenticationMock);
+		when(authenticationMock.getPrincipal()).thenReturn(securityUserMock);
+		when(securityUserMock.getUserId()).thenReturn(userId);
 
 		List<ContactDetail> contactDetails = List.of(contactDetailMock);
 		when(contactDetailRepositoryMock.findByUserId(eq(userId), any(Pageable.class))).thenReturn(pageMock);
@@ -109,7 +123,6 @@ public class ContactDetailsServiceImplTest {
 
 		assertEquals(contactDetails, returnedContactDetails);
 		verify(contactDetailValidatorMock).validateContactDetailsFetchRequest(userId, pageNumber, pageSize);
-		verify(userAuthorizationValidatorMock).validateUserRequest(userId, authenticationMock);
 		verify(contactDetailRepositoryMock).findByUserId(eq(userId), pageableCaptor.capture());
 		Pageable pageable = pageableCaptor.getValue();
 		assertEquals(pageNumber - 1, pageable.getPageNumber());
@@ -120,10 +133,56 @@ public class ContactDetailsServiceImplTest {
 	}
 
 	@Test
-	public void getContactDetailsCount_getsContactDetailsCount() {
+	public void getContactDetails_forConnectedUser_getsContactDetails() {
+		Long userId = 1L;
+		Long connectedUserId = 2L;
+		Integer pageNumber = 2;
+		Integer pageSize = 5;
+		when(authenticationFacadeMock.getAuthentication()).thenReturn(authenticationMock);
+		when(authenticationMock.getPrincipal()).thenReturn(securityUserMock);
+		when(securityUserMock.getUserId()).thenReturn(userId);
+
+		when(connectionRepositoryMock.findConnectionBetweenUsersWithStatus(connectedUserId, userId, ConnectionStatus.ACCEPTED)).thenReturn(List.of(connectionMock));
+
+		List<ContactDetail> contactDetails = List.of(contactDetailMock);
+		when(contactDetailRepositoryMock.findByUserId(eq(connectedUserId), any(Pageable.class))).thenReturn(pageMock);
+		when(pageMock.getContent()).thenReturn(contactDetails);
+
+		List<ContactDetail> returnedContactDetails = contactDetailService.getContactDetails(connectedUserId, pageNumber, pageSize);
+
+		assertEquals(contactDetails, returnedContactDetails);
+		verify(contactDetailValidatorMock).validateContactDetailsFetchRequest(connectedUserId, pageNumber, pageSize);
+		verify(contactDetailRepositoryMock).findByUserId(eq(connectedUserId), pageableCaptor.capture());
+		Pageable pageable = pageableCaptor.getValue();
+		assertEquals(pageNumber - 1, pageable.getPageNumber());
+		assertEquals(pageSize, pageable.getPageSize());
+		Sort.Order order = pageable.getSort().stream().iterator().next();
+		assertEquals("type", order.getProperty());
+		assertEquals(Sort.Direction.ASC, order.getDirection());
+	}
+
+	@Test
+	public void getContactDetails_forUnconnectedUser_throwsException() {
+		Long userId = 1L;
+		Long connectedUserId = 2L;
+		Integer pageNumber = 2;
+		Integer pageSize = 5;
+		when(authenticationFacadeMock.getAuthentication()).thenReturn(authenticationMock);
+		when(authenticationMock.getPrincipal()).thenReturn(securityUserMock);
+		when(securityUserMock.getUserId()).thenReturn(userId);
+
+		when(connectionRepositoryMock.findConnectionBetweenUsersWithStatus(connectedUserId, userId, ConnectionStatus.ACCEPTED)).thenReturn(Collections.emptyList());
+
+		assertThrows(UnauthorizedException.class, () -> contactDetailService.getContactDetails(connectedUserId, pageNumber, pageSize));
+	}
+
+	@Test
+	public void getContactDetailsCount_forLoggedInUser_getsContactDetailsCount() {
 		long count = 10L;
 		Long userId = 1L;
 		when(authenticationFacadeMock.getAuthentication()).thenReturn(authenticationMock);
+		when(authenticationMock.getPrincipal()).thenReturn(securityUserMock);
+		when(securityUserMock.getUserId()).thenReturn(userId);
 
 		when(contactDetailRepositoryMock.countByUserId(userId)).thenReturn(count);
 
@@ -131,8 +190,41 @@ public class ContactDetailsServiceImplTest {
 
 		assertEquals(count, returnedContactDetailsCount);
 		verify(contactDetailValidatorMock).validateContactDetailsCountFetchRequest(userId);
-		verify(userAuthorizationValidatorMock).validateUserRequest(userId, authenticationMock);
 		verify(contactDetailRepositoryMock).countByUserId(userId);
+	}
+
+	@Test
+	public void getContactDetailsCount_forConnectedUser_getsContactDetailsCount() {
+		long count = 10L;
+		Long userId = 1L;
+		Long connectedUserId = 2L;
+		when(authenticationFacadeMock.getAuthentication()).thenReturn(authenticationMock);
+		when(authenticationMock.getPrincipal()).thenReturn(securityUserMock);
+		when(securityUserMock.getUserId()).thenReturn(userId);
+
+		when(connectionRepositoryMock.findConnectionBetweenUsersWithStatus(connectedUserId, userId, ConnectionStatus.ACCEPTED)).thenReturn(List.of(connectionMock));
+
+		when(contactDetailRepositoryMock.countByUserId(connectedUserId)).thenReturn(count);
+
+		long returnedContactDetailsCount = contactDetailService.getContactDetailsCount(connectedUserId);
+
+		assertEquals(count, returnedContactDetailsCount);
+		verify(contactDetailValidatorMock).validateContactDetailsCountFetchRequest(connectedUserId);
+		verify(contactDetailRepositoryMock).countByUserId(connectedUserId);
+	}
+
+	@Test
+	public void getContactDetailsCount_forUnconnectedUser_throwsException() {
+		long count = 10L;
+		Long userId = 1L;
+		Long connectedUserId = 2L;
+		when(authenticationFacadeMock.getAuthentication()).thenReturn(authenticationMock);
+		when(authenticationMock.getPrincipal()).thenReturn(securityUserMock);
+		when(securityUserMock.getUserId()).thenReturn(userId);
+
+		when(connectionRepositoryMock.findConnectionBetweenUsersWithStatus(connectedUserId, userId, ConnectionStatus.ACCEPTED)).thenReturn(Collections.emptyList());
+
+		assertThrows(UnauthorizedException.class, () -> contactDetailService.getContactDetailsCount(connectedUserId));
 	}
 
 	@Test

@@ -27,7 +27,7 @@ class AddConnectionsList extends React.Component {
   }
 
   getPage(pageNumber) {
-    client({method: 'GET', path: '/api/users{?pageNumber,pageSize}', params: { pageNumber: pageNumber, pageSize: this.pageSize }}).then(
+    client({method: 'GET', path: '/api/users{?page-number,page-size}', params: { 'page-number': pageNumber, 'page-size': this.pageSize }}).then(
       response => {
         this.setState({
           users: response.entity,
@@ -55,7 +55,7 @@ class AddConnectionsList extends React.Component {
   }
 
   addConnection(connectedUserId, index) {
-    const newAddedUserIds = new Set(addedUserIds);
+    const newAddedUserIds = new Set(this.state.addedUserIds);
     newAddedUserIds.add(connectedUserId);
     this.setState({
       addedUserIds: newAddedUserIds

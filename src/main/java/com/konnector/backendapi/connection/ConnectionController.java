@@ -50,9 +50,9 @@ public class ConnectionController {
 		connectionService.deleteConnection(id);
 	}
 
-	@DeleteMapping(value = "/api/connections", params = {"connectedUserId"})
+	@DeleteMapping(value = "/api/connections", params = {"connected-user-id"})
 	@ResponseStatus(HttpStatus.OK)
-	public void deleteConnectionByConnectedUserId(@RequestParam("connectedUserId") Long connectedUserId) {
+	public void deleteConnectionByConnectedUserId(@RequestParam("connected-user-id") Long connectedUserId) {
 		connectionService.deleteConnectionByConnectedUserId(connectedUserId);
 	}
 }

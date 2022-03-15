@@ -50,9 +50,10 @@ public class ContactDetailController {
 		return modelMapper.map(contactDetail, ContactDetailDTO.class);
 	}
 
-	@GetMapping(value = "/api/contact-details", params = { "userId", "pageNumber", "pageSize"})
+	@GetMapping(value = "/api/contact-details", params = { "user-id", "page-number", "page-size"})
 	@ResponseStatus(HttpStatus.OK)
-	public List<ContactDetailDTO> getContactDetails(@RequestParam("userId") Long userId, @RequestParam("pageNumber") Integer pageNumber, @RequestParam("pageSize") Integer pageSize,
+	public List<ContactDetailDTO> getContactDetails(@RequestParam("user-id") Long userId, @RequestParam("page-number") Integer pageNumber,
+	                                                @RequestParam("page-size") Integer pageSize,
 	                                                HttpServletResponse response) {
 		List<ContactDetail> contactDetails = contactDetailService.getContactDetails(userId, pageNumber, pageSize);
 

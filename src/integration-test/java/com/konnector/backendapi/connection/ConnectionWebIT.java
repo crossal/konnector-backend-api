@@ -103,11 +103,11 @@ public class ConnectionWebIT {
 	@Test
 	@WithMockUser
 	public void deleteConnectionByConnectedUserId_returnsSuccess() throws Exception {
-		mockMvc.perform(delete("/api/connections?connectedUserId=1")).andExpect(status().isOk());
+		mockMvc.perform(delete("/api/connections?connected-user-id=1")).andExpect(status().isOk());
 	}
 
 	@Test
 	public void deleteConnectionByConnectedUserId_withoutAuthentication_returnsFailure() throws Exception {
-		mockMvc.perform(delete("/api/connections?connectedUserId=1")).andExpect(status().isUnauthorized());
+		mockMvc.perform(delete("/api/connections?connected-user-id=1")).andExpect(status().isUnauthorized());
 	}
 }

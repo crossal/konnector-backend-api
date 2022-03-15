@@ -26,7 +26,7 @@ class ConnectionsList extends React.Component {
   }
 
   getPage(pageNumber) {
-    client({method: 'GET', path: '/api/users{?connectionsOfUserId,pageNumber,pageSize}', params: { connectionsOfUserId: this.props.userId, pageNumber: pageNumber, pageSize: this.pageSize }}).then(
+    client({method: 'GET', path: '/api/users{?connections-of-user-id,page-number,page-size}', params: { 'connections-of-user-id': this.props.userId, 'page-number': pageNumber, 'page-size': this.pageSize }}).then(
       response => {
         this.setState({
           connections: response.entity,
@@ -54,7 +54,7 @@ class ConnectionsList extends React.Component {
   }
 
   deleteConnection(connection, index) {
-    client({method: 'DELETE', path: '/api/connections{?connectedUserId}', params: { connectedUserId: connection.id }}).then(
+    client({method: 'DELETE', path: '/api/connections{?connected-user-id}', params: { 'connected-user-id': connection.id }}).then(
       response => {
         let newConnections = [...this.state.connections];
         newConnections.splice(index, 1);
@@ -79,7 +79,7 @@ class ConnectionsList extends React.Component {
       <>
         <ListGroup>
           {this.state.connections.map((connection, index) =>
-            <ListGroup.Item key={index} style={{ display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center" }} className="connectionsListRow">
+            <ListGroup.Item onClick={() => this.props.viewConnectedUser(connection.id)} key={index} style={{ display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center" }} className="connectionsListRow">
               <div style={{ flex: "1" }}>{connection.firstName} {connection.lastName} - {connection.username}</div>
               <Button variant="light" onClick={() => this.deleteConnection(connection, index)} style={{ display: "flex", alignItems: "center" }}><BiX /></Button>
             </ListGroup.Item>

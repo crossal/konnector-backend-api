@@ -86,7 +86,7 @@ public class ConnectionIT extends AuthenticatedTest {
 
 	@Test
 	public void deleteConnectionByConnectedUserIdEndpoint_deletesConnection() {
-		ResponseEntity<String> response = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/api/connections?connectedUserId=4", HttpMethod.DELETE, getEntityWithAuth(null, null), String.class);
+		ResponseEntity<String> response = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/api/connections?connected-user-id=4", HttpMethod.DELETE, getEntityWithAuth(null, null), String.class);
 
 		assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
 	}

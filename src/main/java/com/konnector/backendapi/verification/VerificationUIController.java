@@ -15,7 +15,7 @@ public class VerificationUIController {
 
 	@GetMapping(value = "/verifications/verify", params = {"token", "type=0"})
 	@ModelAttribute
-	public String verifyEmail(@RequestParam String usernameOrEmail, @RequestParam String token, @RequestParam Integer type) {
+	public String verifyEmail(@RequestParam("username-or-email") String usernameOrEmail, @RequestParam String token, @RequestParam Integer type) {
 		verificationService.verifyEmailByUrlToken(usernameOrEmail, token);
 		return "index";
 	}

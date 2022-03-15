@@ -37,7 +37,7 @@ public class VerificationWebIT {
 	@Test
 	public void createEmailVerificationForUser_returnsSuccess() throws Exception {
 		mockMvc.perform(post("/api/verifications")
-				.queryParam("usernameOrEmail", "username_or_email")
+				.queryParam("username-or-email", "username_or_email")
 				.queryParam("type", Integer.toString(VerificationType.EMAIL.getValue()))
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 	}
@@ -45,7 +45,7 @@ public class VerificationWebIT {
 	@Test
 	public void verifyUserEmailByToken_returnsSuccess() throws Exception {
 		mockMvc.perform(post("/api/verifications/verify")
-				.queryParam("usernameOrEmail", "username_or_email")
+				.queryParam("username-or-email", "username_or_email")
 				.queryParam("token", "token_value")
 				.queryParam("type", Integer.toString(VerificationType.EMAIL.getValue()))
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
@@ -62,7 +62,7 @@ public class VerificationWebIT {
 	@Test
 	public void createPasswordResetForUser_returnsSuccess() throws Exception {
 		mockMvc.perform(post("/api/verifications")
-				.queryParam("usernameOrEmail", "username_or_email")
+				.queryParam("username-or-email", "username_or_email")
 				.queryParam("type", Integer.toString(VerificationType.PASSWORD.getValue()))
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 	}
@@ -71,8 +71,8 @@ public class VerificationWebIT {
 	public void resetUserPasswordWithToken_returnsSuccess() throws Exception {
 		String verificationJson = objectMapper.writeValueAsString(verificationDTO);
 		mockMvc.perform(post("/api/verifications/verify")
-				.queryParam("usernameOrEmail", "username_or_email")
-				.queryParam("passwordResetToken", "token_value")
+				.queryParam("username-or-email", "username_or_email")
+				.queryParam("password-reset-token", "token_value")
 				.queryParam("type", Integer.toString(VerificationType.PASSWORD.getValue()))
 				.contentType(MediaType.APPLICATION_JSON).content(verificationJson)).andExpect(status().isOk());
 	}
@@ -81,7 +81,7 @@ public class VerificationWebIT {
 	public void resetUserPasswordWithCode_returnsSuccess() throws Exception {
 		String verificationJson = objectMapper.writeValueAsString(verificationDTO);
 		mockMvc.perform(post("/api/verifications/verify")
-				.queryParam("usernameOrEmail", "username_or_email")
+				.queryParam("username-or-email", "username_or_email")
 				.queryParam("type", Integer.toString(VerificationType.PASSWORD.getValue()))
 				.contentType(MediaType.APPLICATION_JSON).content(verificationJson)).andExpect(status().isOk());
 	}

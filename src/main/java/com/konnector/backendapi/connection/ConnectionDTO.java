@@ -1,7 +1,11 @@
 package com.konnector.backendapi.connection;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.konnector.backendapi.http.Views;
+
 import java.util.Objects;
 
+@JsonView(Views.Public.class)
 public class ConnectionDTO {
 
 	private Long id;

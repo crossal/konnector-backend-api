@@ -40,7 +40,7 @@ class Main extends React.Component {
    componentDidMount() {
      // check if user session is still valid
      // if not, clean up state
-     client({method: 'GET', path: '/api/authHealth'}).then(
+     client({method: 'GET', path: '/api/auth-health'}).then(
        response => {
          if (response.status.code === 401) {
            this.setState({

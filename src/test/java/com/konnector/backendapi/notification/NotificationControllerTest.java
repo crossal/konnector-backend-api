@@ -1,6 +1,5 @@
 package com.konnector.backendapi.notification;
 
-import com.konnector.backendapi.contactdetail.ContactDetailDTO;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

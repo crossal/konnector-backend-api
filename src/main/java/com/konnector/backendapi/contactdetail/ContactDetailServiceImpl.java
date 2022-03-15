@@ -1,8 +1,13 @@
 package com.konnector.backendapi.contactdetail;
 
 import com.konnector.backendapi.authentication.AuthenticationFacade;
+import com.konnector.backendapi.connection.Connection;
+import com.konnector.backendapi.connection.ConnectionRepository;
+import com.konnector.backendapi.connection.ConnectionStatus;
 import com.konnector.backendapi.data.Dao;
 import com.konnector.backendapi.exceptions.NotFoundException;
+import com.konnector.backendapi.exceptions.UnauthorizedException;
+import com.konnector.backendapi.security.AuthenticationUtil;
 import com.konnector.backendapi.user.UserAuthorizationValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,17 +35,21 @@ public class ContactDetailServiceImpl implements ContactDetailService {
 	private AuthenticationFacade authenticationFacade;
 	@Autowired
 	private ContactDetailRepository contactDetailRepository;
+	@Autowired
+	private ConnectionRepository connectionRepository;
 
 	public ContactDetailServiceImpl(Dao<ContactDetail> contactDetailDao,
 	                                ContactDetailValidator contactDetailValidator,
 	                                UserAuthorizationValidator userAuthorizationValidator,
 	                                AuthenticationFacade authenticationFacade,
-	                                ContactDetailRepository contactDetailRepository) {
+	                                ContactDetailRepository contactDetailRepository,
+	                                ConnectionRepository connectionRepository) {
 		this.contactDetailDao = contactDetailDao;
 		this.contactDetailValidator = contactDetailValidator;
 		this.userAuthorizationValidator = userAuthorizationValidator;
 		this.authenticationFacade = authenticationFacade;
 		this.contactDetailRepository = contactDetailRepository;
+		this.connectionRepository = connectionRepository;
 	}
 
 	@Override
@@ -82,7 +92,13 @@ public class ContactDetailServiceImpl implements ContactDetailService {
 		contactDetailValidator.validateContactDetailsFetchRequest(userId, pageNumber, pageSize);
 
 		Authentication authentication = authenticationFacade.getAuthentication();
-		userAuthorizationValidator.validateUserRequest(userId, authentication);
+		Long loggedInUserId = AuthenticationUtil.getUserId(authentication);
+		if (!userId.equals(loggedInUserId)) {
+			Collection<Connection> connections = connectionRepository.findConnectionBetweenUsersWithStatus(userId, loggedInUserId, ConnectionStatus.ACCEPTED);
+			if (connections.isEmpty()) {
+				throw new UnauthorizedException();
+			}
+		}
 
 		Pageable sortedByTypeAscPageable = PageRequest.of(pageNumber - 1, pageSize, Sort.by("type").ascending());
 		Page page = contactDetailRepository.findByUserId(userId, sortedByTypeAscPageable);
@@ -96,7 +112,13 @@ public class ContactDetailServiceImpl implements ContactDetailService {
 		contactDetailValidator.validateContactDetailsCountFetchRequest(userId);
 
 		Authentication authentication = authenticationFacade.getAuthentication();
-		userAuthorizationValidator.validateUserRequest(userId, authentication);
+		Long loggedInUserId = AuthenticationUtil.getUserId(authentication);
+		if (!userId.equals(loggedInUserId)) {
+			Collection<Connection> connections = connectionRepository.findConnectionBetweenUsersWithStatus(userId, loggedInUserId, ConnectionStatus.ACCEPTED);
+			if (connections.isEmpty()) {
+				throw new UnauthorizedException();
+			}
+		}
 
 		return contactDetailRepository.countByUserId(userId);
 	}

@@ -33,7 +33,7 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
 	private static final String PROPERTY_KEY_AUTH = "mail.smtp.auth";
 	private static final String AUTH = "true";
 	private static final String VERIFICATION_EMAIL_SUBJECT = "Verify your email address";
-	private static final String VERIFICATION_URL_TEMPLATE = "konnector.io/verifications/verify?type=0&token={0}&usernameOrEmail={1}";
+	private static final String VERIFICATION_URL_TEMPLATE = "konnector.io/verifications/verify?type=0&token={0}&username-or-email={1}";
 	private static final String VERIFICATION_EMAIL_BODY_TEMPLATE = "Verification code: {0}\nVerification link: {1}";
 	private static final String RESET_PASSWORD_EMAIL_SUBJECT = "Reset your password";
 	private static final String RESET_PASSWORD_URL_TEMPLATE = "konnector.io/verifications/verify?type=1&token={0}";

@@ -10,4 +10,9 @@ public interface ConnectionRepository extends PagingAndSortingRepository<Connect
 			"SELECT c FROM Connection c " +
 			"WHERE (c.requesterId = ?1 AND c.requesteeId = ?2) OR (c.requesterId = ?2 AND c.requesteeId = ?1)")
 	Collection<Connection> findConnectionBetweenUsersWithAnyStatus(Long userIdA, Long userIdB);
+	@Query("" +
+			"SELECT c FROM Connection c " +
+			"WHERE ((c.requesterId = ?1 AND c.requesteeId = ?2) OR (c.requesterId = ?2 AND c.requesteeId = ?1))" +
+			"   AND c.status = ?3")
+	Collection<Connection> findConnectionBetweenUsersWithStatus(Long userIdA, Long userIdB, ConnectionStatus status);
 }

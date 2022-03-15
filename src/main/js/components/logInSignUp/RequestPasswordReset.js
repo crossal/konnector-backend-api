@@ -19,7 +19,7 @@ const RequestPasswordReset = ({ back, passwordResetRequested }) => {
       setLoading(true);
       client({
         method: 'POST',
-        path: '/api/verifications?type=1&usernameOrEmail=' + event.target.usernameOrEmail.value
+        path: '/api/verifications?type=1&username-or-email=' + event.target.usernameOrEmail.value
       }).then(response => {
         setLoading(false);
         if (response.status.code === 200) {

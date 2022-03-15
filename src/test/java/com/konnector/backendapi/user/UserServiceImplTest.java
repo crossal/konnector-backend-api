@@ -85,22 +85,19 @@ public class UserServiceImplTest {
 
 		assertThrows(NotFoundException.class, () -> userService.getUser(userId));
 
-		verify(userValidatorMock, times(1)).validateUserFetchRequest(userId);
-		verify(userDaoMock, times(1)).get(userId);
+		verify(userDaoMock).get(userId);
 	}
 
 	@Test
 	public void getUser_getsUser() {
 		Long userId = 1L;
 		when(userDaoMock.get(userId)).thenReturn(Optional.of(userMock));
-		when(authenticationFacadeMock.getAuthentication()).thenReturn(authenticationMock);
 
 		User fetchedUser = userService.getUser(userId);
 
 		assertEquals(userMock, fetchedUser);
-		verify(userValidatorMock, times(1)).validateUserFetchRequest(userId);
-		verify(userDaoMock, times(1)).get(userId);
-		verify(userAuthorizationValidatorMock, times(1)).validateUserRequest(userId, authenticationMock);
+		verify(userValidatorMock).validateUserFetchRequest(userId);
+		verify(userDaoMock).get(userId);
 	}
 
 	@Test

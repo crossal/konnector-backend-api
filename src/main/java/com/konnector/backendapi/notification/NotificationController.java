@@ -27,9 +27,9 @@ public class NotificationController {
 	@Autowired
 	private ModelMapper modelMapper;
 
-	@GetMapping(value = "/api/notifications", params = { "userId", "pageNumber", "pageSize"})
+	@GetMapping(value = "/api/notifications", params = { "user-id", "page-number", "page-size"})
 	@ResponseStatus(HttpStatus.OK)
-	public List<NotificationDTO> getNotifications(@RequestParam("userId") Long userId, @RequestParam("pageNumber") Integer pageNumber, @RequestParam("pageSize") Integer pageSize,
+	public List<NotificationDTO> getNotifications(@RequestParam("user-id") Long userId, @RequestParam("page-number") Integer pageNumber, @RequestParam("page-size") Integer pageSize,
 	                                                HttpServletResponse response) {
 		List<Notification> notifications = notificationService.getNotifications(userId, pageNumber, pageSize);
 

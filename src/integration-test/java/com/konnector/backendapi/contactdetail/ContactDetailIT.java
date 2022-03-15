@@ -83,7 +83,7 @@ public class ContactDetailIT extends AuthenticatedTest {
 
 	@Test
 	public void getContactDetailsEndpoint_getsContactDetails() throws Exception {
-		ResponseEntity<String> response = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/api/contact-details?userId=1&pageNumber=2&pageSize=2", HttpMethod.GET, getEntityWithAuth(null, null), String.class);
+		ResponseEntity<String> response = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/api/contact-details?user-id=1&page-number=2&page-size=2", HttpMethod.GET, getEntityWithAuth(null, null), String.class);
 
 		assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
 		assertNotNull(response.getBody());

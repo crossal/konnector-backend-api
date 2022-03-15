@@ -1,27 +1,38 @@
 package com.konnector.backendapi.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.konnector.backendapi.connection.ConnectionDTO;
+import com.konnector.backendapi.http.Views;
 
 import java.util.Objects;
 
 public class UserDTO {
 
+	@JsonView(Views.Public.class)
 	private Long id;
+	@JsonView(Views.Private.class)
 	private String email;
+	@JsonView(Views.Public.class)
 	private String username;
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	@JsonView(Views.Private.class)
 	private String password;
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	@JsonView(Views.Private.class)
 	private String oldPassword;
+	@JsonView(Views.Public.class)
 	private String firstName;
+	@JsonView(Views.Public.class)
 	private String lastName;
 	@JsonProperty(value = "emailVerified")
+	@JsonView(Views.Private.class)
 	private Boolean emailVerified;
 	/**
 	 * Populated if there is connection between the user and requester
 	 */
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	@JsonView(Views.Public.class)
 	private ConnectionDTO connection;
 
 	public Long getId() {
