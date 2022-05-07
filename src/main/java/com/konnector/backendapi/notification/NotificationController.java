@@ -1,6 +1,8 @@
 package com.konnector.backendapi.notification;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.konnector.backendapi.http.Headers;
+import com.konnector.backendapi.http.Views;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
@@ -29,6 +31,7 @@ public class NotificationController {
 
 	@GetMapping(value = "/api/notifications", params = { "user-id", "page-number", "page-size"})
 	@ResponseStatus(HttpStatus.OK)
+	@JsonView(Views.Public.class)
 	public List<NotificationDTO> getNotifications(@RequestParam("user-id") Long userId, @RequestParam("page-number") Integer pageNumber, @RequestParam("page-size") Integer pageSize,
 	                                                HttpServletResponse response) {
 		List<Notification> notifications = notificationService.getNotifications(userId, pageNumber, pageSize);

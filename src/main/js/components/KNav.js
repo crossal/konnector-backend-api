@@ -25,6 +25,7 @@ class KNav extends React.Component {
             <Nav.Link as={Link} to="/">Home</Nav.Link>
             <Nav.Link as={Link} to="/profile">Profile</Nav.Link>
             <Nav.Link as={Link} to="/connections">Connections</Nav.Link>
+            <Nav.Link as={Link} to="/notifications">Notifications</Nav.Link>
           </Nav>
           <Nav>
             <Button variant="link" onClick={this.updateLoggedIn}>Log Out</Button>

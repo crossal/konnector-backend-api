@@ -1,14 +1,18 @@
 package com.konnector.backendapi.notification;
 
 import com.konnector.backendapi.exceptions.InvalidDataException;
+import com.konnector.backendapi.user.User;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import java.time.LocalDateTime;
 
 @Entity
@@ -21,8 +25,16 @@ public class Notification {
 	@Column(name = "recipient_id")
 	private Long recipientId;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "recipient_id", insertable = false, updatable = false)
+	private User recipient;
+
 	@Column(name = "sender_id")
 	private Long senderId;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "sender_id", insertable = false, updatable = false)
+	private User sender;
 
 	@Column(name = "type")
 	private NotificationType type;
@@ -63,12 +75,28 @@ public class Notification {
 		this.recipientId = recipientId;
 	}
 
+	public User getRecipient() {
+		return recipient;
+	}
+
+	public void setRecipient(User recipient) {
+		this.recipient = recipient;
+	}
+
 	public Long getSenderId() {
 		return senderId;
 	}
 
 	public void setSenderId(Long senderId) {
 		this.senderId = senderId;
+	}
+
+	public User getSender() {
+		return sender;
+	}
+
+	public void setSender(User sender) {
+		this.sender = sender;
 	}
 
 	public NotificationType getType() {

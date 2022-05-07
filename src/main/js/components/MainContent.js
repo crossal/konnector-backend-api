@@ -3,6 +3,7 @@ import { Switch, Route } from 'react-router-dom';
 import Home from './Home';
 import Profile from './profile/Profile';
 import Connections from './connections/Connections';
+import Notifications from './notifications/Notifications';
 import LogInSignUp from './logInSignUp/LogInSignUp';
 import ResetPassword from './logInSignUp/ResetPassword';
 import { Container, Row, Col } from "react-bootstrap";
@@ -21,6 +22,7 @@ class MainContent extends React.Component {
           <Route exact path='/' component={Home}/>
           <Route path='/profile' render={() => <Profile {...this.props}/>}/>
           <Route path='/connections' render={() => <Connections {...this.props}/>}/>
+          <Route path='/notifications' render={() => <Notifications {...this.props}/>}/>
         </Switch>
     } else if (this.props.resetPasswordToken === true) {
       content =

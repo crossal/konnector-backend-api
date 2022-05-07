@@ -67,7 +67,7 @@ public class NotificationServiceImpl implements NotificationService {
 		userAuthorizationValidator.validateUserRequest(userId, authentication);
 
 		Pageable sortedByCreationDateDescPageable = PageRequest.of(pageNumber - 1, pageSize, Sort.by("createdOn").descending());
-		Page page = notificationRepository.findByRecipientId(userId, sortedByCreationDateDescPageable);
+		Page page = notificationRepository.findByRecipientIdAndLoadRecipientAndSender(userId, sortedByCreationDateDescPageable);
 
 		return page.getContent();
 	}

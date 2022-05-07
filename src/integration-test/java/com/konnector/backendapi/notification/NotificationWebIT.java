@@ -55,11 +55,17 @@ public class NotificationWebIT {
 			.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 	private final EasyRandom easyRandom = new EasyRandom();
 	private final NotificationDTO notificationDTO = easyRandom.nextObject(NotificationDTO.class);
-	private String connectionJson;
 
 	@BeforeEach
 	public void setup() throws JsonProcessingException {
-		connectionJson = objectMapper.writeValueAsString(notificationDTO);
+		notificationDTO.getRecipient().setEmail(null);
+		notificationDTO.getRecipient().setPassword(null);
+		notificationDTO.getRecipient().setOldPassword(null);
+		notificationDTO.getRecipient().setEmailVerified(null);
+		notificationDTO.getSender().setPassword(null);
+		notificationDTO.getSender().setOldPassword(null);
+		notificationDTO.getSender().setEmailVerified(null);
+		notificationDTO.getSender().setEmail(null);
 	}
 
 	@Test

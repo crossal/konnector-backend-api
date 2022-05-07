@@ -100,7 +100,7 @@ public class NotificationServiceImplTest {
 		when(authenticationFacadeMock.getAuthentication()).thenReturn(authenticationMock);
 
 		List<Notification> notifications = List.of(notificationMock);
-		when(notificationRepository.findByRecipientId(eq(userId), any(Pageable.class))).thenReturn(pageMock);
+		when(notificationRepository.findByRecipientIdAndLoadRecipientAndSender(eq(userId), any(Pageable.class))).thenReturn(pageMock);
 		when(pageMock.getContent()).thenReturn(notifications);
 
 		List<Notification> returnedNotifications = notificationService.getNotifications(userId, pageNumber, pageSize);
@@ -108,7 +108,7 @@ public class NotificationServiceImplTest {
 		assertEquals(notifications, returnedNotifications);
 		verify(notificationValidatorMock).validateNotificationsFetchRequest(userId, pageNumber, pageSize);
 		verify(userAuthorizationValidatorMock).validateUserRequest(userId, authenticationMock);
-		verify(notificationRepository).findByRecipientId(eq(userId), pageableCaptor.capture());
+		verify(notificationRepository).findByRecipientIdAndLoadRecipientAndSender(eq(userId), pageableCaptor.capture());
 		Pageable pageable = pageableCaptor.getValue();
 		assertEquals(pageNumber - 1, pageable.getPageNumber());
 		assertEquals(pageSize, pageable.getPageSize());
