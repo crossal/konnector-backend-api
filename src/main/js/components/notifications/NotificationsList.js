@@ -92,22 +92,22 @@ class NotificationsList extends React.Component {
   }
 
   denyNotificationAction(notification, index) {
-      const connection = { id: notification.referenceId, requesterId: notification.senderId, requesteeId: notification.recipientId, status: 1 };
-      if (notification.type == 0) {
-        client({method: 'DELETE', path: '/api/connections/' + notification.referenceId }).then(
-          response => {
-            this.clearNotification(notification, index);
-          },
-          response => {
-            if (response.status.code === 401) {
-              this.props.updateLoggedIn(false, null)
-            }
+    const connection = { id: notification.referenceId, requesterId: notification.senderId, requesteeId: notification.recipientId, status: 1 };
+    if (notification.type == 0) {
+      client({method: 'DELETE', path: '/api/connections/' + notification.referenceId }).then(
+        response => {
+          this.clearNotification(notification, index);
+        },
+        response => {
+          if (response.status.code === 401) {
+            this.props.updateLoggedIn(false, null)
           }
-        );
-      } else if (notification.type == 1) {
-        this.clearNotification(notification, index);
-      }
+        }
+      );
+    } else if (notification.type == 1) {
+      this.clearNotification(notification, index);
     }
+  }
 
   refresh() {
     this.getPage(1);

@@ -1,5 +1,7 @@
 package com.konnector.backendapi.login;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.konnector.backendapi.http.Views;
 import com.konnector.backendapi.user.User;
 import com.konnector.backendapi.user.UserDTO;
 import org.modelmapper.ModelMapper;
@@ -20,6 +22,7 @@ public class LoginController {
 
 	@PostMapping("/api/authenticate")
 	@ResponseStatus(HttpStatus.OK)
+	@JsonView(Views.Private.class)
 	public UserDTO login(@RequestBody AuthenticationDTO authenticationDTO) {
 		User user = loginService.login(authenticationDTO.getUsernameOrEmail(), authenticationDTO.getPassword());
 
