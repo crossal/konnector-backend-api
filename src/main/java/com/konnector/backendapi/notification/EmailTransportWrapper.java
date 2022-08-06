@@ -1,4 +1,4 @@
-package com.konnector.backendapi.notifications;
+package com.konnector.backendapi.notification;
 
 import org.springframework.stereotype.Service;
 

@@ -16,7 +16,7 @@ public class HealthController {
 		return "Ok";
 	}
 
-	@GetMapping("/api/authHealth")
+	@GetMapping("/api/auth-health")
 	@ResponseStatus(HttpStatus.OK)
 	@ResponseBody
 	public String getAuthHealth() {

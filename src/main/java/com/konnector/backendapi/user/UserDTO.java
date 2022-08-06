@@ -1,22 +1,39 @@
 package com.konnector.backendapi.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.konnector.backendapi.connection.ConnectionDTO;
+import com.konnector.backendapi.http.Views;
 
 import java.util.Objects;
 
 public class UserDTO {
 
+	@JsonView(Views.Public.class)
 	private Long id;
+	@JsonView(Views.Private.class)
 	private String email;
+	@JsonView(Views.Public.class)
 	private String username;
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	@JsonView(Views.Private.class)
 	private String password;
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	@JsonView(Views.Private.class)
 	private String oldPassword;
+	@JsonView(Views.Public.class)
 	private String firstName;
+	@JsonView(Views.Public.class)
 	private String lastName;
 	@JsonProperty(value = "emailVerified")
+	@JsonView(Views.Private.class)
 	private Boolean emailVerified;
+	/**
+	 * Populated if there is connection between the user and requester
+	 */
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	@JsonView(Views.Public.class)
+	private ConnectionDTO connection;
 
 	public Long getId() {
 		return id;
@@ -82,22 +99,24 @@ public class UserDTO {
 		this.emailVerified = emailVerified;
 	}
 
+	public ConnectionDTO getConnection() {
+		return connection;
+	}
+
+	public void setConnection(ConnectionDTO connection) {
+		this.connection = connection;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		UserDTO userDTO = (UserDTO) o;
-		return Objects.equals(id, userDTO.id) &&
-				Objects.equals(email, userDTO.email) &&
-				Objects.equals(username, userDTO.username) &&
-				Objects.equals(password, userDTO.password) &&
-				Objects.equals(firstName, userDTO.firstName) &&
-				Objects.equals(lastName, userDTO.lastName) &&
-				Objects.equals(emailVerified, userDTO.emailVerified);
+		return Objects.equals(id, userDTO.id) && Objects.equals(email, userDTO.email) && Objects.equals(username, userDTO.username) && Objects.equals(password, userDTO.password) && Objects.equals(oldPassword, userDTO.oldPassword) && Objects.equals(firstName, userDTO.firstName) && Objects.equals(lastName, userDTO.lastName) && Objects.equals(emailVerified, userDTO.emailVerified) && Objects.equals(connection, userDTO.connection);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, email, username, password, firstName, lastName, emailVerified);
+		return Objects.hash(id, email, username, password, oldPassword, firstName, lastName, emailVerified, connection);
 	}
 }

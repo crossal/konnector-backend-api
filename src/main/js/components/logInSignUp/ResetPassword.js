@@ -22,7 +22,7 @@ const ResetPassword = ({ token, updatePasswordReset }) => {
       const formData = new FormData(event.target), formDataObj = Object.fromEntries(formData.entries())
       client({
         method: 'POST',
-        path: '/api/verifications/verify?type=1&passwordResetToken=' + token,
+        path: '/api/verifications/verify?type=1&password-reset-token=' + token,
         entity: formDataObj
       }).then(response => {
         setLoading(false);

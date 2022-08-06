@@ -3,15 +3,21 @@ package com.konnector.backendapi.user;
 import com.konnector.backendapi.authentication.AuthenticationFacade;
 import com.konnector.backendapi.data.Dao;
 import com.konnector.backendapi.exceptions.NotFoundException;
+import com.konnector.backendapi.security.AuthenticationUtil;
 import com.konnector.backendapi.verification.VerificationService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -81,14 +87,7 @@ public class UserServiceImpl implements UserService {
 
 		Optional<User> optionalUser = userDao.get(id);
 
-		return optionalUser.map(
-				user -> {
-					Authentication authentication = authenticationFacade.getAuthentication();
-					userAuthorizationValidator.validateUserRequest(id, authentication);
-
-					return user;
-				}
-		).orElseThrow(() -> new NotFoundException("User not found."));
+		return optionalUser.orElseThrow(() -> new NotFoundException("User not found."));
 	}
 
 	@Override
@@ -98,5 +97,56 @@ public class UserServiceImpl implements UserService {
 		user.setPassword(hashedPassword);
 
 		userDao.update(user);
+	}
+
+	@Override
+	public List<User> getConnections(Long userId, Integer pageNumber, Integer pageSize) {
+		userValidator.validateConnectionsFetchRequest(userId, pageNumber, pageSize);
+
+		Authentication authentication = authenticationFacade.getAuthentication();
+		userAuthorizationValidator.validateUserRequest(userId, authentication);
+
+		Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
+		Page page = userRepository.getConnections(userId, pageable);
+
+		return page.getContent();
+	}
+
+	@Override
+	@Transactional
+	public long getConnectionsCount(Long userId) {
+		userValidator.validateConnectionsCountFetchRequest(userId);
+
+		Authentication authentication = authenticationFacade.getAuthentication();
+		userAuthorizationValidator.validateUserRequest(userId, authentication);
+
+		return userRepository.countConnectionsByUserId(userId);
+	}
+
+	@Override
+	public List<User> getUsers(Integer pageNumber, Integer pageSize) {
+		userValidator.validateUsersFetchRequest(pageNumber, pageSize);
+
+		Authentication authentication = authenticationFacade.getAuthentication();
+		Long userId = AuthenticationUtil.getUserId(authentication);
+
+		Pageable sortedByNamePageable = PageRequest.of(pageNumber - 1, pageSize,
+				Sort.by(
+						Sort.Order.asc("firstName"),
+						Sort.Order.asc("lastName"),
+						Sort.Order.asc("username"))
+		);
+		Page page = userRepository.findByIdNot(userId, sortedByNamePageable);
+
+		return page.getContent();
+	}
+
+	@Override
+	@Transactional
+	public long getUsersCount() {
+		Authentication authentication = authenticationFacade.getAuthentication();
+		Long userId = AuthenticationUtil.getUserId(authentication);
+
+		return userRepository.countByIdNot(userId);
 	}
 }

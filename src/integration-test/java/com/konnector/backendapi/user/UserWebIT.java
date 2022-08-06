@@ -63,6 +63,7 @@ public class UserWebIT {
 		UserDTO userDTOResponse = objectMapper.readValue(result.getResponse().getContentAsString(), UserDTO.class);
 
 		userDTO.setPassword(null);
+		userDTO.setOldPassword(null);
 		assertEquals(userDTO, userDTOResponse);
 	}
 
@@ -82,6 +83,7 @@ public class UserWebIT {
 		UserDTO userDTOResponse = objectMapper.readValue(result.getResponse().getContentAsString(), UserDTO.class);
 
 		userDTO.setPassword(null);
+		userDTO.setOldPassword(null);
 		assertEquals(userDTO, userDTOResponse);
 	}
 
@@ -96,10 +98,32 @@ public class UserWebIT {
 		when(userServiceMock.getUser(1L)).thenReturn(userMock);
 		when(modelMapperMock.map(userMock, UserDTO.class)).thenReturn(userDTO);
 
-		MvcResult result = mockMvc.perform(get("/api/users/1").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+		MvcResult result = mockMvc.perform(get("/api/users/1?view-type=0").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 		UserDTO userDTOResponse = objectMapper.readValue(result.getResponse().getContentAsString(), UserDTO.class);
 
 		userDTO.setPassword(null);
+		userDTO.setOldPassword(null);
+		userDTO.setEmailVerified(null);
+		userDTO.setEmail(null);
+		assertEquals(userDTO, userDTOResponse);
+	}
+
+	@Test
+	public void getUser_fullUserWithoutAuthentication_returnsFailure() throws Exception {
+		mockMvc.perform(get("/api/users/1").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isUnauthorized());
+	}
+
+	@Test
+	@WithMockUser
+	public void getUser_fullUser_returnsSuccessAndFullUser() throws Exception {
+		when(userServiceMock.getUser(1L)).thenReturn(userMock);
+		when(modelMapperMock.map(userMock, UserDTO.class)).thenReturn(userDTO);
+
+		MvcResult result = mockMvc.perform(get("/api/users/1?view-type=1").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+		UserDTO userDTOResponse = objectMapper.readValue(result.getResponse().getContentAsString(), UserDTO.class);
+
+		userDTO.setPassword(null);
+		userDTO.setOldPassword(null);
 		assertEquals(userDTO, userDTOResponse);
 	}
 }

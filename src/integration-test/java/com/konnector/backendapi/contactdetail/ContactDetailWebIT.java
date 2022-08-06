@@ -106,7 +106,7 @@ public class ContactDetailWebIT {
 		Type listType = new TypeToken<List<ContactDetailDTO>>() {}.getType();
 		when(modelMapperMock.map(contactDetails, listType)).thenReturn(contactDetailDTOs);
 
-		MvcResult result = mockMvc.perform(get("/api/contact-details?userId=1&pageNumber=1&pageSize=1").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+		MvcResult result = mockMvc.perform(get("/api/contact-details?user-id=1&page-number=1&page-size=1").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 		List<ContactDetailDTO> contactDetailDTOsResponse = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
 
 		assertEquals(contactDetailDTOs, contactDetailDTOsResponse);
@@ -115,7 +115,7 @@ public class ContactDetailWebIT {
 
 	@Test
 	public void getContactDetails_withoutAuthentication_returnsFailure() throws Exception {
-		mockMvc.perform(get("/api/contact-details?userId=1&pageNumber=1&pageSize=1")).andExpect(status().isUnauthorized());
+		mockMvc.perform(get("/api/contact-details?userId=1&page-number=1&page-size=1")).andExpect(status().isUnauthorized());
 	}
 
 	@Test

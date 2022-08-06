@@ -17,15 +17,15 @@ public class VerificationController {
 	@Autowired
 	private ModelMapper modelMapper;
 
-	@PostMapping(value = "/api/verifications", params = { "usernameOrEmail", "type=0" })
+	@PostMapping(value = "/api/verifications", params = { "username-or-email", "type=0" })
 	@ResponseStatus(HttpStatus.OK)
-	public void createEmailVerificationForUser(@RequestParam String usernameOrEmail, @RequestParam Integer type) {
+	public void createEmailVerificationForUser(@RequestParam("username-or-email") String usernameOrEmail, @RequestParam Integer type) {
 		verificationService.createEmailVerificationForUser(usernameOrEmail);
 	}
 
 	@PostMapping(value = "/api/verifications/verify", params = { "token", "type=0" })
 	@ResponseStatus(HttpStatus.OK)
-	public void verifyUserEmailByToken(@RequestParam String usernameOrEmail, @RequestParam String token, @RequestParam Integer type) {
+	public void verifyUserEmailByToken(@RequestParam("username-or-email") String usernameOrEmail, @RequestParam String token, @RequestParam Integer type) {
 		verificationService.verifyEmailByUrlToken(usernameOrEmail, token);
 	}
 
@@ -35,15 +35,15 @@ public class VerificationController {
 		verificationService.verifyEmailByCode(verificationDTO.getUsernameOrEmail(), verificationDTO.getCode());
 	}
 
-	@PostMapping(value = "/api/verifications", params = { "usernameOrEmail", "type=1" })
+	@PostMapping(value = "/api/verifications", params = { "username-or-email", "type=1" })
 	@ResponseStatus(HttpStatus.OK)
-	public void createPasswordResetForUser(@RequestParam String usernameOrEmail, @RequestParam Integer type) {
+	public void createPasswordResetForUser(@RequestParam("username-or-email") String usernameOrEmail, @RequestParam Integer type) {
 		verificationService.createPasswordResetForUser(usernameOrEmail);
 	}
 
-	@PostMapping(value = "/api/verifications/verify", params = {"passwordResetToken", "type=1"})
+	@PostMapping(value = "/api/verifications/verify", params = {"password-reset-token", "type=1"})
 	@ResponseStatus(HttpStatus.OK)
-	public void resetUserPasswordWithToken(@RequestBody VerificationDTO verificationDTO, @RequestParam String passwordResetToken, @RequestParam Integer type) {
+	public void resetUserPasswordWithToken(@RequestBody VerificationDTO verificationDTO, @RequestParam("password-reset-token") String passwordResetToken, @RequestParam Integer type) {
 		verificationService.resetPasswordWithToken(verificationDTO.getUsernameOrEmail(), verificationDTO.getUserPassword(), passwordResetToken);
 	}
 

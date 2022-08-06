@@ -32,4 +32,9 @@ public class JpaVerificationDao implements Dao<Verification> {
 	public void delete(Verification verification) {
 		entityManager.remove(verification);
 	}
+
+	@Override
+	public void flush() {
+		entityManager.flush();
+	}
 }

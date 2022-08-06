@@ -26,7 +26,7 @@ class ContactDetailsList extends React.Component {
   }
 
   getPage(pageNumber) {
-    client({method: 'GET', path: '/api/contact-details{?userId,pageNumber,pageSize}', params: { userId: this.props.userId, pageNumber: pageNumber, pageSize: this.pageSize }}).then(
+    client({method: 'GET', path: '/api/contact-details{?user-id,page-number,page-size}', params: { 'user-id': this.props.userId, 'page-number': pageNumber, 'page-size': this.pageSize }}).then(
       response => {
         this.setState({
           contactDetails: response.entity,
@@ -81,7 +81,7 @@ class ContactDetailsList extends React.Component {
           {this.state.contactDetails.map((contactDetail, index) =>
             <ListGroup.Item key={index} style={{ display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center" }} className="contactDetailsListRow">
               <div style={{ flex: "1" }}>{contactDetail.type}: {contactDetail.value}</div>
-              <Button variant="light" onClick={() => this.deleteContactDetail(contactDetail, index)} style={{ display: "flex", alignItems: "center" }}><BiX /></Button>
+              { this.props.disableDeleteButton ? <div/> : <Button variant="light" onClick={() => this.deleteContactDetail(contactDetail, index)} style={{ display: "flex", alignItems: "center" }}><BiX /></Button> }
             </ListGroup.Item>
           )}
         </ListGroup>

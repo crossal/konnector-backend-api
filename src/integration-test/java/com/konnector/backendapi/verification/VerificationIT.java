@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.konnector.backendapi.notifications.EmailTransportWrapper;
+import com.konnector.backendapi.notification.EmailTransportWrapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -49,7 +49,7 @@ public class VerificationIT {
 	public void createEmailVerificationForUser_createsEmailVerification() {
 		String url = "http://localhost:" + randomServerPort + "/api/verifications";
 		UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString(url)
-				.queryParam("usernameOrEmail", USER_EMAIL_FOR_VERIFICATION)
+				.queryParam("username-or-email", USER_EMAIL_FOR_VERIFICATION)
 				.queryParam("type", VerificationType.EMAIL.getValue());
 		ResponseEntity<String> response = testRestTemplate.postForEntity(uriComponentsBuilder.build().toUriString(), null, String.class);
 
@@ -60,7 +60,7 @@ public class VerificationIT {
 	public void createEmailVerificationForUser_notAllowedReverifyYet_returnsError() {
 		String url = "http://localhost:" + randomServerPort + "/api/verifications";
 		UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString(url)
-				.queryParam("usernameOrEmail", USER_EMAIL_WITH_VERIFICATION_NOT_ALLOWED_TO_REVERIFY_YET)
+				.queryParam("username-or-email", USER_EMAIL_WITH_VERIFICATION_NOT_ALLOWED_TO_REVERIFY_YET)
 				.queryParam("type", VerificationType.EMAIL.getValue());
 		ResponseEntity<String> response = testRestTemplate.postForEntity(uriComponentsBuilder.build().toUriString(), null, String.class);
 
@@ -71,7 +71,7 @@ public class VerificationIT {
 	public void verifyUserEmail_byToken_verifiesUserEmail() {
 		String url = "http://localhost:" + randomServerPort + "/api/verifications/verify";
 		UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString(url)
-				.queryParam("usernameOrEmail", USER_EMAIL_FOR_VERIFICATION)
+				.queryParam("username-or-email", USER_EMAIL_FOR_VERIFICATION)
 				.queryParam("token", VERIFICATION_TOKEN)
 				.queryParam("type", VerificationType.EMAIL.getValue());
 		ResponseEntity<String> response = testRestTemplate.postForEntity(uriComponentsBuilder.build().toUriString(), null, String.class);
@@ -125,7 +125,7 @@ public class VerificationIT {
 	public void createPasswordResetForUser_createsPasswordReset() {
 		String url = "http://localhost:" + randomServerPort + "/api/verifications";
 		UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString(url)
-				.queryParam("usernameOrEmail", USER_EMAIL_FOR_PASSWORD_RESET_WITH_TOKEN)
+				.queryParam("username-or-email", USER_EMAIL_FOR_PASSWORD_RESET_WITH_TOKEN)
 				.queryParam("type", VerificationType.PASSWORD.getValue());
 		ResponseEntity<String> response = testRestTemplate.postForEntity(uriComponentsBuilder.build().toUriString(), null, String.class);
 
@@ -136,7 +136,7 @@ public class VerificationIT {
 	public void createPasswordResetForUser_notAllowedResetPasswordAgainYet_returnsError() {
 		String url = "http://localhost:" + randomServerPort + "/api/verifications";
 		UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString(url)
-				.queryParam("usernameOrEmail", USER_EMAIL_WITH_PASSWORD_RESET_NOT_ALLOWED_AGAIN_YET)
+				.queryParam("username-or-email", USER_EMAIL_WITH_PASSWORD_RESET_NOT_ALLOWED_AGAIN_YET)
 				.queryParam("type", VerificationType.PASSWORD.getValue());
 		ResponseEntity<String> response = testRestTemplate.postForEntity(uriComponentsBuilder.build().toUriString(), null, String.class);
 
@@ -147,7 +147,7 @@ public class VerificationIT {
 	public void resetPassword_withToken_resetsPassword() throws JsonProcessingException {
 		String url = "http://localhost:" + randomServerPort + "/api/verifications/verify";
 		UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString(url)
-				.queryParam("passwordResetToken", VERIFICATION_TOKEN)
+				.queryParam("password-reset-token", VERIFICATION_TOKEN)
 				.queryParam("type", VerificationType.PASSWORD.getValue());
 		verificationDTO.setUsernameOrEmail(USER_EMAIL_FOR_PASSWORD_RESET_WITH_TOKEN);
 		verificationDTO.setCode(VERIFICATION_CODE);
