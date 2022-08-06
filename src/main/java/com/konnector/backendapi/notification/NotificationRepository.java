@@ -7,11 +7,6 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 public interface NotificationRepository  extends PagingAndSortingRepository<Notification, Long> {
 	Page findByRecipientId(Long id, Pageable pageable);
-//	@Query("" +
-//			"SELECT n FROM Notification n " +
-//			"JOIN FETCH n.recipient " +
-//			"JOIN FETCH n.sender " +
-//			"ORDER BY n.updatedOn DESC")
 	@Query(value =
 		"SELECT n FROM Notification n " +
 		"JOIN FETCH n.recipient " +
