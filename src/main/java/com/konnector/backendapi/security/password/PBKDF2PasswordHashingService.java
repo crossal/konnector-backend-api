@@ -41,8 +41,8 @@ public class PBKDF2PasswordHashingService implements PasswordHashingService {
 		PBEKeySpec pbeKeySpec = new PBEKeySpec(passwordChars, salt, PBKDF2_ITERATIONS, HASH_BYTES * 8);
 
 		try {
-			SecretKeyFactory secretKeyFactory = secretKeyFactoryWrapperService.getInstance(PBKDF2_ALGORITHM);
-			byte[] hashedPassword = secretKeyFactory.generateSecret(pbeKeySpec).getEncoded();
+			SecretKeyFactoryWrapper secretKeyFactoryWrapper = secretKeyFactoryWrapperService.getInstance(PBKDF2_ALGORITHM);
+			byte[] hashedPassword = secretKeyFactoryWrapper.generateSecret(pbeKeySpec).getEncoded();
 
 			String pass = hashedPassword.toString();
 
