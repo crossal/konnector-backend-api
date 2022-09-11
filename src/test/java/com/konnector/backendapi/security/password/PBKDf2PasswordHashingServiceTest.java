@@ -24,9 +24,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 @ExtendWith(MockitoExtension.class)
 public class PBKDf2PasswordHashingServiceTest {
@@ -34,8 +36,7 @@ public class PBKDf2PasswordHashingServiceTest {
 	@InjectMocks
 	private PasswordHashingService passwordHashingService = new PBKDF2PasswordHashingService();
 
-	@Mock
-	private SecureRandom secureRandomMock;
+	private SecureRandom secureRandomMock = mock(SecureRandom.class, withSettings().withoutAnnotations());
 	@Mock
 	private SecretKeyFactoryWrapperService secretKeyFactoryWrapperServiceMock;
 	@Mock

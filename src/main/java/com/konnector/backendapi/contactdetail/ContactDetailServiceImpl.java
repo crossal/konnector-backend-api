@@ -4,7 +4,6 @@ import com.konnector.backendapi.authentication.AuthenticationFacade;
 import com.konnector.backendapi.connection.Connection;
 import com.konnector.backendapi.connection.ConnectionRepository;
 import com.konnector.backendapi.connection.ConnectionStatus;
-import com.konnector.backendapi.data.Dao;
 import com.konnector.backendapi.exceptions.NotFoundException;
 import com.konnector.backendapi.exceptions.UnauthorizedException;
 import com.konnector.backendapi.security.AuthenticationUtil;
@@ -26,8 +25,6 @@ import java.util.Optional;
 public class ContactDetailServiceImpl implements ContactDetailService {
 
 	@Autowired
-	private Dao<ContactDetail> contactDetailDao;
-	@Autowired
 	private ContactDetailValidator contactDetailValidator;
 	@Autowired
 	private UserAuthorizationValidator userAuthorizationValidator;
@@ -38,13 +35,11 @@ public class ContactDetailServiceImpl implements ContactDetailService {
 	@Autowired
 	private ConnectionRepository connectionRepository;
 
-	public ContactDetailServiceImpl(Dao<ContactDetail> contactDetailDao,
-	                                ContactDetailValidator contactDetailValidator,
+	public ContactDetailServiceImpl(ContactDetailValidator contactDetailValidator,
 	                                UserAuthorizationValidator userAuthorizationValidator,
 	                                AuthenticationFacade authenticationFacade,
 	                                ContactDetailRepository contactDetailRepository,
 	                                ConnectionRepository connectionRepository) {
-		this.contactDetailDao = contactDetailDao;
 		this.contactDetailValidator = contactDetailValidator;
 		this.userAuthorizationValidator = userAuthorizationValidator;
 		this.authenticationFacade = authenticationFacade;
@@ -60,7 +55,7 @@ public class ContactDetailServiceImpl implements ContactDetailService {
 		Authentication authentication = authenticationFacade.getAuthentication();
 		userAuthorizationValidator.validateUserRequest(contactDetail.getUserId(), authentication);
 
-		contactDetailDao.save(contactDetail);
+		contactDetailRepository.save(contactDetail);
 
 		return contactDetail;
 	}
@@ -68,7 +63,7 @@ public class ContactDetailServiceImpl implements ContactDetailService {
 	@Override
 	@Transactional
 	public ContactDetail updateContactDetail(ContactDetail contactDetail, Long contactDetailId) {
-		Optional<ContactDetail> optionalContactDetail = contactDetailDao.get(contactDetailId);
+		Optional<ContactDetail> optionalContactDetail = contactDetailRepository.findById(contactDetailId);
 
 		return optionalContactDetail.map(
 				existingContactDetail -> {
@@ -79,7 +74,7 @@ public class ContactDetailServiceImpl implements ContactDetailService {
 
 					existingContactDetail.merge(contactDetail);
 
-					contactDetailDao.update(existingContactDetail);
+					contactDetailRepository.save(existingContactDetail);
 
 					return existingContactDetail;
 				}
@@ -126,14 +121,14 @@ public class ContactDetailServiceImpl implements ContactDetailService {
 	@Override
 	@Transactional
 	public void deleteContactDetail(Long id) {
-		Optional<ContactDetail> optionalContactDetail = contactDetailDao.get(id);
+		Optional<ContactDetail> optionalContactDetail = contactDetailRepository.findById(id);
 
 		optionalContactDetail.ifPresentOrElse(
 				existingContactDetail -> {
 					Authentication authentication = authenticationFacade.getAuthentication();
 					userAuthorizationValidator.validateUserRequest(existingContactDetail.getUserId(), authentication);
 
-					contactDetailDao.delete(existingContactDetail);
+					contactDetailRepository.delete(existingContactDetail);
 				},
 				() -> {
 					throw new NotFoundException("Contact detail not found.");

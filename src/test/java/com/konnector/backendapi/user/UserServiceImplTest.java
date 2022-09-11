@@ -1,7 +1,6 @@
 package com.konnector.backendapi.user;
 
 import com.konnector.backendapi.authentication.AuthenticationFacade;
-import com.konnector.backendapi.data.Dao;
 import com.konnector.backendapi.exceptions.NotFoundException;
 import com.konnector.backendapi.security.SecurityUser;
 import com.konnector.backendapi.verification.VerificationService;
@@ -35,8 +34,6 @@ public class UserServiceImplTest {
 	@InjectMocks
 	private final UserService userService = new UserServiceImpl();
 
-	@Mock
-	private Dao<User> userDaoMock;
 	@Mock
 	private UserRepository userRepositoryMock;
 	@Mock
@@ -72,7 +69,7 @@ public class UserServiceImplTest {
 		User createdUser = userService.createUser(userMock);
 
 		verify(userValidatorMock).validateUserCreationArgument(userMock);
-		verify(userDaoMock).save(userMock);
+		verify(userRepositoryMock).save(userMock);
 		verify(verificationServiceMock).createEmailVerificationForUser(userMock);
 		verify(userMock).setPassword(hashedPassword);
 		assertEquals(userMock, createdUser);
@@ -81,23 +78,23 @@ public class UserServiceImplTest {
 	@Test
 	public void getUser_userNotFound_throwsException() {
 		Long userId = 1L;
-		when(userDaoMock.get(userId)).thenReturn(Optional.empty());
+		when(userRepositoryMock.findById(userId)).thenReturn(Optional.empty());
 
 		assertThrows(NotFoundException.class, () -> userService.getUser(userId));
 
-		verify(userDaoMock).get(userId);
+		verify(userRepositoryMock).findById(userId);
 	}
 
 	@Test
 	public void getUser_getsUser() {
 		Long userId = 1L;
-		when(userDaoMock.get(userId)).thenReturn(Optional.of(userMock));
+		when(userRepositoryMock.findById(userId)).thenReturn(Optional.of(userMock));
 
 		User fetchedUser = userService.getUser(userId);
 
 		assertEquals(userMock, fetchedUser);
 		verify(userValidatorMock).validateUserFetchRequest(userId);
-		verify(userDaoMock).get(userId);
+		verify(userRepositoryMock).findById(userId);
 	}
 
 	@Test
@@ -126,7 +123,7 @@ public class UserServiceImplTest {
 		verify(userAuthorizationValidatorMock, times(1)).validateUserRequest(userId, authenticationMock);
 		verify(userMock).setPassword(hashedPassword);
 		verify(userMock).merge(userMock);
-		verify(userDaoMock).update(userMock);
+		verify(userRepositoryMock).save(userMock);
 	}
 
 	@Test
@@ -138,7 +135,7 @@ public class UserServiceImplTest {
 		verify(userMock).validatePassword(password);
 		verify(passwordEncoderMock).encode(password);
 		verify(userMock).setPassword(hashedPassword);
-		verify(userDaoMock).update(userMock);
+		verify(userRepositoryMock).save(userMock);
 	}
 
 	@Test

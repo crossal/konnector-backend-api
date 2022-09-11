@@ -1,7 +1,6 @@
 package com.konnector.backendapi.connection;
 
 import com.konnector.backendapi.authentication.AuthenticationFacade;
-import com.konnector.backendapi.data.Dao;
 import com.konnector.backendapi.exceptions.NotFoundException;
 import com.konnector.backendapi.notification.NotificationService;
 import com.konnector.backendapi.security.AuthenticationUtil;
@@ -18,8 +17,6 @@ import java.util.Optional;
 @Service
 public class ConnectionServiceImpl implements ConnectionService {
 
-	@Autowired
-	private Dao<Connection> connectionDao;
 	@Autowired
 	private ConnectionValidator connectionValidator;
 	@Autowired
@@ -39,7 +36,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 		connectionValidator.validateConnectionCreationArgument(AuthenticationUtil.getUserId(authentication), connection);
 		userAuthorizationValidator.validateUserRequest(connection.getRequesterId(), authentication);
 
-		connectionDao.save(connection);
+		connectionRepository.save(connection);
 
 		notificationService.createNotification(connection);
 
@@ -49,7 +46,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 	@Override
 	@Transactional
 	public Connection updateConnection(Connection connection, Long connectionId) {
-		Optional<Connection> optionalConnection = connectionDao.get(connectionId);
+		Optional<Connection> optionalConnection = connectionRepository.findById(connectionId);
 
 		return optionalConnection.map(
 				existingConnection -> {
@@ -60,7 +57,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 
 					existingConnection.merge(connection);
 
-					connectionDao.update(existingConnection);
+					connectionRepository.save(existingConnection);
 
 					if (existingConnection.getStatus().equals(ConnectionStatus.ACCEPTED)) {
 						notificationService.createNotification(existingConnection);
@@ -74,7 +71,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 	@Override
 	@Transactional
 	public void deleteConnection(Long id) {
-		Optional<Connection> optionalConnection = connectionDao.get(id);
+		Optional<Connection> optionalConnection = connectionRepository.findById(id);
 
 		optionalConnection.ifPresentOrElse(
 				existingConnection -> {
@@ -84,7 +81,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 					Authentication authentication = authenticationFacade.getAuthentication();
 					userAuthorizationValidator.validateUserRequest(userIds, authentication);
 
-					connectionDao.delete(existingConnection);
+					connectionRepository.delete(existingConnection);
 				},
 				() -> {
 					throw new NotFoundException("Connection not found.");
@@ -104,6 +101,6 @@ public class ConnectionServiceImpl implements ConnectionService {
 		}
 
 		Connection connection = connections.stream().iterator().next();
-		connectionDao.delete(connection);
+		connectionRepository.delete(connection);
 	}
 }

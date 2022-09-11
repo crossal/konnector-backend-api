@@ -1,13 +1,13 @@
 package com.konnector.backendapi.user;
 
 import com.konnector.backendapi.authentication.AuthenticationFacade;
-import com.konnector.backendapi.data.Dao;
 import com.konnector.backendapi.exceptions.NotFoundException;
 import com.konnector.backendapi.security.AuthenticationUtil;
 import com.konnector.backendapi.verification.VerificationService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,12 +26,11 @@ public class UserServiceImpl implements UserService {
 	private static final Logger LOGGER = LogManager.getLogger(UserServiceImpl.class);
 
 	@Autowired
-	private Dao<User> userDao;
-	@Autowired
 	private UserRepository userRepository;
 	@Autowired
 	private UserValidator userValidator;
 	@Autowired
+	@Lazy
 	private VerificationService verificationService;
 	@Autowired
 	private PasswordEncoder passwordEncoder;
@@ -48,7 +47,7 @@ public class UserServiceImpl implements UserService {
 		String hashedPassword = passwordEncoder.encode(user.getPassword());
 		user.setPassword(hashedPassword);
 
-		userDao.save(user);
+		userRepository.save(user);
 
 		verificationService.createEmailVerificationForUser(user);
 
@@ -74,7 +73,7 @@ public class UserServiceImpl implements UserService {
 
 					existingUser.merge(user);
 
-					userDao.update(existingUser);
+					userRepository.save(existingUser);
 
 					return existingUser;
 				}
@@ -85,7 +84,7 @@ public class UserServiceImpl implements UserService {
 	public User getUser(Long id) {
 		userValidator.validateUserFetchRequest(id);
 
-		Optional<User> optionalUser = userDao.get(id);
+		Optional<User> optionalUser = userRepository.findById(id);
 
 		return optionalUser.orElseThrow(() -> new NotFoundException("User not found."));
 	}
@@ -96,7 +95,7 @@ public class UserServiceImpl implements UserService {
 		String hashedPassword = passwordEncoder.encode(password);
 		user.setPassword(hashedPassword);
 
-		userDao.update(user);
+		userRepository.save(user);
 	}
 
 	@Override
