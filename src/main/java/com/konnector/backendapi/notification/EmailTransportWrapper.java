@@ -1,10 +1,9 @@
 package com.konnector.backendapi.notification;
 
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Transport;
 import org.springframework.stereotype.Service;
-
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Transport;
 
 @Service
 public class EmailTransportWrapper {

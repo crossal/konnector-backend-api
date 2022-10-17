@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -99,53 +98,38 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<User> getConnections(Long userId, Integer pageNumber, Integer pageSize) {
-		userValidator.validateConnectionsFetchRequest(userId, pageNumber, pageSize);
-
-		Authentication authentication = authenticationFacade.getAuthentication();
-		userAuthorizationValidator.validateUserRequest(userId, authentication);
-
-		Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
-		Page page = userRepository.getConnections(userId, pageable);
-
-		return page.getContent();
-	}
-
-	@Override
-	@Transactional
-	public long getConnectionsCount(Long userId) {
-		userValidator.validateConnectionsCountFetchRequest(userId);
-
-		Authentication authentication = authenticationFacade.getAuthentication();
-		userAuthorizationValidator.validateUserRequest(userId, authentication);
-
-		return userRepository.countConnectionsByUserId(userId);
-	}
-
-	@Override
-	public List<User> getUsers(Integer pageNumber, Integer pageSize) {
+	public List<User> getUsers(Optional<Long> optionalUserId, boolean connectedUsers, String username, Integer pageNumber, Integer pageSize) {
 		userValidator.validateUsersFetchRequest(pageNumber, pageSize);
 
 		Authentication authentication = authenticationFacade.getAuthentication();
-		Long userId = AuthenticationUtil.getUserId(authentication);
 
-		Pageable sortedByNamePageable = PageRequest.of(pageNumber - 1, pageSize,
-				Sort.by(
-						Sort.Order.asc("firstName"),
-						Sort.Order.asc("lastName"),
-						Sort.Order.asc("username"))
-		);
-		Page page = userRepository.findByIdNot(userId, sortedByNamePageable);
+		optionalUserId.ifPresent(userId -> userAuthorizationValidator.validateUserRequest(userId, authentication));
+		Long userId = optionalUserId.orElseGet(() -> AuthenticationUtil.getUserId(authentication));
+
+		Pageable sortedByNamePageable = PageRequest.of(pageNumber - 1, pageSize);
+
+		Page page;
+		if (connectedUsers) {
+			page = userRepository.getConnections(userId, username, sortedByNamePageable);
+		} else {
+			page = userRepository.getNonConnections(userId, username, sortedByNamePageable);
+		}
 
 		return page.getContent();
 	}
 
 	@Override
 	@Transactional
-	public long getUsersCount() {
+	public long getUsersCount(Optional<Long> optionalUserId, boolean connectedUsers, String username) {
 		Authentication authentication = authenticationFacade.getAuthentication();
-		Long userId = AuthenticationUtil.getUserId(authentication);
 
-		return userRepository.countByIdNot(userId);
+		optionalUserId.ifPresent(userId -> userAuthorizationValidator.validateUserRequest(userId, authentication));
+		Long userId = optionalUserId.orElseGet(() -> AuthenticationUtil.getUserId(authentication));
+
+		if (connectedUsers) {
+			return userRepository.countConnectionsByUserId(userId, username);
+		} else {
+			return userRepository.countNonConnectionsByUserId(userId, username);
+		}
 	}
 }

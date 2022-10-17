@@ -10,6 +10,7 @@ class NotificationsList extends React.Component {
     this.pageSize = 10;
     this.totalCountHeader = 'Total-Count';
     this.getPage = this.getPage.bind(this);
+    this.getPageCount = this.getPageCount.bind(this);
     this.handlePageNavigation = this.handlePageNavigation.bind(this);
     this.refresh = this.refresh.bind(this);
     this.acceptNotificationAction = this.acceptNotificationAction.bind(this);
@@ -19,13 +20,26 @@ class NotificationsList extends React.Component {
     this.state = {
       currentPage: 1,
       notifications: [],
-      totalPages: 0
+      pageCount: 0
     };
   }
 
   componentDidMount() {
-    var _this = this;
     this.getPage(1);
+  }
+
+  getPageCount(entryCount) {
+    if (entryCount == 0) {
+      return 0;
+    }
+
+    let pageCount = Math.floor(entryCount / this.pageSize);
+    const leftover = entryCount % this.pageSize;
+    if (leftover > 0) {
+      pageCount++;
+    }
+
+    return pageCount;
   }
 
   getPage(pageNumber) {
@@ -34,7 +48,7 @@ class NotificationsList extends React.Component {
         this.setState({
           notifications: response.entity,
           currentPage: pageNumber,
-          totalPages: Math.floor(response.headers[this.totalCountHeader] / this.pageSize) + 1
+          pageCount: this.getPageCount(response.headers[this.totalCountHeader])
         });
       },
       response => {
@@ -139,7 +153,7 @@ class NotificationsList extends React.Component {
         <Pagination>
           { this.state.currentPage == 1 ? <div/> : <Pagination.Prev onClick={() => this.handlePageNavigation(0)} /> }
           <Pagination.Item>{ this.state.currentPage }</Pagination.Item>
-          { this.state.currentPage < this.state.totalPages ? <Pagination.Next onClick={() => this.handlePageNavigation(1)} /> : <div/>}
+          { this.state.currentPage < this.state.pageCount ? <Pagination.Next onClick={() => this.handlePageNavigation(1)} /> : <div/>}
           <Button variant="light" onClick={this.refresh} style={{ display: "flex", alignItems: "center" }}><BiRefresh /></Button>
         </Pagination>
       </>

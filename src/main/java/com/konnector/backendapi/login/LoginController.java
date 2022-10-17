@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,5 +28,13 @@ public class LoginController {
 		User user = loginService.login(authenticationDTO.getUsernameOrEmail(), authenticationDTO.getPassword());
 
 		return modelMapper.map(user, UserDTO.class);
+	}
+
+	@PostMapping("/api/deauthenticate")
+	@ResponseStatus(HttpStatus.OK)
+	@ResponseBody
+	public String logout() {
+		loginService.logout();
+		return "Ok";
 	}
 }

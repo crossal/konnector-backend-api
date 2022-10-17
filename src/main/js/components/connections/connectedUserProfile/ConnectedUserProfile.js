@@ -16,7 +16,6 @@ class ConnectedUserProfile extends React.Component {
   }
 
   componentDidMount() {
-    var _this = this;
     client({method: 'GET', path: '/api/users/' + this.props.connectedUserId}).then(
       response => {
         this.setState({user: response.entity});
@@ -33,8 +32,11 @@ class ConnectedUserProfile extends React.Component {
     return (
       <div>
         <Button className="mb-4" variant="secondary" onClick={this.props.exitConnectedUserProfile}>Back</Button>
-        <h2>{this.state.user.firstName} {this.state.user.lastName}</h2>
-        <h3>{this.state.user.username}</h3>
+        <h2>{this.state.user.username}</h2>
+        <h3>{this.state.user.firstName} {this.state.user.lastName}</h3>
+
+        <br />
+
         <h4>Contact Details</h4>
         <ContactDetailsList disableDeleteButton={true} userId={this.props.connectedUserId} />
       </div>

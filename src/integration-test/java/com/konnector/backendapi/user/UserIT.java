@@ -1,5 +1,6 @@
 package com.konnector.backendapi.user;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,6 +21,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -105,5 +108,27 @@ public class UserIT extends AuthenticatedTest {
 		assertEquals(1, user.getId());
 	}
 
-	// TODO: getUsers
+	@Test
+	public void getUsersEndpoint_connectedUsers_getsConnectedUsers() throws Exception {
+		ResponseEntity<String> response = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/api/users?connections-of-user-id=1&page-number=1&page-size=1&username=username2", HttpMethod.GET, getEntityWithAuth(null, null), String.class);
+
+		assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+		assertNotNull(response.getBody());
+
+		List<UserDTO> userDTOs = objectMapper.readValue(response.getBody(), new TypeReference<>() {});
+		assertEquals(1, userDTOs.size());
+		assertEquals(2L, userDTOs.get(0).getId());
+	}
+
+	@Test
+	public void getUsersEndpoint_nonConnectedUsers_getsUsers() throws Exception {
+		ResponseEntity<String> response = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/api/users?page-number=1&page-size=1&username=username5", HttpMethod.GET, getEntityWithAuth(null, null), String.class);
+
+		assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+		assertNotNull(response.getBody());
+
+		List<UserDTO> userDTOs = objectMapper.readValue(response.getBody(), new TypeReference<>() {});
+		assertEquals(1, userDTOs.size());
+		assertEquals(5L, userDTOs.get(0).getId());
+	}
 }

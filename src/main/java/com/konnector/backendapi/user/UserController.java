@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class UserController {
@@ -71,26 +72,15 @@ public class UserController {
 		return modelMapper.map(user, UserDTO.class);
 	}
 
-	@GetMapping(value = "/api/users", params = {"connections-of-user-id", "page-number", "page-size"})
+	@GetMapping(value = "/api/users")
 	@ResponseStatus(HttpStatus.OK)
-	public List<UserDTO> getConnectedUsers(@RequestParam("connections-of-user-id") Long connectionsOfUserId, @RequestParam("page-number") Integer pageNumber,
-	                                       @RequestParam("page-size") Integer pageSize,
-	                                       HttpServletResponse response) {
-		List<User> connections = userService.getConnections(connectionsOfUserId, pageNumber, pageSize);
+	public List<UserDTO> getUsers(@RequestParam(value = "connections-of-user-id", required = false) Long connectionsOfUserId, @RequestParam("page-number") Integer pageNumber,
+	                              @RequestParam("page-size") Integer pageSize, @RequestParam(value = "username", defaultValue = "") String username,
+	                              HttpServletResponse response) {
+		boolean connectedUsers = connectionsOfUserId != null;
+		List<User> users = userService.getUsers(Optional.ofNullable(connectionsOfUserId), connectedUsers, username, pageNumber, pageSize);
 
-		long totalConnectionsCount = userService.getConnectionsCount(connectionsOfUserId);
-		response.setHeader(Headers.HEADER_TOTAL_COUNT, String.valueOf(totalConnectionsCount));
-
-		return modelMapper.map(connections, new TypeToken<List<UserDTO>>() {}.getType());
-	}
-
-	@GetMapping(value = "/api/users", params = {"page-number", "page-size"})
-	@ResponseStatus(HttpStatus.OK)
-	public List<UserDTO> getUsers(@RequestParam("page-number") Integer pageNumber, @RequestParam("page-size") Integer pageSize,
-	                                       HttpServletResponse response) {
-		List<User> users = userService.getUsers(pageNumber, pageSize);
-
-		long totalUsersCount = userService.getUsersCount();
+		long totalUsersCount = userService.getUsersCount(Optional.ofNullable(connectionsOfUserId), connectedUsers, username);
 		response.setHeader(Headers.HEADER_TOTAL_COUNT, String.valueOf(totalUsersCount));
 
 		return modelMapper.map(users, new TypeToken<List<UserDTO>>() {}.getType());

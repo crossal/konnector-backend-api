@@ -33,4 +33,9 @@ public class SecurityServiceImpl implements SecurityService {
 		HttpSession session = request.getSession(true);
 		session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
 	}
+
+	@Override
+	public void destroySession() {
+		request.getSession(false).invalidate();
+	}
 }

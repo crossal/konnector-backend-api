@@ -41,4 +41,9 @@ public class LoginServiceImpl implements LoginService {
 
 		return user;
 	}
+
+	@Override
+	public void logout() {
+		securityService.destroySession();
+	}
 }
