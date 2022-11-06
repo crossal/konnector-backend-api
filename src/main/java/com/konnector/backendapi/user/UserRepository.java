@@ -41,7 +41,7 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long> {
 
 	@Query("" +
 			"SELECT u FROM User u " +
-			"LEFT JOIN Connection c ON c.requesterId = u.id OR c.requesteeId = u.id " +
+			"LEFT JOIN Connection c ON ((c.requesterId = u.id OR c.requesteeId = u.id) AND (c.requesterId = ?1 OR c.requesteeId = ?1)) " +
 			"WHERE u.id != ?1 " +
 			"   AND c.id IS NULL " +
 			"   AND u.emailVerified = 1 " +
@@ -51,7 +51,7 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long> {
 
 	@Query("" +
 			"SELECT count(u) FROM User u " +
-			"LEFT JOIN Connection c ON c.requesterId = u.id OR c.requesteeId = u.id " +
+			"LEFT JOIN Connection c ON ((c.requesterId = u.id OR c.requesteeId = u.id) AND (c.requesterId = ?1 OR c.requesteeId = ?1)) " +
 			"WHERE u.id != ?1 " +
 			"   AND c.id IS NULL " +
 			"   AND u.emailVerified = 1 " +

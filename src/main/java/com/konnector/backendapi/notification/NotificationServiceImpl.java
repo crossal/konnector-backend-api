@@ -36,16 +36,15 @@ public class NotificationServiceImpl implements NotificationService {
 
 		NotificationType notificationType;
 		Long senderId, recipientId, referenceId;
+		referenceId = connection.getId();
 		if (connection.getStatus().equals(ConnectionStatus.REQUESTED)) {
 			notificationType = NotificationType.CONNECTION_REQUEST;
 			senderId = connection.getRequesterId();
 			recipientId = connection.getRequesteeId();
-			referenceId = connection.getRequesterId();
 		} else {
 			notificationType = NotificationType.CONNECTION_ACCEPT;
 			senderId = connection.getRequesteeId();
 			recipientId = connection.getRequesterId();
-			referenceId = connection.getRequesteeId();
 		}
 
 		Notification notification = new Notification(recipientId, senderId, notificationType, referenceId);

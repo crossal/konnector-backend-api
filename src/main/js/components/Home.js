@@ -5,7 +5,7 @@ class Home extends React.Component {
   render() {
     return (
       <div className="mx-auto text-center">
-        <h1>Version 1. Welcome :)</h1>
+        <h1><em>Connect & share your details with friends.</em></h1>
       </div>
     )
   }

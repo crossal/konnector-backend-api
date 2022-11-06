@@ -57,16 +57,18 @@ public class NotificationServiceImplTest {
 	public void createNotification_statusIsRequested_createsNotification() {
 		Long requesterId = 1L;
 		Long requesteeId = 2L;
+		Long connectionId = 3L;
 		when(connectionMock.getStatus()).thenReturn(ConnectionStatus.REQUESTED);
 		when(connectionMock.getRequesterId()).thenReturn(requesterId);
 		when(connectionMock.getRequesteeId()).thenReturn(requesteeId);
+		when(connectionMock.getId()).thenReturn(connectionId);
 
 		Notification createdNotification = notificationService.createNotification(connectionMock);
 
 		assertEquals(requesteeId, createdNotification.getRecipientId());
 		assertEquals(requesterId, createdNotification.getSenderId());
 		assertEquals(NotificationType.CONNECTION_REQUEST, createdNotification.getType());
-		assertEquals(requesterId, createdNotification.getReferenceId());
+		assertEquals(connectionId, createdNotification.getReferenceId());
 		verify(notificationValidatorMock).validateNotificationCreationArgument(connectionMock);
 		verify(notificationRepository).save(createdNotification);
 	}
@@ -75,16 +77,18 @@ public class NotificationServiceImplTest {
 	public void createNotification_statusIsNotRequested_createsNotification() {
 		Long requesterId = 1L;
 		Long requesteeId = 2L;
+		Long connectionId = 3L;
 		when(connectionMock.getStatus()).thenReturn(ConnectionStatus.ACCEPTED);
 		when(connectionMock.getRequesterId()).thenReturn(requesterId);
 		when(connectionMock.getRequesteeId()).thenReturn(requesteeId);
+		when(connectionMock.getId()).thenReturn(connectionId);
 
 		Notification createdNotification = notificationService.createNotification(connectionMock);
 
 		assertEquals(requesterId, createdNotification.getRecipientId());
 		assertEquals(requesteeId, createdNotification.getSenderId());
 		assertEquals(NotificationType.CONNECTION_ACCEPT, createdNotification.getType());
-		assertEquals(requesteeId, createdNotification.getReferenceId());
+		assertEquals(connectionId, createdNotification.getReferenceId());
 		verify(notificationValidatorMock).validateNotificationCreationArgument(connectionMock);
 		verify(notificationRepository).save(createdNotification);
 	}

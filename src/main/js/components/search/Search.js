@@ -21,7 +21,6 @@ class Search extends React.Component {
 
     this.setState({
       searchString: event.target.value,
-      typing: false,
       typingTimeout: setTimeout(() => {
         this.props.search(this.state.searchString);
        }, 1000)
