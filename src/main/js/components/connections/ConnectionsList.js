@@ -48,16 +48,16 @@ class ConnectionsList extends React.Component {
   getPage(pageNumber) {
     client({method: 'GET', path: '/api/users{?connections-of-user-id,page-number,page-size,username}', params: { 'connections-of-user-id': this.props.userId, 'page-number': pageNumber, 'page-size': this.pageSize, 'username': this.props.searchString }}).then(
       response => {
+        if (response.status.code === 401) {
+          this.props.updateLoggedIn(false, null);
+          return;
+        }
+
         this.setState({
           connections: response.entity,
           currentPage: pageNumber,
           pageCount: this.getPageCount(response.headers[this.totalCountHeader])
         });
-      },
-      response => {
-        if (response.status.code === 401) {
-          this.props.updateLoggedIn(false, null)
-        }
       }
     );
   }
@@ -77,16 +77,16 @@ class ConnectionsList extends React.Component {
     e.stopPropagation();
     client({method: 'DELETE', path: '/api/connections{?connected-user-id}', params: { 'connected-user-id': connection.id }}).then(
       response => {
+        if (response.status.code === 401) {
+          this.props.updateLoggedIn(false, null);
+          return;
+        }
+
         let newConnections = [...this.state.connections];
         newConnections.splice(index, 1);
         this.setState({
           connections: newConnections
         });
-      },
-      response => {
-        if (response.status.code === 401) {
-          this.props.updateLoggedIn(false, null)
-        }
       }
     );
   }

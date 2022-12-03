@@ -45,16 +45,16 @@ class NotificationsList extends React.Component {
   getPage(pageNumber) {
     client({method: 'GET', path: '/api/notifications{?user-id,page-number,page-size}', params: { 'user-id': this.props.userId, 'page-number': pageNumber, 'page-size': this.pageSize }}).then(
       response => {
+        if (response.status.code === 401) {
+          this.props.updateLoggedIn(false, null);
+          return;
+        }
+
         this.setState({
           notifications: response.entity,
           currentPage: pageNumber,
           pageCount: this.getPageCount(response.headers[this.totalCountHeader])
         });
-      },
-      response => {
-        if (response.status.code === 401) {
-          this.props.updateLoggedIn(false, null)
-        }
       }
     );
   }
@@ -73,16 +73,16 @@ class NotificationsList extends React.Component {
   clearNotification(notification, index) {
     client({method: 'DELETE', path: '/api/notifications/' + notification.id }).then(
       response => {
+        if (response.status.code === 401) {
+          this.props.updateLoggedIn(false, null);
+          return;
+        }
+
         let newNotifications = [...this.state.notifications];
         newNotifications.splice(index, 1);
         this.setState({
           notifications: newNotifications
         });
-      },
-      response => {
-        if (response.status.code === 401) {
-          this.props.updateLoggedIn(false, null)
-        }
       }
     );
   }
@@ -92,12 +92,12 @@ class NotificationsList extends React.Component {
     if (notification.type == 0) {
       client({method: 'PUT', path: '/api/connections/' + notification.referenceId, entity: connection }).then(
         response => {
-          this.clearNotification(notification, index);
-        },
-        response => {
           if (response.status.code === 401) {
-            this.props.updateLoggedIn(false, null)
+            this.props.updateLoggedIn(false, null);
+            return;
           }
+
+          this.clearNotification(notification, index);
         }
       );
     } else if (notification.type == 1) {
@@ -110,12 +110,12 @@ class NotificationsList extends React.Component {
     if (notification.type == 0) {
       client({method: 'DELETE', path: '/api/connections/' + notification.referenceId }).then(
         response => {
-          this.clearNotification(notification, index);
-        },
-        response => {
           if (response.status.code === 401) {
-            this.props.updateLoggedIn(false, null)
+            this.props.updateLoggedIn(false, null);
+            return;
           }
+
+          this.clearNotification(notification, index);
         }
       );
     } else if (notification.type == 1) {

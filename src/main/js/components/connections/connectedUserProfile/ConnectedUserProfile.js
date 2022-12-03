@@ -18,12 +18,12 @@ class ConnectedUserProfile extends React.Component {
   componentDidMount() {
     client({method: 'GET', path: '/api/users/' + this.props.connectedUserId}).then(
       response => {
-        this.setState({user: response.entity});
-      },
-      response => {
         if (response.status.code === 401) {
-          this.props.updateLoggedIn(false, null)
+          this.props.updateLoggedIn(false, null);
+          return;
         }
+
+        this.setState({user: response.entity});
       }
     );
   }

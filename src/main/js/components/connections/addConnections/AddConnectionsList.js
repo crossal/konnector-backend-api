@@ -49,16 +49,16 @@ class AddConnectionsList extends React.Component {
   getPage(pageNumber) {
     client({method: 'GET', path: '/api/users{?page-number,page-size,username}', params: { 'page-number': pageNumber, 'page-size': this.pageSize, 'username': this.props.searchString }}).then(
       response => {
+        if (response.status.code === 401) {
+          this.props.updateLoggedIn(false, null);
+          return;
+        }
+
         this.setState({
           users: response.entity,
           currentPage: pageNumber,
           pageCount: this.getPageCount(response.headers[this.totalCountHeader])
         });
-      },
-      response => {
-        if (response.status.code === 401) {
-          this.props.updateLoggedIn(false, null)
-        }
       }
     );
   }
@@ -84,10 +84,8 @@ class AddConnectionsList extends React.Component {
     const connection = { requesterId: this.props.userId, requesteeId: connectedUserId, status: 0 };
     client({method: 'POST', path: '/api/connections', entity: connection}).then(
       response => {
-      },
-      response => {
         if (response.status.code === 401) {
-          this.props.updateLoggedIn(false, null)
+          this.props.updateLoggedIn(false, null);
         }
       }
     );

@@ -42,16 +42,16 @@ class ContactDetailsList extends React.Component {
   getPage(pageNumber) {
     client({method: 'GET', path: '/api/contact-details{?user-id,page-number,page-size}', params: { 'user-id': this.props.userId, 'page-number': pageNumber, 'page-size': this.pageSize }}).then(
       response => {
+        if (response.status.code === 401) {
+          this.props.updateLoggedIn(false, null);
+          return;
+        }
+
         this.setState({
           contactDetails: response.entity,
           currentPage: pageNumber,
           pageCount: this.getPageCount(response.headers[this.totalCountHeader])
         });
-      },
-      response => {
-        if (response.status.code === 401) {
-          this.props.updateLoggedIn(false, null)
-        }
       }
     );
   }
@@ -70,16 +70,16 @@ class ContactDetailsList extends React.Component {
   deleteContactDetail(contactDetail, index) {
     client({method: 'DELETE', path: '/api/contact-details/' + contactDetail.id}).then(
       response => {
+        if (response.status.code === 401) {
+          this.props.updateLoggedIn(false, null);
+          return;
+        }
+
         let newContactDetails = [...this.state.contactDetails];
         newContactDetails.splice(index, 1);
         this.setState({
           contactDetails: newContactDetails
         });
-      },
-      response => {
-        if (response.status.code === 401) {
-          this.props.updateLoggedIn(false, null)
-        }
       }
     );
   }

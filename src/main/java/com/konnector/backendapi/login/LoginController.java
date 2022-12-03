@@ -35,6 +35,6 @@ public class LoginController {
 	@ResponseBody
 	public String logout() {
 		loginService.logout();
-		return "Ok";
+		return "";
 	}
 }

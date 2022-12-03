@@ -5,7 +5,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import java.security.SecureRandom;
 
@@ -43,8 +42,6 @@ public class PBKDF2PasswordHashingService implements PasswordHashingService {
 		try {
 			SecretKeyFactoryWrapper secretKeyFactoryWrapper = secretKeyFactoryWrapperService.getInstance(PBKDF2_ALGORITHM);
 			byte[] hashedPassword = secretKeyFactoryWrapper.generateSecret(pbeKeySpec).getEncoded();
-
-			String pass = hashedPassword.toString();
 
 			return new HashedPassword(hashedPassword, salt, PBKDF2_ITERATIONS);
 		} catch (Exception e) {
