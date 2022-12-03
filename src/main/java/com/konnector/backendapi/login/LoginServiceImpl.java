@@ -1,6 +1,5 @@
 package com.konnector.backendapi.login;
 
-import com.konnector.backendapi.data.Dao;
 import com.konnector.backendapi.exceptions.InvalidDataException;
 import com.konnector.backendapi.exceptions.InvalidLoginDetailsException;
 import com.konnector.backendapi.exceptions.UserNotVerifiedException;
@@ -15,8 +14,6 @@ import java.util.Optional;
 @Service
 public class LoginServiceImpl implements LoginService {
 
-	@Autowired
-	private Dao<User> userDao;
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
@@ -43,5 +40,10 @@ public class LoginServiceImpl implements LoginService {
 		securityService.createSession(usernameOrEmail, password);
 
 		return user;
+	}
+
+	@Override
+	public void logout() {
+		securityService.destroySession();
 	}
 }

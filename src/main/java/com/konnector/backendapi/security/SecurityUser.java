@@ -23,4 +23,9 @@ public class SecurityUser extends User {
 	public Long getUserId() {
 		return userId;
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj);
+	}
 }

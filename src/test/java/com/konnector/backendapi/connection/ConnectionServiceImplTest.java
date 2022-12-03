@@ -1,7 +1,6 @@
 package com.konnector.backendapi.connection;
 
 import com.konnector.backendapi.authentication.AuthenticationFacade;
-import com.konnector.backendapi.data.Dao;
 import com.konnector.backendapi.exceptions.NotFoundException;
 import com.konnector.backendapi.notification.NotificationService;
 import com.konnector.backendapi.security.SecurityUser;
@@ -30,8 +29,6 @@ public class ConnectionServiceImplTest {
 	private ConnectionService connectionService = new ConnectionServiceImpl();
 
 	@Mock
-	private Dao<Connection> connectionDaoMock;
-	@Mock
 	private ConnectionValidator connectionValidatorMock;
 	@Mock
 	private AuthenticationFacade authenticationFacadeMock;
@@ -59,13 +56,13 @@ public class ConnectionServiceImplTest {
 
 		verify(connectionValidatorMock).validateConnectionCreationArgument(1L, connectionMock);
 		verify(userAuthorizationValidatorMock).validateUserRequest(2L, authenticationMock);
-		verify(connectionDaoMock).save(connectionMock);
+		verify(connectionRepositoryMock).save(connectionMock);
 		verify(notificationServiceMock).createNotification(connectionMock);
 	}
 
 	@Test
 	public void updateConnection_connectionNotFound_throwsException() {
-		when(connectionDaoMock.get(1L)).thenReturn(Optional.empty());
+		when(connectionRepositoryMock.findById(1L)).thenReturn(Optional.empty());
 
 		assertThrows(NotFoundException.class, () -> connectionService.updateConnection(connectionMock, 1L));
 	}
@@ -76,7 +73,7 @@ public class ConnectionServiceImplTest {
 		Long userId = 1L;
 		Long requesterId = 2L;
 		Long requesteeId = 3L;
-		when(connectionDaoMock.get(connectionId)).thenReturn(Optional.of(connectionMock));
+		when(connectionRepositoryMock.findById(connectionId)).thenReturn(Optional.of(connectionMock));
 		when(authenticationFacadeMock.getAuthentication()).thenReturn(authenticationMock);
 		when(authenticationMock.getPrincipal()).thenReturn(securityUserMock);
 		when(securityUserMock.getUserId()).thenReturn(userId);
@@ -90,7 +87,7 @@ public class ConnectionServiceImplTest {
 		verify(connectionValidatorMock).validateConnectionUpdateArgument(userId, connectionMock, connectionMock, connectionId);
 		verify(userAuthorizationValidatorMock).validateUserRequest(List.of(requesterId, requesteeId), authenticationMock);
 		verify(connectionMock).merge(connectionMock);
-		verify(connectionDaoMock).update(connectionMock);
+		verify(connectionRepositoryMock).save(connectionMock);
 		verify(notificationServiceMock).createNotification(connectionMock);
 	}
 
@@ -100,7 +97,7 @@ public class ConnectionServiceImplTest {
 		Long userId = 1L;
 		Long requesterId = 2L;
 		Long requesteeId = 3L;
-		when(connectionDaoMock.get(connectionId)).thenReturn(Optional.of(connectionMock));
+		when(connectionRepositoryMock.findById(connectionId)).thenReturn(Optional.of(connectionMock));
 		when(authenticationFacadeMock.getAuthentication()).thenReturn(authenticationMock);
 		when(authenticationMock.getPrincipal()).thenReturn(securityUserMock);
 		when(securityUserMock.getUserId()).thenReturn(userId);
@@ -114,13 +111,13 @@ public class ConnectionServiceImplTest {
 		verify(connectionValidatorMock).validateConnectionUpdateArgument(userId, connectionMock, connectionMock, connectionId);
 		verify(userAuthorizationValidatorMock).validateUserRequest(List.of(requesterId, requesteeId), authenticationMock);
 		verify(connectionMock).merge(connectionMock);
-		verify(connectionDaoMock).update(connectionMock);
+		verify(connectionRepositoryMock).save(connectionMock);
 		verifyNoInteractions(notificationServiceMock);
 	}
 
 	@Test
 	public void deleteConnection_connectionNotFound_throwsException() {
-		when(connectionDaoMock.get(1L)).thenReturn(Optional.empty());
+		when(connectionRepositoryMock.findById(1L)).thenReturn(Optional.empty());
 
 		assertThrows(NotFoundException.class, () -> connectionService.deleteConnection(1L));
 	}
@@ -130,7 +127,7 @@ public class ConnectionServiceImplTest {
 		Long connectionId = 1L;
 		Long requesterId = 2L;
 		Long requesteeId = 3L;
-		when(connectionDaoMock.get(connectionId)).thenReturn(Optional.of(connectionMock));
+		when(connectionRepositoryMock.findById(connectionId)).thenReturn(Optional.of(connectionMock));
 		when(connectionMock.getRequesteeId()).thenReturn(requesteeId);
 		when(connectionMock.getRequesterId()).thenReturn(requesterId);
 		when(authenticationFacadeMock.getAuthentication()).thenReturn(authenticationMock);
@@ -138,7 +135,7 @@ public class ConnectionServiceImplTest {
 		connectionService.deleteConnection(connectionId);
 
 		verify(userAuthorizationValidatorMock).validateUserRequest(List.of(requesteeId, requesterId), authenticationMock);
-		verify(connectionDaoMock).delete(connectionMock);
+		verify(connectionRepositoryMock).delete(connectionMock);
 	}
 
 	@Test
@@ -167,6 +164,6 @@ public class ConnectionServiceImplTest {
 
 		connectionService.deleteConnectionByConnectedUserId(connectedUserId);
 
-		verify(connectionDaoMock).delete(connectionMock);
+		verify(connectionRepositoryMock).delete(connectionMock);
 	}
 }

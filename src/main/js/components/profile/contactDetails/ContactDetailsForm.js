@@ -32,7 +32,6 @@ class ContactDetailsForm extends React.Component {
       }).then(response => {
         this.setState({loading: false});
         if (response.status.code === 201) {
-          // TODO: show some success popup
           this.clearForm();
         } else if (response.status.code === 401) {
           this.props.updateLoggedIn(false, null)

@@ -3,7 +3,6 @@ package com.konnector.backendapi.notification;
 import com.konnector.backendapi.authentication.AuthenticationFacade;
 import com.konnector.backendapi.connection.Connection;
 import com.konnector.backendapi.connection.ConnectionStatus;
-import com.konnector.backendapi.data.Dao;
 import com.konnector.backendapi.exceptions.NotFoundException;
 import com.konnector.backendapi.user.UserAuthorizationValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +21,6 @@ import java.util.Optional;
 public class NotificationServiceImpl implements NotificationService {
 
 	@Autowired
-	private Dao<Notification> notificationDao;
-	@Autowired
 	private NotificationValidator notificationValidator;
 	@Autowired
 	private AuthenticationFacade authenticationFacade;
@@ -39,21 +36,20 @@ public class NotificationServiceImpl implements NotificationService {
 
 		NotificationType notificationType;
 		Long senderId, recipientId, referenceId;
+		referenceId = connection.getId();
 		if (connection.getStatus().equals(ConnectionStatus.REQUESTED)) {
 			notificationType = NotificationType.CONNECTION_REQUEST;
 			senderId = connection.getRequesterId();
 			recipientId = connection.getRequesteeId();
-			referenceId = connection.getRequesterId();
 		} else {
 			notificationType = NotificationType.CONNECTION_ACCEPT;
 			senderId = connection.getRequesteeId();
 			recipientId = connection.getRequesterId();
-			referenceId = connection.getRequesteeId();
 		}
 
 		Notification notification = new Notification(recipientId, senderId, notificationType, referenceId);
 
-		notificationDao.save(notification);
+		notificationRepository.save(notification);
 
 		return notification;
 	}
@@ -86,14 +82,14 @@ public class NotificationServiceImpl implements NotificationService {
 	@Override
 	@Transactional
 	public void deleteNotification(Long id) {
-		Optional<Notification> optionalNotification = notificationDao.get(id);
+		Optional<Notification> optionalNotification = notificationRepository.findById(id);
 
 		optionalNotification.ifPresentOrElse(
 				existingNotification -> {
 					Authentication authentication = authenticationFacade.getAuthentication();
 					userAuthorizationValidator.validateUserRequest(existingNotification.getRecipientId(), authentication);
 
-					notificationDao.delete(existingNotification);
+					notificationRepository.delete(existingNotification);
 				},
 				() -> {
 					throw new NotFoundException("Notification not found.");

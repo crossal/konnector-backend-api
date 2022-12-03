@@ -8,7 +8,7 @@ import java.security.NoSuchAlgorithmException;
 @Service
 public class SecretKeyFactoryWrapperService {
 
-	public SecretKeyFactory getInstance(String algorithm) throws NoSuchAlgorithmException {
-		return SecretKeyFactory.getInstance(algorithm);
+	public SecretKeyFactoryWrapper getInstance(String algorithm) throws NoSuchAlgorithmException {
+		return SecretKeyFactoryWrapper.getInstance(algorithm);
 	}
 }

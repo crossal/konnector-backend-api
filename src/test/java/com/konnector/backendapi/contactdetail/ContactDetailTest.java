@@ -22,30 +22,35 @@ public class ContactDetailTest {
 
 	@Test
 	public void validateForCreation_userIdIsNull_throwsException() {
+		ReflectionTestUtils.setField(contactDetail, "id", null);
 		contactDetail.setUserId(null);
 		assertThrows(InvalidDataException.class, () -> contactDetail.validateForCreation());
 	}
 
 	@Test
 	public void validateForCreation_typeIsNull_throwsException() {
+		ReflectionTestUtils.setField(contactDetail, "id", null);
 		contactDetail.setType(null);
 		assertThrows(InvalidDataException.class, () -> contactDetail.validateForCreation());
 	}
 
 	@Test
 	public void validateForCreation_typeIsEmpty_throwsException() {
+		ReflectionTestUtils.setField(contactDetail, "id", null);
 		contactDetail.setType("");
 		assertThrows(InvalidDataException.class, () -> contactDetail.validateForCreation());
 	}
 
 	@Test
 	public void validateForCreation_valueIsNull_throwsException() {
+		ReflectionTestUtils.setField(contactDetail, "id", null);
 		contactDetail.setValue(null);
 		assertThrows(InvalidDataException.class, () -> contactDetail.validateForCreation());
 	}
 
 	@Test
 	public void validateForCreation_valueIsEmpty_throwsException() {
+		ReflectionTestUtils.setField(contactDetail, "id", null);
 		contactDetail.setValue("");
 		assertThrows(InvalidDataException.class, () -> contactDetail.validateForCreation());
 	}

@@ -83,7 +83,7 @@ const SignUpDetails = ({ signedUp, back }) => {
         </Form.Row>
         <Form.Row>
           <Form.Group as={Col} controlId="formGridPassword">
-            <Form.Control ref={password} required minlength="7" type="password" placeholder="Password" name="password" onChange={checkPasswordMatching} />
+            <Form.Control ref={password} required minLength="7" type="password" placeholder="Password" name="password" onChange={checkPasswordMatching} />
             <Form.Control.Feedback type="invalid">Please add a password greater than 7 characters.</Form.Control.Feedback>
           </Form.Group>
         </Form.Row>

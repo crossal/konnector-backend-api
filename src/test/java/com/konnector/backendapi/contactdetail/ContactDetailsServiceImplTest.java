@@ -4,7 +4,6 @@ import com.konnector.backendapi.authentication.AuthenticationFacade;
 import com.konnector.backendapi.connection.Connection;
 import com.konnector.backendapi.connection.ConnectionRepository;
 import com.konnector.backendapi.connection.ConnectionStatus;
-import com.konnector.backendapi.data.Dao;
 import com.konnector.backendapi.exceptions.NotFoundException;
 import com.konnector.backendapi.exceptions.UnauthorizedException;
 import com.konnector.backendapi.security.SecurityUser;
@@ -38,8 +37,6 @@ public class ContactDetailsServiceImplTest {
 	private ContactDetailService contactDetailService;
 
 	@Mock
-	private Dao<ContactDetail> contactDetailDaoMock;
-	@Mock
 	private ContactDetailValidator contactDetailValidatorMock;
 	@Mock
 	private AuthenticationFacade authenticationFacadeMock;
@@ -65,8 +62,8 @@ public class ContactDetailsServiceImplTest {
 
 	@BeforeEach
 	public void setup() {
-		contactDetailService = new ContactDetailServiceImpl(contactDetailDaoMock,
-				contactDetailValidatorMock, userAuthorizationValidatorMock, authenticationFacadeMock,
+		contactDetailService = new ContactDetailServiceImpl(contactDetailValidatorMock,
+				userAuthorizationValidatorMock, authenticationFacadeMock,
 				contactDetailRepositoryMock, connectionRepositoryMock);
 	}
 
@@ -77,14 +74,14 @@ public class ContactDetailsServiceImplTest {
 		ContactDetail createdContactDetail = contactDetailService.createContactDetail(contactDetailMock);
 
 		verify(contactDetailValidatorMock).validateContactDetailCreationArgument(contactDetailMock);
-		verify(contactDetailDaoMock).save(contactDetailMock);
+		verify(contactDetailRepositoryMock).save(contactDetailMock);
 		assertEquals(contactDetailMock, createdContactDetail);
 	}
 
 	@Test
 	public void updateContactDetail_contactDetailNotFound_throwsException() {
 		Long contactDetailId = 1L;
-		when(contactDetailDaoMock.get(contactDetailId)).thenReturn(Optional.empty());
+		when(contactDetailRepositoryMock.findById(contactDetailId)).thenReturn(Optional.empty());
 
 		assertThrows(NotFoundException.class, () -> contactDetailService.updateContactDetail(contactDetailMock, contactDetailId));
 	}
@@ -93,7 +90,7 @@ public class ContactDetailsServiceImplTest {
 	public void updateUser_updatesUser() {
 		Long contactDetailId = 1L;
 		Long userId = 1L;
-		when(contactDetailDaoMock.get(contactDetailId)).thenReturn(Optional.of(contactDetailMock));
+		when(contactDetailRepositoryMock.findById(contactDetailId)).thenReturn(Optional.of(contactDetailMock));
 		when(authenticationFacadeMock.getAuthentication()).thenReturn(authenticationMock);
 		when(contactDetailMock.getUserId()).thenReturn(userId);
 
@@ -103,7 +100,7 @@ public class ContactDetailsServiceImplTest {
 		verify(contactDetailValidatorMock).validateContactDetailUpdateArgument(contactDetailMock, contactDetailMock, contactDetailId);
 		verify(userAuthorizationValidatorMock).validateUserRequest(userId, authenticationMock);
 		verify(contactDetailMock).merge(contactDetailMock);
-		verify(contactDetailDaoMock).update(contactDetailMock);
+		verify(contactDetailRepositoryMock).save(contactDetailMock);
 	}
 
 	@Test
@@ -231,20 +228,20 @@ public class ContactDetailsServiceImplTest {
 	public void deleteContactDetail_deletesContactDetail() {
 		Long contactDetailId = 1L;
 		Long userId = 1L;
-		when(contactDetailDaoMock.get(contactDetailId)).thenReturn(Optional.of(contactDetailMock));
+		when(contactDetailRepositoryMock.findById(contactDetailId)).thenReturn(Optional.of(contactDetailMock));
 		when(contactDetailMock.getUserId()).thenReturn(userId);
 		when(authenticationFacadeMock.getAuthentication()).thenReturn(authenticationMock);
 
 		contactDetailService.deleteContactDetail(contactDetailId);
 
 		verify(userAuthorizationValidatorMock).validateUserRequest(userId, authenticationMock);
-		verify(contactDetailDaoMock).delete(contactDetailMock);
+		verify(contactDetailRepositoryMock).delete(contactDetailMock);
 	}
 
 	@Test
 	public void deleteContactDetail_contactDetailNotFound_throwsException() {
 		Long contactDetailId = 1L;
-		when(contactDetailDaoMock.get(contactDetailId)).thenReturn(Optional.empty());
+		when(contactDetailRepositoryMock.findById(contactDetailId)).thenReturn(Optional.empty());
 
 		assertThrows(NotFoundException.class, () -> contactDetailService.deleteContactDetail(contactDetailId));
 	}

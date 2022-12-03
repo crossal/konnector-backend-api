@@ -1,23 +1,32 @@
 package com.konnector.backendapi.user;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.konnector.backendapi.http.Headers;
+import com.konnector.backendapi.session.SecurityConfig;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+
+import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -29,6 +38,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserController.class)
+@Import(SecurityConfig.class)
 @TestPropertySource("classpath:application-integration-test.properties")
 public class UserWebIT {
 
@@ -125,5 +135,24 @@ public class UserWebIT {
 		userDTO.setPassword(null);
 		userDTO.setOldPassword(null);
 		assertEquals(userDTO, userDTOResponse);
+	}
+
+	@Test
+	@WithMockUser
+	public void getUsers_returnsSuccessAndUsers() throws Exception {
+		List<User> users = List.of(userMock);
+		List<UserDTO> userDTOs = List.of(userDTO);
+		when(userServiceMock.getUsers(Optional.of(1L), true, "user1", 1, 1)).thenReturn(users);
+		when(userServiceMock.getUsersCount(Optional.of(1L), true, "user1")).thenReturn(1L);
+		Type listType = new TypeToken<List<UserDTO>>() {}.getType();
+		when(modelMapperMock.map(users, listType)).thenReturn(userDTOs);
+
+		MvcResult result = mockMvc.perform(get("/api/users?connections-of-user-id=1&page-number=1&page-size=1&username=user1").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+		List<UserDTO> userDTOsResponse = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
+
+		userDTO.setPassword(null);
+		userDTO.setOldPassword(null);
+		assertEquals(userDTOs, userDTOsResponse);
+		assertEquals("1", result.getResponse().getHeader(Headers.HEADER_TOTAL_COUNT));
 	}
 }

@@ -10,34 +10,54 @@ class ConnectionsList extends React.Component {
     this.pageSize = 10;
     this.totalCountHeader = 'Total-Count';
     this.getPage = this.getPage.bind(this);
+    this.getPageCount = this.getPageCount.bind(this);
     this.handlePageNavigation = this.handlePageNavigation.bind(this);
     this.refresh = this.refresh.bind(this);
     this.deleteConnection = this.deleteConnection.bind(this);
     this.state = {
       currentPage: 1,
       connections: [],
-      totalPages: 0
+      pageCount: 0
     };
   }
 
   componentDidMount() {
-    var _this = this;
     this.getPage(1);
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.searchString !== prevProps.searchString) {
+      this.refresh();
+    }
+  }
+
+  getPageCount(entryCount) {
+    if (entryCount == 0) {
+      return 0;
+    }
+
+    let pageCount = Math.floor(entryCount / this.pageSize);
+    const leftover = entryCount % this.pageSize;
+    if (leftover > 0) {
+      pageCount++;
+    }
+
+    return pageCount;
+  }
+
   getPage(pageNumber) {
-    client({method: 'GET', path: '/api/users{?connections-of-user-id,page-number,page-size}', params: { 'connections-of-user-id': this.props.userId, 'page-number': pageNumber, 'page-size': this.pageSize }}).then(
+    client({method: 'GET', path: '/api/users{?connections-of-user-id,page-number,page-size,username}', params: { 'connections-of-user-id': this.props.userId, 'page-number': pageNumber, 'page-size': this.pageSize, 'username': this.props.searchString }}).then(
       response => {
+        if (response.status.code === 401) {
+          this.props.updateLoggedIn(false, null);
+          return;
+        }
+
         this.setState({
           connections: response.entity,
           currentPage: pageNumber,
-          totalPages: Math.floor(response.headers[this.totalCountHeader] / this.pageSize) + 1
+          pageCount: this.getPageCount(response.headers[this.totalCountHeader])
         });
-      },
-      response => {
-        if (response.status.code === 401) {
-          this.props.updateLoggedIn(false, null)
-        }
       }
     );
   }
@@ -53,19 +73,20 @@ class ConnectionsList extends React.Component {
     this.getPage(nextPageNumber);
   }
 
-  deleteConnection(connection, index) {
+  deleteConnection(e, connection, index) {
+    e.stopPropagation();
     client({method: 'DELETE', path: '/api/connections{?connected-user-id}', params: { 'connected-user-id': connection.id }}).then(
       response => {
+        if (response.status.code === 401) {
+          this.props.updateLoggedIn(false, null);
+          return;
+        }
+
         let newConnections = [...this.state.connections];
         newConnections.splice(index, 1);
         this.setState({
           connections: newConnections
         });
-      },
-      response => {
-        if (response.status.code === 401) {
-          this.props.updateLoggedIn(false, null)
-        }
       }
     );
   }
@@ -79,9 +100,9 @@ class ConnectionsList extends React.Component {
       <>
         <ListGroup>
           {this.state.connections.map((connection, index) =>
-            <ListGroup.Item onClick={() => this.props.viewConnectedUser(connection.id)} key={index} style={{ display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center" }} className="connectionsListRow">
-              <div style={{ flex: "1" }}>{connection.firstName} {connection.lastName} - {connection.username}</div>
-              <Button variant="light" onClick={() => this.deleteConnection(connection, index)} style={{ display: "flex", alignItems: "center" }}><BiX /></Button>
+            <ListGroup.Item onClick={() => this.props.viewConnectedUser(connection.id)} key={index} style={{ display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center", cursor: "pointer" }} className="connectionsListRow">
+              <div style={{ flex: "1" }}><span style={{fontWeight: 'bold'}}>{connection.username}</span> - {connection.firstName} {connection.lastName}</div>
+              <Button variant="light" onClick={(e) => this.deleteConnection(e, connection, index)} style={{ display: "flex", alignItems: "center" }}><BiX /></Button>
             </ListGroup.Item>
           )}
         </ListGroup>
@@ -91,7 +112,7 @@ class ConnectionsList extends React.Component {
         <Pagination>
           { this.state.currentPage == 1 ? <div/> : <Pagination.Prev onClick={() => this.handlePageNavigation(0)} /> }
           <Pagination.Item>{ this.state.currentPage }</Pagination.Item>
-          { this.state.currentPage < this.state.totalPages ? <Pagination.Next onClick={() => this.handlePageNavigation(1)} /> : <div/>}
+          { this.state.currentPage < this.state.pageCount ? <Pagination.Next onClick={() => this.handlePageNavigation(1)} /> : <div/>}
           <Button variant="light" onClick={this.refresh} style={{ display: "flex", alignItems: "center" }}><BiRefresh /></Button>
         </Pagination>
       </>

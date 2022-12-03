@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import { Button } from "react-bootstrap";
+import client from '../client';
 
 class KNav extends React.Component {
 
@@ -12,6 +13,10 @@ class KNav extends React.Component {
   }
 
   updateLoggedIn(e){
+    client({method: 'POST', path: '/api/deauthenticate/'}).then(
+      response => {
+      }
+    );
     this.props.updateLoggedIn(false, null)
   }
 
@@ -28,6 +33,9 @@ class KNav extends React.Component {
             <Nav.Link as={Link} to="/notifications">Notifications</Nav.Link>
           </Nav>
           <Nav>
+            <a href="https://www.buymeacoffee.com/crossal" target="_blank">
+              <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style={{ height: "40px", width: "143px" }}/>
+            </a>
             <Button variant="link" onClick={this.updateLoggedIn}>Log Out</Button>
           </Nav>
         </Navbar>
@@ -35,6 +43,12 @@ class KNav extends React.Component {
       content =
         <Navbar bg="dark" variant="dark">
           <Navbar.Brand href="#home">Konnector</Navbar.Brand>
+          <Nav className="mr-auto"/>
+          <Nav>
+            <a href="https://www.buymeacoffee.com/crossal" target="_blank">
+              <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style={{ height: "40px", width: "143px" }}/>
+            </a>
+          </Nav>
         </Navbar>
     }
 

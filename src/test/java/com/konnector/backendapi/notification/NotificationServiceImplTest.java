@@ -3,7 +3,6 @@ package com.konnector.backendapi.notification;
 import com.konnector.backendapi.authentication.AuthenticationFacade;
 import com.konnector.backendapi.connection.Connection;
 import com.konnector.backendapi.connection.ConnectionStatus;
-import com.konnector.backendapi.data.Dao;
 import com.konnector.backendapi.exceptions.NotFoundException;
 import com.konnector.backendapi.user.UserAuthorizationValidator;
 import org.junit.jupiter.api.Test;
@@ -35,8 +34,6 @@ public class NotificationServiceImplTest {
 	private NotificationService notificationService = new NotificationServiceImpl();
 
 	@Mock
-	private Dao<Notification> notificationDaoMock;
-	@Mock
 	private NotificationValidator notificationValidatorMock;
 	@Mock
 	private AuthenticationFacade authenticationFacadeMock;
@@ -60,36 +57,40 @@ public class NotificationServiceImplTest {
 	public void createNotification_statusIsRequested_createsNotification() {
 		Long requesterId = 1L;
 		Long requesteeId = 2L;
+		Long connectionId = 3L;
 		when(connectionMock.getStatus()).thenReturn(ConnectionStatus.REQUESTED);
 		when(connectionMock.getRequesterId()).thenReturn(requesterId);
 		when(connectionMock.getRequesteeId()).thenReturn(requesteeId);
+		when(connectionMock.getId()).thenReturn(connectionId);
 
 		Notification createdNotification = notificationService.createNotification(connectionMock);
 
 		assertEquals(requesteeId, createdNotification.getRecipientId());
 		assertEquals(requesterId, createdNotification.getSenderId());
 		assertEquals(NotificationType.CONNECTION_REQUEST, createdNotification.getType());
-		assertEquals(requesterId, createdNotification.getReferenceId());
+		assertEquals(connectionId, createdNotification.getReferenceId());
 		verify(notificationValidatorMock).validateNotificationCreationArgument(connectionMock);
-		verify(notificationDaoMock).save(createdNotification);
+		verify(notificationRepository).save(createdNotification);
 	}
 
 	@Test
 	public void createNotification_statusIsNotRequested_createsNotification() {
 		Long requesterId = 1L;
 		Long requesteeId = 2L;
+		Long connectionId = 3L;
 		when(connectionMock.getStatus()).thenReturn(ConnectionStatus.ACCEPTED);
 		when(connectionMock.getRequesterId()).thenReturn(requesterId);
 		when(connectionMock.getRequesteeId()).thenReturn(requesteeId);
+		when(connectionMock.getId()).thenReturn(connectionId);
 
 		Notification createdNotification = notificationService.createNotification(connectionMock);
 
 		assertEquals(requesterId, createdNotification.getRecipientId());
 		assertEquals(requesteeId, createdNotification.getSenderId());
 		assertEquals(NotificationType.CONNECTION_ACCEPT, createdNotification.getType());
-		assertEquals(requesteeId, createdNotification.getReferenceId());
+		assertEquals(connectionId, createdNotification.getReferenceId());
 		verify(notificationValidatorMock).validateNotificationCreationArgument(connectionMock);
-		verify(notificationDaoMock).save(createdNotification);
+		verify(notificationRepository).save(createdNotification);
 	}
 
 	@Test
@@ -135,7 +136,7 @@ public class NotificationServiceImplTest {
 
 	@Test
 	public void deleteNotification_notificationNotFound_throwsException() {
-		when(notificationDaoMock.get(1L)).thenReturn(Optional.empty());
+		when(notificationRepository.findById(1L)).thenReturn(Optional.empty());
 
 		assertThrows(NotFoundException.class, () -> notificationService.deleteNotification(1L));
 	}
@@ -144,13 +145,13 @@ public class NotificationServiceImplTest {
 	public void deleteNotification_updatesNotification() {
 		Long notificationId = 1L;
 		Long recipientId = 2L;
-		when(notificationDaoMock.get(notificationId)).thenReturn(Optional.of(notificationMock));
+		when(notificationRepository.findById(notificationId)).thenReturn(Optional.of(notificationMock));
 		when(notificationMock.getRecipientId()).thenReturn(recipientId);
 		when(authenticationFacadeMock.getAuthentication()).thenReturn(authenticationMock);
 
 		notificationService.deleteNotification(notificationId);
 
 		verify(userAuthorizationValidatorMock).validateUserRequest(recipientId, authenticationMock);
-		verify(notificationDaoMock).delete(notificationMock);
+		verify(notificationRepository).delete(notificationMock);
 	}
 }

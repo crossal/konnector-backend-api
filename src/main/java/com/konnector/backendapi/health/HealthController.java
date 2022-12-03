@@ -13,13 +13,13 @@ public class HealthController {
 	@ResponseStatus(HttpStatus.OK)
 	@ResponseBody
 	public String getHealth() {
-		return "Ok";
+		return "";
 	}
 
 	@GetMapping("/api/auth-health")
 	@ResponseStatus(HttpStatus.OK)
 	@ResponseBody
 	public String getAuthHealth() {
-		return "Ok";
+		return "";
 	}
 }

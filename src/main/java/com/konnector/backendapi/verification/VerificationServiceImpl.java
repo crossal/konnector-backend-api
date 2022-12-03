@@ -1,6 +1,5 @@
 package com.konnector.backendapi.verification;
 
-import com.konnector.backendapi.data.Dao;
 import com.konnector.backendapi.exceptions.InvalidDataException;
 import com.konnector.backendapi.exceptions.InvalidVerificationCodeException;
 import com.konnector.backendapi.exceptions.NoVerificationAttemptsLeftException;
@@ -27,11 +26,7 @@ public class VerificationServiceImpl implements VerificationService {
 	private static final int RESEND_ALLOWED_IN_MINUTES = 30;
 
 	@Autowired
-	private Dao<Verification> verificationDao;
-	@Autowired
 	private VerificationRepository verificationRepository;
-	@Autowired
-	private Dao<User> userDao;
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
@@ -41,12 +36,10 @@ public class VerificationServiceImpl implements VerificationService {
 	@Autowired
 	private UserService userService;
 
-	public VerificationServiceImpl(Dao<Verification> verificationDao, VerificationRepository verificationRepository, Dao<User> userDao,
-	                               UserRepository userRepository, CodeGenerationService codeGenerationService, EmailNotificationService emailNotificationService,
+	public VerificationServiceImpl(VerificationRepository verificationRepository, UserRepository userRepository,
+	                               CodeGenerationService codeGenerationService, EmailNotificationService emailNotificationService,
 	                               UserService userService) {
-		this.verificationDao = verificationDao;
 		this.verificationRepository = verificationRepository;
-		this.userDao = userDao;
 		this.userRepository = userRepository;
 		this.codeGenerationService = codeGenerationService;
 		this.emailNotificationService = emailNotificationService;
@@ -69,7 +62,7 @@ public class VerificationServiceImpl implements VerificationService {
 
 		Verification verification = new Verification(user.getId(), VerificationType.EMAIL, codeGenerationService.generateCode(CODE_LENGTH), CODE_ATTEMPTS,
 				UUID.randomUUID().toString(), LocalDateTime.now().plusDays(URL_TOKEN_EXPIRATION_IN_DAYS), LocalDateTime.now().plusMinutes(RESEND_ALLOWED_IN_MINUTES));
-		verificationDao.save(verification);
+		verificationRepository.save(verification);
 
 		emailNotificationService.sendVerificationEmail(user.getEmail(), verification.getCode(), verification.getUrlToken());
 
@@ -134,7 +127,7 @@ public class VerificationServiceImpl implements VerificationService {
 
 			if (!urlTokenOrCode.equals(verification.getCode())) {
 				verification.setCodeAttemptsLeft(verification.getCodeAttemptsLeft() - 1);
-				verificationDao.update(verification); // not working?
+				verificationRepository.save(verification);
 				throw new InvalidVerificationCodeException("Code incorrect.");
 			}
 		} else if (!urlTokenOrCode.equals(verification.getUrlToken())) {
@@ -142,10 +135,10 @@ public class VerificationServiceImpl implements VerificationService {
 		}
 
 		user.setEmailVerified(true);
-		userDao.update(user);
+		userRepository.save(user);
 
 		verification.setStatus(VerificationStatus.COMPLETE);
-		verificationDao.update(verification);
+		verificationRepository.save(verification);
 	}
 
 	@Override
@@ -162,7 +155,7 @@ public class VerificationServiceImpl implements VerificationService {
 
 		Verification verification = new Verification(user.getId(), VerificationType.PASSWORD, codeGenerationService.generateCode(CODE_LENGTH), CODE_ATTEMPTS,
 				UUID.randomUUID().toString(), LocalDateTime.now().plusDays(URL_TOKEN_EXPIRATION_IN_DAYS), LocalDateTime.now().plusMinutes(RESEND_ALLOWED_IN_MINUTES));
-		verificationDao.save(verification);
+		verificationRepository.save(verification);
 
 		emailNotificationService.sendPasswordResetEmail(user.getEmail(), verification.getCode(), verification.getUrlToken());
 
@@ -216,7 +209,7 @@ public class VerificationServiceImpl implements VerificationService {
 
 			if (!passwordResetUrlTokenOrCode.equals(verification.getCode())) {
 				verification.setCodeAttemptsLeft(verification.getCodeAttemptsLeft() - 1);
-				verificationDao.update(verification); // not working?
+				verificationRepository.save(verification); // not working?
 				throw new InvalidVerificationCodeException("Code incorrect.");
 			}
 		} else if (!passwordResetUrlTokenOrCode.equals(verification.getUrlToken())) {
@@ -226,6 +219,6 @@ public class VerificationServiceImpl implements VerificationService {
 		userService.updateUserPassword(user, userPassword);
 
 		verification.setStatus(VerificationStatus.COMPLETE);
-		verificationDao.update(verification);
+		verificationRepository.save(verification);
 	}
 }

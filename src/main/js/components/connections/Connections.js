@@ -2,6 +2,7 @@ import React from 'react';
 import ConnectionsList from './ConnectionsList';
 import AddConnections from './addConnections/AddConnections';
 import ConnectedUserProfile from './connectedUserProfile/ConnectedUserProfile';
+import Search from './../search/Search';
 import { Button } from "react-bootstrap";
 
 class Connections extends React.Component {
@@ -12,10 +13,18 @@ class Connections extends React.Component {
     this.exitAddConnections = this.exitAddConnections.bind(this);
     this.viewConnectedUser = this.viewConnectedUser.bind(this);
     this.exitViewConnectedUser = this.exitViewConnectedUser.bind(this);
+    this.search = this.search.bind(this);
     this.state = {
       addingConnections: false,
-      connectedUserIdToView: null
+      connectedUserIdToView: null,
+      searchString: ''
     };
+  }
+
+  search(newSearchString) {
+    this.setState({
+      searchString: newSearchString
+    });
   }
 
   addConnections(e) {
@@ -58,7 +67,8 @@ class Connections extends React.Component {
       content =
         <div>
           <h2>Connections</h2>
-          <ConnectionsList viewConnectedUser={this.viewConnectedUser} {...this.props} />
+          <Search {...this.props} placeholder="Search" search={this.search} />
+          <ConnectionsList viewConnectedUser={this.viewConnectedUser} {...this.props} searchString={this.state.searchString} />
           <br />
           <Button variant="primary" onClick={this.addConnections}>Add</Button>
         </div>
