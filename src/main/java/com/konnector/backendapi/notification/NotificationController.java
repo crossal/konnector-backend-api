@@ -3,6 +3,7 @@ package com.konnector.backendapi.notification;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.konnector.backendapi.http.Headers;
 import com.konnector.backendapi.http.Views;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RestController

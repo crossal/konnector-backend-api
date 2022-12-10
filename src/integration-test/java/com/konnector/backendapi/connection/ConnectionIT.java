@@ -9,7 +9,7 @@ import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -47,7 +47,7 @@ public class ConnectionIT extends AuthenticatedTest {
 
 		ResponseEntity<String> response = testRestTemplate.postForEntity("http://localhost:" + randomServerPort + "/api/connections", entity, String.class);
 
-		assertEquals(HttpStatus.CREATED.value(), response.getStatusCodeValue());
+		assertEquals(HttpStatus.CREATED.value(), response.getStatusCode().value());
 		assertNotNull(response.getBody());
 
 		ConnectionDTO createdConnectionDTO = objectMapper.readValue(response.getBody(), ConnectionDTO.class);
@@ -70,7 +70,7 @@ public class ConnectionIT extends AuthenticatedTest {
 
 		ResponseEntity<String> response = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/api/connections/1", HttpMethod.PUT, entity, String.class);
 
-		assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+		assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
 		assertNotNull(response.getBody());
 
 		ConnectionDTO updatedConnectionDTO = objectMapper.readValue(response.getBody(), ConnectionDTO.class);
@@ -81,13 +81,13 @@ public class ConnectionIT extends AuthenticatedTest {
 	public void deleteConnectionEndpoint_deletesConnection() {
 		ResponseEntity<String> response = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/api/connections/1", HttpMethod.DELETE, getEntityWithAuth(null, null), String.class);
 
-		assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+		assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
 	}
 
 	@Test
 	public void deleteConnectionByConnectedUserIdEndpoint_deletesConnection() {
 		ResponseEntity<String> response = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/api/connections?connected-user-id=4", HttpMethod.DELETE, getEntityWithAuth(null, null), String.class);
 
-		assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+		assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
 	}
 }

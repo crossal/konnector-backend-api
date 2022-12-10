@@ -11,7 +11,7 @@ import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -49,7 +49,7 @@ public class ContactDetailIT extends AuthenticatedTest {
 
 		ResponseEntity<String> response = testRestTemplate.postForEntity("http://localhost:" + randomServerPort + "/api/contact-details", entity, String.class);
 
-		assertEquals(HttpStatus.CREATED.value(), response.getStatusCodeValue());
+		assertEquals(HttpStatus.CREATED.value(), response.getStatusCode().value());
 		assertNotNull(response.getBody());
 
 		ContactDetailDTO createdContactDetailDTO = objectMapper.readValue(response.getBody(), ContactDetailDTO.class);
@@ -72,7 +72,7 @@ public class ContactDetailIT extends AuthenticatedTest {
 
 		ResponseEntity<String> response = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/api/contact-details/1", HttpMethod.PUT, entity, String.class);
 
-		assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+		assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
 		assertNotNull(response.getBody());
 
 		ContactDetailDTO updatedContactDetailDTO = objectMapper.readValue(response.getBody(), ContactDetailDTO.class);
@@ -85,7 +85,7 @@ public class ContactDetailIT extends AuthenticatedTest {
 	public void getContactDetailsEndpoint_getsContactDetails() throws Exception {
 		ResponseEntity<String> response = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/api/contact-details?user-id=1&page-number=2&page-size=2", HttpMethod.GET, getEntityWithAuth(null, null), String.class);
 
-		assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+		assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
 		assertNotNull(response.getBody());
 
 		List<ContactDetailDTO> contactDetailDTOs = objectMapper.readValue(response.getBody(), new TypeReference<>() {});
@@ -99,6 +99,6 @@ public class ContactDetailIT extends AuthenticatedTest {
 	public void deleteContactDetailEndpoint_deletesContactDetail() {
 		ResponseEntity<String> response = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/api/contact-details/1", HttpMethod.DELETE, getEntityWithAuth(null, null), String.class);
 
-		assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+		assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
 	}
 }

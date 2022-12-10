@@ -1,5 +1,6 @@
 package com.konnector.backendapi.notification;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -8,8 +9,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
-
-import javax.servlet.http.HttpServletResponse;
 
 import java.lang.reflect.Type;
 import java.util.List;

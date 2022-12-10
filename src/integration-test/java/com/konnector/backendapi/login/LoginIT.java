@@ -8,7 +8,7 @@ import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -32,6 +32,8 @@ public class LoginIT {
 	private static final String EMAIL = "email";
 	private static final String PASSWORD = "password";
 	private static final String HEADER_SET_COOKIE = "Set-Cookie";
+	private static final String HEADER_SET_COOKIE_JSESSIONID_KEY = "JSESSIONID";
+	private static final String HEADER_SET_COOKIE_REMEMBER_ME_KEY = "remember-me";
 	private static final String HEADER_SET_COOKIE_EXPECTED_ATTRIBUTES = "Secure; HttpOnly; SameSite=Strict";
 
 	private TestRestTemplate testRestTemplate = new TestRestTemplate();
@@ -52,7 +54,7 @@ public class LoginIT {
 
 		ResponseEntity<String> response = testRestTemplate.postForEntity("http://localhost:" + randomServerPort + "/api/authenticate", entity, String.class);
 
-		assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+		assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
 		assertNotNull(response.getBody());
 
 		UserDTO loggedInUser = objectMapper.readValue(response.getBody(), UserDTO.class);
@@ -61,7 +63,8 @@ public class LoginIT {
 		assertFalse(response.getHeaders().isEmpty());
 		assertTrue(response.getHeaders().containsKey(HEADER_SET_COOKIE));
 		List<String> setCookieHeader = response.getHeaders().get(HEADER_SET_COOKIE);
-		assertTrue(setCookieHeader.get(0).contains(HEADER_SET_COOKIE_EXPECTED_ATTRIBUTES));
+		assertTrue(setCookieHeader.stream().anyMatch(value -> value.contains(HEADER_SET_COOKIE_JSESSIONID_KEY) && value.contains(HEADER_SET_COOKIE_EXPECTED_ATTRIBUTES)));
+		assertTrue(setCookieHeader.stream().anyMatch(value -> value.contains(HEADER_SET_COOKIE_REMEMBER_ME_KEY) && value.contains(HEADER_SET_COOKIE_EXPECTED_ATTRIBUTES)));
 	}
 
 	@Test
@@ -75,6 +78,6 @@ public class LoginIT {
 
 		ResponseEntity<String> response = testRestTemplate.postForEntity("http://localhost:" + randomServerPort + "/api/authenticate", entity, String.class);
 
-		assertEquals(HttpStatus.UNAUTHORIZED.value(), response.getStatusCodeValue());
+		assertEquals(HttpStatus.UNAUTHORIZED.value(), response.getStatusCode().value());
 	}
 }

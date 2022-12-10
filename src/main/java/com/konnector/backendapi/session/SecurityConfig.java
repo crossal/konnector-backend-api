@@ -58,6 +58,7 @@ public class SecurityConfig {
 		TokenBasedRememberMeServices tokenBasedRememberMeServices = new TokenBasedRememberMeServices(rememberMeKey, userDetailsService);
 		tokenBasedRememberMeServices.setAlwaysRemember(true);
 		tokenBasedRememberMeServices.setTokenValiditySeconds(ONE_WEEK_IN_SECONDS);
+		tokenBasedRememberMeServices.setUseSecureCookie(true);
 		return tokenBasedRememberMeServices;
 	}
 
@@ -70,14 +71,14 @@ public class SecurityConfig {
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
 				.csrf().disable() // disabled as solved via SameSite settings
-				.authorizeRequests()
-				.antMatchers(HttpMethod.GET, "/api/health").permitAll()
-				.antMatchers(HttpMethod.POST, "/api/users").permitAll()
-				.antMatchers(HttpMethod.POST, "/api/verifications/verify*").permitAll()
-				.antMatchers(HttpMethod.POST, "/api/verifications*").permitAll()
-				.antMatchers(HttpMethod.POST, "/api/authenticate").permitAll()
-				.antMatchers(HttpMethod.GET, "/verifications*").permitAll()
-				.antMatchers("/api/**").authenticated() // comment this line out for testing
+				.authorizeHttpRequests()
+				.requestMatchers(HttpMethod.GET, "/api/health").permitAll()
+				.requestMatchers(HttpMethod.POST, "/api/users").permitAll()
+				.requestMatchers(HttpMethod.POST, "/api/verifications/verify*").permitAll()
+				.requestMatchers(HttpMethod.POST, "/api/verifications*").permitAll()
+				.requestMatchers(HttpMethod.POST, "/api/authenticate").permitAll()
+				.requestMatchers(HttpMethod.GET, "/verifications*").permitAll()
+				.requestMatchers("/api/**").authenticated() // comment this line out for testing
 				.anyRequest().permitAll()
 				.and()
 				.exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
