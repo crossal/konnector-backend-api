@@ -1,6 +1,7 @@
 package com.konnector.backendapi.notification;
 
 import com.konnector.backendapi.exceptions.EmailVerificationSendException;
+import jakarta.annotation.PostConstruct;
 import jakarta.mail.Authenticator;
 import jakarta.mail.Message;
 import jakarta.mail.PasswordAuthentication;
@@ -13,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.text.MessageFormat;
 import java.util.Properties;
 

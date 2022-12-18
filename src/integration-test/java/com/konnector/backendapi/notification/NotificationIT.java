@@ -8,11 +8,10 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.konnector.backendapi.AuthenticatedTest;
 import com.konnector.backendapi.session.SecurityTestConfig;
-import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,14 +37,12 @@ public class NotificationIT extends AuthenticatedTest {
 			.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 			.registerModule(new JavaTimeModule())
 			.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);;
-	private final EasyRandom easyRandom = new EasyRandom();
-	private final NotificationDTO notificationDTO = easyRandom.nextObject(NotificationDTO.class);
 
 	@Test
 	public void getNotificationsEndpoint_getsNotifications() throws Exception {
 		ResponseEntity<String> response = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/api/notifications?user-id=1&page-number=2&page-size=2", HttpMethod.GET, getEntityWithAuth(null, null), String.class);
 
-		assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+		assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
 		assertNotNull(response.getBody());
 
 		List<NotificationDTO>  notificationDTOs = objectMapper.readValue(response.getBody(), new TypeReference<>() {});
@@ -57,6 +54,6 @@ public class NotificationIT extends AuthenticatedTest {
 	public void deleteNotificationEndpoint_deletesNotification() {
 		ResponseEntity<String> response = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/api/notifications/1", HttpMethod.DELETE, getEntityWithAuth(null, null), String.class);
 
-		assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+		assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
 	}
 }

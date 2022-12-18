@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -56,7 +56,7 @@ public class UserIT extends AuthenticatedTest {
 
 		ResponseEntity<String> response = testRestTemplate.postForEntity("http://localhost:" + randomServerPort + "/api/users", entity, String.class);
 
-		assertEquals(HttpStatus.CREATED.value(), response.getStatusCodeValue());
+		assertEquals(HttpStatus.CREATED.value(), response.getStatusCode().value());
 		assertNotNull(response.getBody());
 
 		UserDTO createdUser = objectMapper.readValue(response.getBody(), UserDTO.class);
@@ -85,7 +85,7 @@ public class UserIT extends AuthenticatedTest {
 
 		ResponseEntity<String> response = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/api/users/1", HttpMethod.PUT, entity, String.class);
 
-		assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+		assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
 		assertNotNull(response.getBody());
 
 		UserDTO updatedUser = objectMapper.readValue(response.getBody(), UserDTO.class);
@@ -101,7 +101,7 @@ public class UserIT extends AuthenticatedTest {
 	public void getUserEndpoint_getsUser() throws Exception {
 		ResponseEntity<String> response = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/api/users/1", HttpMethod.GET, getEntityWithAuth(null, null), String.class);
 
-		assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+		assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
 		assertNotNull(response.getBody());
 
 		UserDTO user = objectMapper.readValue(response.getBody(), UserDTO.class);
@@ -112,7 +112,7 @@ public class UserIT extends AuthenticatedTest {
 	public void getUsersEndpoint_connectedUsers_getsConnectedUsers() throws Exception {
 		ResponseEntity<String> response = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/api/users?connections-of-user-id=1&page-number=1&page-size=1&username=username2", HttpMethod.GET, getEntityWithAuth(null, null), String.class);
 
-		assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+		assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
 		assertNotNull(response.getBody());
 
 		List<UserDTO> userDTOs = objectMapper.readValue(response.getBody(), new TypeReference<>() {});
@@ -124,7 +124,7 @@ public class UserIT extends AuthenticatedTest {
 	public void getUsersEndpoint_nonConnectedUsers_getsUsers() throws Exception {
 		ResponseEntity<String> response = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/api/users?page-number=1&page-size=1&username=username5", HttpMethod.GET, getEntityWithAuth(null, null), String.class);
 
-		assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+		assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
 		assertNotNull(response.getBody());
 
 		List<UserDTO> userDTOs = objectMapper.readValue(response.getBody(), new TypeReference<>() {});

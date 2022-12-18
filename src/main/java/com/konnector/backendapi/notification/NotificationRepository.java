@@ -2,10 +2,10 @@ package com.konnector.backendapi.notification;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
 
-public interface NotificationRepository  extends PagingAndSortingRepository<Notification, Long> {
+public interface NotificationRepository  extends JpaRepository<Notification, Long> {
 	Page findByRecipientId(Long id, Pageable pageable);
 	@Query(value =
 		"SELECT n FROM Notification n " +
