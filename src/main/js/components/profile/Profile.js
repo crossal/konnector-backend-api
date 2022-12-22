@@ -10,6 +10,7 @@ class Profile extends React.Component {
     var updateLoggedIn = this.props.updateLoggedIn;
     this.handleSubmit = this.handleSubmit.bind(this);
     this.validatePasswords = this.validatePasswords.bind(this);
+    this.clearPasswords = this.clearPasswords.bind(this);
     this.state = {
       user: {},
       validated: false,
@@ -32,6 +33,11 @@ class Profile extends React.Component {
         this.setState({user: response.entity});
       }
     );
+  }
+
+  clearPasswords() {
+    this.oldPassword.current.value = '';
+    this.password.current.value = '';
   }
 
   validatePasswords() {
@@ -64,6 +70,7 @@ class Profile extends React.Component {
       }).then(response => {
         this.setState({loading: false});
         if (response.status.code === 200) {
+          this.clearPasswords();
           // TODO: show some success popup
         } else if (response.status.code === 401) {
           this.props.updateLoggedIn(false, null)
@@ -97,12 +104,12 @@ class Profile extends React.Component {
           </Form.Row>
           <Form.Row>
             <Form.Group as={Col} controlId="formGridPassword">
-              <Form.Label>Password</Form.Label>
+              <Form.Label>Current Password</Form.Label>
               <Form.Control isInvalid={!this.state.oldPasswordValid && this.state.validated} ref={this.oldPassword}  type="password" placeholder="Password" name="oldPassword" onChange={this.validatePasswords} />
               <Form.Control.Feedback type="invalid">Password cannot be empty when setting new password.</Form.Control.Feedback>
             </Form.Group>
             <Form.Group as={Col} controlId="formGridNewPassword">
-              <Form.Label>Password</Form.Label>
+              <Form.Label>New Password</Form.Label>
               <Form.Control ref={this.password} minLength="7" type="password" placeholder="New password" name="password" onChange={this.validatePasswords} />
               <Form.Control.Feedback type="invalid">Please add a password greater than 7 characters.</Form.Control.Feedback>
             </Form.Group>

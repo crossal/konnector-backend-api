@@ -20,10 +20,12 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
+public class SecurityConfig implements WebMvcConfigurer {
 
 	private static final int BCRYPT_STRENGTH = 12;
 	private static final int ONE_WEEK_IN_SECONDS = 604800;
@@ -92,5 +94,13 @@ public class SecurityConfig {
 				.sessionCreationPolicy(SessionCreationPolicy.NEVER)
 				.maximumSessions(1);
 		return http.build();
+	}
+
+	@Override
+	public void addViewControllers(ViewControllerRegistry registry) {
+		registry.addViewController("/{spring:\\w+}")
+				.setViewName("forward:/");
+		registry.addViewController("/**{spring:\\w+}")
+				.setViewName("forward:/");
 	}
 }

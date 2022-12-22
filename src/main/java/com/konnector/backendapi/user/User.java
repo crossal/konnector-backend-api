@@ -174,5 +174,6 @@ public class User {
 	public void merge(User user) {
 		this.firstName = user.firstName;
 		this.lastName = user.lastName;
+		this.password = user.password != null ? user.password : this.password;
 	}
 }
