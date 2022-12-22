@@ -35,6 +35,8 @@ public class LoginIT {
 	private static final String HEADER_SET_COOKIE_JSESSIONID_KEY = "JSESSIONID";
 	private static final String HEADER_SET_COOKIE_REMEMBER_ME_KEY = "remember-me";
 	private static final String HEADER_SET_COOKIE_EXPECTED_ATTRIBUTES = "Secure; HttpOnly; SameSite=Strict";
+	private static final String HEADER_X_FRAME_OPTIONS = "X-Frame-Options";
+	private static final String HEADER_X_FRAME_OPTIONS_EXPECTED_VALUE = "DENY";
 
 	private TestRestTemplate testRestTemplate = new TestRestTemplate();
 	@LocalServerPort
@@ -61,6 +63,8 @@ public class LoginIT {
 		assertEquals(EMAIL, loggedInUser.getEmail());
 
 		assertFalse(response.getHeaders().isEmpty());
+		assertTrue(response.getHeaders().containsKey(HEADER_X_FRAME_OPTIONS));
+		assertEquals(HEADER_X_FRAME_OPTIONS_EXPECTED_VALUE, response.getHeaders().get(HEADER_X_FRAME_OPTIONS).get(0));
 		assertTrue(response.getHeaders().containsKey(HEADER_SET_COOKIE));
 		List<String> setCookieHeader = response.getHeaders().get(HEADER_SET_COOKIE);
 		assertTrue(setCookieHeader.stream().anyMatch(value -> value.contains(HEADER_SET_COOKIE_JSESSIONID_KEY) && value.contains(HEADER_SET_COOKIE_EXPECTED_ATTRIBUTES)));

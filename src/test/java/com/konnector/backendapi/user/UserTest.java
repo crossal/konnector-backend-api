@@ -225,11 +225,24 @@ public class UserTest {
 
 		user1.merge(user2);
 
-		assertNotEquals(user1.getId(), user2.getId());
-		assertNotEquals(user1.getUsername(), user2.getUsername());
-		assertNotEquals(user1.getEmail(), user2.getEmail());
-		assertNotEquals(user1.isEmailVerified(), user2.isEmailVerified());
-		assertEquals(user1.getFirstName(), user2.getFirstName());
-		assertEquals(user1.getLastName(), user2.getLastName());
+		assertNotEquals(user2.getId(), user1.getId());
+		assertNotEquals(user2.getUsername(), user1.getUsername());
+		assertNotEquals(user2.getEmail(), user1.getEmail());
+		assertNotEquals(user2.isEmailVerified(), user1.isEmailVerified());
+		assertEquals(user2.getFirstName(), user1.getFirstName());
+		assertEquals(user2.getLastName(), user1.getLastName());
+		assertEquals(user2.getPassword(), user1.getPassword());
+	}
+
+	@Test
+	public void merge_missingPassword_mergesAndKeepsOldPassword() {
+		User user1 = new User();
+		user1.setPassword("password1");
+
+		User user2 = new User();
+
+		user1.merge(user2);
+
+		assertEquals("password1", user1.getPassword());
 	}
 }
