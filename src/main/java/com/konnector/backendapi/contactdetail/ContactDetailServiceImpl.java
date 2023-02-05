@@ -96,7 +96,7 @@ public class ContactDetailServiceImpl implements ContactDetailService {
 		}
 
 		Pageable sortedByTypeAscPageable = PageRequest.of(pageNumber - 1, pageSize, Sort.by("type").ascending());
-		Page page = contactDetailRepository.findByUserId(userId, sortedByTypeAscPageable);
+		Page<ContactDetail> page = contactDetailRepository.findByUserId(userId, sortedByTypeAscPageable);
 
 		return page.getContent();
 	}

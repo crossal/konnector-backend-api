@@ -54,24 +54,24 @@ const ResetPassword = ({ token, updatePasswordReset }) => {
       <Button className="mb-4" variant="secondary" onClick={cancelButton}>Cancel</Button>
       <h3 className="mb-4">Password Reset</h3>
       <Form noValidate validated={validated} onSubmit={handleSubmit}>
-        <Form.Row>
+        <Row className="mb-2">
           <Form.Group as={Col} controlId="formGridUsernameOrEmail">
             <Form.Control required placeholder="Username or Email" name="usernameOrEmail" />
             <Form.Control.Feedback type="invalid">Please add a username or email.</Form.Control.Feedback>
           </Form.Group>
-        </Form.Row>
-        <Form.Row>
+        </Row>
+        <Row className="mb-2">
           <Form.Group as={Col} controlId="formGridPassword">
             <Form.Control ref={password} required type="password" placeholder="Password" name="userPassword" />
             <Form.Control.Feedback type="invalid">Please add a password.</Form.Control.Feedback>
           </Form.Group>
-        </Form.Row>
-        <Form.Row>
+        </Row>
+        <Row className="mb-2">
           <Form.Group as={Col} controlId="formGridPasswordConfirmation">
             <Form.Control ref={passwordConfirmation} required type="password" placeholder="Confirm password " name="passwordConfirmation" onChange={checkPasswordMatching} />
             <Form.Control.Feedback type="invalid">Please add a matching password confirmation.</Form.Control.Feedback>
           </Form.Group>
-        </Form.Row>
+        </Row>
         { serverError ? <Alert variant="danger">{serverError}</Alert> : <div/> }
         <Button variant="primary" type="submit" disabled={loading}>{loading ? 'Loading...' : 'Submit'}</Button>
       </Form>

@@ -226,8 +226,8 @@
                             <goal>install-node-and-npm</goal>
                         </goals>
                         <configuration>
-                            <nodeVersion>v12.14.0</nodeVersion>
-                            <npmVersion>6.13.4</npmVersion>
+                            <nodeVersion>v19.4.0</nodeVersion>
+                            <npmVersion>9.3.1</npmVersion>
                         </configuration>
                     </execution>
                     <execution>
@@ -279,6 +279,9 @@
                 <configuration>
                     <source>17</source>
                     <target>17</target>
+<!--                    <compilerArgument>-Xlint:all</compilerArgument>-->
+<!--                    <showWarnings>true</showWarnings>-->
+<!--                    <showDeprecation>true</showDeprecation>-->
                 </configuration>
             </plugin>
 

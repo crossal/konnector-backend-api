@@ -1,5 +1,6 @@
 package com.konnector.backendapi.exceptions;
 
+@SuppressWarnings("serial")
 public class InvalidLoginDetailsException extends RuntimeException {
 
 	public InvalidLoginDetailsException() {

@@ -52,17 +52,17 @@ class ContactDetailsForm extends React.Component {
   render() {
     return (
       <Form noValidate validated={this.state.validated} onSubmit={this.handleSubmit}>
-        <Form.Row>
+        <Row>
           <input hidden name="userId" defaultValue={this.props.userId} />
-          <Form.Group as={Col} controlId="formGridContactType">
-            <Form.Control ref={this.type} required placeholder="Type" name="type" />
+          <Form.Group className="mb-2" as={Col} xs={12} sm={6} controlId="formGridContactType">
+            <Form.Control ref={this.type} required placeholder="Type e.g. phone/social media" name="type" />
             <Form.Control.Feedback type="invalid">Cannot be empty.</Form.Control.Feedback>
           </Form.Group>
-          <Form.Group as={Col} controlId="formGridContactValue">
-            <Form.Control ref={this.value} required placeholder="Value" name="value" />
+          <Form.Group className="mb-2" as={Col} xs={12} sm={6} controlId="formGridContactValue">
+            <Form.Control ref={this.value} required placeholder="Value e.g. 123/social.com" name="value" />
             <Form.Control.Feedback type="invalid">Cannot be empty.</Form.Control.Feedback>
           </Form.Group>
-        </Form.Row>
+        </Row>
         { this.state.serverError ? <Alert variant="danger">{this.state.serverError}</Alert> : <div/> }
         <Button variant="primary" type="submit" disabled={this.state.loading}>{this.state.loading ? 'Loading...' : 'Add'}</Button>
       </Form>

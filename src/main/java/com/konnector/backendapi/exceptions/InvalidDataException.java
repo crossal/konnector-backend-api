@@ -1,5 +1,6 @@
 package com.konnector.backendapi.exceptions;
 
+@SuppressWarnings("serial")
 public class InvalidDataException extends RuntimeException {
 
 	public InvalidDataException() {

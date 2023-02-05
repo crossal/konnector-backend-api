@@ -42,18 +42,18 @@ const LogInDetails = ({ updateLoggedIn, logInWithoutVerification, requestResetPa
       <Button className="mb-4" variant="secondary" onClick={back}>Back</Button>
       <h3 className="mb-4">Login</h3>
       <Form noValidate validated={validated} onSubmit={handleSubmit}>
-        <Form.Row>
+        <Row className="mb-2">
           <Form.Group as={Col} controlId="formGridUsernameOrEmail">
             <Form.Control required placeholder="Username or Email" name="usernameOrEmail" />
             <Form.Control.Feedback type="invalid">Please add a username or email.</Form.Control.Feedback>
           </Form.Group>
-        </Form.Row>
-        <Form.Row>
+        </Row>
+        <Row className="mb-2">
           <Form.Group as={Col} controlId="formGridPassword">
             <Form.Control required type="password" placeholder="Password" name="password" />
             <Form.Control.Feedback type="invalid">Please add a password.</Form.Control.Feedback>
           </Form.Group>
-        </Form.Row>
+        </Row>
         { serverError ? <Alert variant="danger">{serverError}</Alert> : <div/> }
         <div><Button className="mb-2" variant="link" onClick={requestResetPassword}>Reset password</Button></div>
         <Button variant="primary" type="submit" disabled={loading}>{loading ? 'Loading...' : 'Submit'}</Button>

@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
+@SuppressWarnings("serial")
 public class SecurityUser extends User {
 
 	private final Long userId;

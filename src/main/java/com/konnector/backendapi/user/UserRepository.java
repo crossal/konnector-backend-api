@@ -24,7 +24,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 			"   AND connected_u.emailVerified = 1 " +
 			"   AND connected_u.username LIKE CONCAT(?2,'%') " +
 			"ORDER BY connected_u.username ASC, connected_u.firstName ASC, connected_u.lastName ASC")
-	Page getConnections(Long userId, String username, Pageable pageable);
+	Page<User> getConnections(Long userId, String username, Pageable pageable);
 
 	@Query("" +
 			"SELECT count(c) FROM Connection c " +
@@ -47,7 +47,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 			"   AND u.emailVerified = 1 " +
 			"   AND u.username LIKE CONCAT(?2,'%') " +
 			"ORDER BY u.username ASC, u.firstName ASC, u.lastName ASC")
-	Page getNonConnections(Long userId, String username, Pageable pageable);
+	Page<User> getNonConnections(Long userId, String username, Pageable pageable);
 
 	@Query("" +
 			"SELECT count(u) FROM User u " +
@@ -58,6 +58,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 			"   AND u.username LIKE CONCAT(?2,'%')")
 	long countNonConnectionsByUserId(Long userId, String username);
 
-	Page findByIdNotAndEmailVerifiedTrueAndUsernameStartingWith(Long id,  String username, Pageable pageable);
+	Page<User> findByIdNotAndEmailVerifiedTrueAndUsernameStartingWith(Long id,  String username, Pageable pageable);
 	long countByIdNotAndEmailVerifiedTrueAndUsernameStartingWith(Long id, String username);
 }

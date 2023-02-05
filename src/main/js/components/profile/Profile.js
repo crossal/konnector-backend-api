@@ -90,40 +90,40 @@ class Profile extends React.Component {
         <Form noValidate validated={this.state.validated} onSubmit={this.handleSubmit}>
           <input hidden name="id" defaultValue={this.props.userId} />
           <input hidden name="emailVerified" defaultValue={this.state.user.emailVerified} />
-          <Form.Row>
+          <Row className="mb-2">
             <Form.Group as={Col} controlId="formGridEmail">
               <Form.Label>Email</Form.Label>
               <Form.Control readOnly type="email" placeholder="Email" defaultValue={this.state.user.email || ''} name="email" />
             </Form.Group>
-          </Form.Row>
-          <Form.Row>
+          </Row>
+          <Row className="mb-2">
             <Form.Group as={Col} controlId="formGridUsername">
               <Form.Label>Username</Form.Label>
               <Form.Control readOnly placeholder="Username" defaultValue={this.state.user.username || ''} name="username" />
             </Form.Group>
-          </Form.Row>
-          <Form.Row>
-            <Form.Group as={Col} controlId="formGridPassword">
+          </Row>
+          <Row className="mb-2">
+            <Form.Group as={Col} xs={12} sm={6} controlId="formGridPassword">
               <Form.Label>Current Password</Form.Label>
               <Form.Control isInvalid={!this.state.oldPasswordValid && this.state.validated} ref={this.oldPassword}  type="password" placeholder="Password" name="oldPassword" onChange={this.validatePasswords} />
               <Form.Control.Feedback type="invalid">Password cannot be empty when setting new password.</Form.Control.Feedback>
             </Form.Group>
-            <Form.Group as={Col} controlId="formGridNewPassword">
+            <Form.Group as={Col} xs={12} sm={6} controlId="formGridNewPassword">
               <Form.Label>New Password</Form.Label>
               <Form.Control ref={this.password} minLength="7" type="password" placeholder="New password" name="password" onChange={this.validatePasswords} />
               <Form.Control.Feedback type="invalid">Please add a password greater than 7 characters.</Form.Control.Feedback>
             </Form.Group>
-          </Form.Row>
-          <Form.Row>
-            <Form.Group as={Col} controlId="formGridFirstName">
+          </Row>
+          <Row className="mb-2">
+            <Form.Group as={Col} xs={12} sm={6} controlId="formGridFirstName">
               <Form.Label>First Name</Form.Label>
               <Form.Control required placeholder="First name" defaultValue={this.state.user.firstName || ''} name="firstName" />
             </Form.Group>
-            <Form.Group as={Col} controlId="formGridLastName">
+            <Form.Group as={Col} xs={12} sm={6} controlId="formGridLastName">
               <Form.Label>Last Name</Form.Label>
               <Form.Control required placeholder="Last name" defaultValue={this.state.user.lastName || ''} name="lastName" />
             </Form.Group>
-          </Form.Row>
+          </Row>
           { this.state.serverError ? <Alert variant="danger">{this.state.serverError}</Alert> : <div/> }
           <Button variant="primary" type="submit" disabled={this.state.loading}>{this.state.loading ? 'Loading...' : 'Save'}</Button>
         </Form>

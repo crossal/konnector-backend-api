@@ -44,18 +44,18 @@ const AccountVerification = ({ verified, back }) => {
       <Button className="mb-4" variant="secondary" onClick={backButton}>Back</Button>
       <h3>Verification</h3>
       <Form noValidate validated={validated}  onSubmit={handleSubmit}>
-        <Form.Row>
+        <Row className="mb-2">
           <Form.Group required as={Col} controlId="formGridUsernameOrEmail">
             <Form.Control placeholder="Username or email" name="usernameOrEmail" />
             <Form.Control.Feedback type="invalid">Please add a username or email.</Form.Control.Feedback>
           </Form.Group>
-        </Form.Row>
-        <Form.Row>
+        </Row>
+        <Row className="mb-2">
           <Form.Group as={Col} controlId="formGridCode">
             <Form.Control required placeholder="Code" name="code" />
             <Form.Control.Feedback type="invalid">Please add a code.</Form.Control.Feedback>
           </Form.Group>
-        </Form.Row>
+        </Row>
         { serverError ? <Alert variant="danger">{serverError}</Alert> : <div/> }
         <Button variant="primary" type="submit" disabled={loading}>{loading ? 'Loading...' : 'Submit'}</Button>
       </Form>
