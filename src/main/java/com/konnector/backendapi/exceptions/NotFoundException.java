@@ -1,5 +1,6 @@
 package com.konnector.backendapi.exceptions;
 
+@SuppressWarnings("serial")
 public class NotFoundException extends RuntimeException {
 
 	public NotFoundException() {

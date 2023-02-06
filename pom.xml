@@ -7,6 +7,7 @@
     <groupId>io.konnector.backend-api</groupId>
     <artifactId>konnector-backend-api</artifactId>
     <version>1.0-SNAPSHOT</version>
+<!--    <packaging>war</packaging>-->
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -181,7 +182,27 @@
         </dependency>
     </dependencies>
 
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <spring.profiles.active>dev</spring.profiles.active>
+            </properties>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <properties>
+                <spring.profiles.active>prod</spring.profiles.active>
+            </properties>
+        </profile>
+    </profiles>
+
     <build>
+        <finalName>${project.artifactId}</finalName>
+
         <extensions>
             <extension>
                 <groupId>com.github.shyiko.servers-maven-extension</groupId>
@@ -205,8 +226,8 @@
                             <goal>install-node-and-npm</goal>
                         </goals>
                         <configuration>
-                            <nodeVersion>v12.14.0</nodeVersion>
-                            <npmVersion>6.13.4</npmVersion>
+                            <nodeVersion>v19.4.0</nodeVersion>
+                            <npmVersion>9.3.1</npmVersion>
                         </configuration>
                     </execution>
                     <execution>
@@ -235,6 +256,13 @@
 <!--                        -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005-->
 <!--                    </jvmArguments>-->
                 </configuration>
+                <executions>
+                    <execution>
+                        <configuration>
+                            <mainClass>com.konnector.backendapi.Application</mainClass>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -251,6 +279,9 @@
                 <configuration>
                     <source>17</source>
                     <target>17</target>
+<!--                    <compilerArgument>-Xlint:all</compilerArgument>-->
+<!--                    <showWarnings>true</showWarnings>-->
+<!--                    <showDeprecation>true</showDeprecation>-->
                 </configuration>
             </plugin>
 
@@ -362,7 +393,7 @@
             <plugin>
                 <groupId>org.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
-                <version>7.3.0</version>
+                <version>7.4.4</version>
                 <executions>
                     <execution>
                         <goals>

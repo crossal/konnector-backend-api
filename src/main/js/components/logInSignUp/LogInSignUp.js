@@ -50,7 +50,7 @@ class LogInSignUp extends React.Component {
     } else {
       content =
         <div className="mx-auto text-center">
-          <Button className="mr-2" variant="primary" onClick={this.logIn}>Log In</Button>
+          <Button className="mr-2" variant="primary" onClick={this.logIn}>Log In</Button>{' '}
           <Button variant="primary" onClick={this.signUp}>Sign Up</Button>
         </div>
     }

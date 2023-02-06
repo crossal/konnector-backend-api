@@ -108,7 +108,7 @@ public class UserServiceImpl implements UserService {
 
 		Pageable sortedByNamePageable = PageRequest.of(pageNumber - 1, pageSize);
 
-		Page page;
+		Page<User> page;
 		if (connectedUsers) {
 			page = userRepository.getConnections(userId, username, sortedByNamePageable);
 		} else {
