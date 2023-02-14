@@ -80,7 +80,7 @@ Handling Konnector web and data requests
 * Navigate to the project root
 * Run `$ mvn clean install -DskipTests` to build the JAR file
 * Build the API image by running `$ docker build -f docker/Dockerfile -t konnector-backend-api .`
-* Run the image by running `$ docker run -d --publish 8080:8080 --name konnector-backend-api konnector-backend-api prod tls_cert_keystore_password_replace_me`
+* Run the image by running `$ docker run -d --publish 8080:8080 --name konnector-backend-api konnector-backend-api prod tls_cert_keystore_password_replace_me` (if RAM is constrained, arguments like `--memory 400m --memory-swap 5G` can also be provided)
 
 * For production, Certbot packages on the system come with a cron job or systemd timer that will renew the TLS certificates automatically before they expire. Certbot will not need to run again, but the Spring application may need to be bounced manually or via a cron job also
 * To remove any stopped containers and all unused images `$ docker system prune -a`
