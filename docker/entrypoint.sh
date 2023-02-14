@@ -1,11 +1,7 @@
 #!/bin/sh
 
-echo "hello"
 ENVIRONMENT="$1"
 KEYSTORE_PASSWORD="$2"
-echo "hello2"
-echo "env $ENVIRONMENT"
-echo "pass $KEYSTORE_PASSWORD"
 
 if [ "$#" -ne 2 ]; then
   echo "Illegal number of parameters (needed 2)"
