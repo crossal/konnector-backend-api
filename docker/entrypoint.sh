@@ -12,7 +12,7 @@ if [ "$ENVIRONMENT" = "prod" ]
 then
   certbot certonly --standalone -d konnector.io -d www.konnector.io --non-interactive --email root.konnector@gmail.com --agree-tos
   cd /etc/letsencrypt/live/konnector.io
-  openssl pkcs12 -export -in fullchain.pem -inkey privkey.pem -out keystore.p12 -name konnectorCerts -CAfile chain.pem -caname otherCerts -password "$2"
+  openssl pkcs12 -export -in fullchain.pem -inkey privkey.pem -out keystore.p12 -name konnectorCerts -CAfile chain.pem -caname otherCerts -password pass:"$2"
 fi
 
 java -jar /app.jar --network="host" --spring.profiles.active="$ENVIRONMENT"
