@@ -62,7 +62,7 @@ Handling Konnector web and data requests
 * Ensure application-{env}.properties are set correctly
 * Navigate to the project root
 * Run `$ mvn clean install -DskipTests` to build the JAR file
-* Run the WAR file by running the command `$ java -jar target/konnector-backend-api.jar`
+* Run the JAR file by running the command `$ java -jar target/konnector-backend-api.jar`
 
 ## Running the API as a WAR
 
