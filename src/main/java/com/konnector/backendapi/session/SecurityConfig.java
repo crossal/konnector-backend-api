@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,6 +24,8 @@ import org.springframework.security.web.authentication.rememberme.TokenBasedReme
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.util.Arrays;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig implements WebMvcConfigurer {
@@ -38,6 +41,8 @@ public class SecurityConfig implements WebMvcConfigurer {
 	@Autowired
 	@Lazy
 	private RememberMeAuthenticationProvider rememberMeAuthenticationProvider;
+	@Autowired
+	private Environment environment;
 
 	@Value("${server.servlet.session.remember.me.key}")
 	private String rememberMeKey;
@@ -72,6 +77,12 @@ public class SecurityConfig implements WebMvcConfigurer {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
+				.requiresChannel(channel -> {
+					if (Arrays.stream(environment.getActiveProfiles()).anyMatch(env ->
+							env.equalsIgnoreCase(com.konnector.backendapi.Environment.PROD.getValue()))) {
+						channel.anyRequest().requiresSecure();
+					}
+				})
 				.csrf().disable() // disabled as solved via SameSite settings
 				.authorizeHttpRequests()
 				.requestMatchers(HttpMethod.GET, "/api/health").permitAll()
@@ -96,6 +107,10 @@ public class SecurityConfig implements WebMvcConfigurer {
 		return http.build();
 	}
 
+	/**
+	 * Redirect unmapped URLs to the home page/index
+	 * @param registry
+	 */
 	@Override
 	public void addViewControllers(ViewControllerRegistry registry) {
 		registry.addViewController("/{spring:\\w+}")
