@@ -84,3 +84,8 @@ Handling Konnector web and data requests
 
 * For production, Certbot packages on the system come with a cron job or systemd timer that will renew the TLS certificates automatically before they expire. Certbot will not need to run again, but the Spring application may need to be bounced manually or via a cron job also
 * To remove any stopped containers and all unused images `$ docker system prune -a`
+
+* If Cerbot cron jobs are not running, the certs can be rotated manually by running the following commands and then bouncing the Spring application
+  * `$ cd /etc/letsencrypt/live/konnector.io`
+  * `$ sudo certbot renew`
+  * `$ openssl pkcs12 -export -in fullchain.pem -inkey privkey.pem -out keystore.p12 -name konnectorCerts -CAfile chain.pem -caname otherCerts -password pass:"keystore_password"`
