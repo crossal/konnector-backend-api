@@ -63,6 +63,7 @@ Handling Konnector web and data requests
 * Navigate to the project root
 * Run `$ mvn clean install -DskipTests` to build the JAR file
 * Run the JAR file by running the command `$ java -jar target/konnector-backend-api.jar`
+* Run the JAR file in production by running the command `$ nohup java -jar target/konnector-backend-api.jar --network="host" --spring.profiles.active=prod &`
 
 ## Running the API as a WAR
 
